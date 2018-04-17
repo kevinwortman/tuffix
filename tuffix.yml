@@ -1,0 +1,106 @@
+
+---
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+    - name: update system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: VirtualBox guest additions
+      apt:
+        name: virtualbox-guest-utils virtuablox-guest-x11
+        state: present
+
+    - name: fundamental programming tools
+      apt:
+        name: build-essential
+        state: present
+
+    - name: G++ 5
+      apt:
+        name: gcc-5 g++
+        state: present
+
+    - name: Atom editor
+      apt:
+        deb: https://atom.io/download/deb
+
+    - name: GDB debugger
+      apt:
+        name: gdb
+        state: present
+
+    - name: git
+      apt:
+        name: git
+        state: present
+
+    - name: media computation tools
+      apt:
+        name: nlohmann-json-dev libsdl2-dev gimp audacity
+        state: present
+
+    - name: OpenGL and related libraries
+      apt:
+        name: freeglut3-dev libglu1-mesa-dev libglew-dev libgl1-mesa-dev
+        state: present
+
+    - name: LaTeX
+      apt:
+        name: latex-full
+        state: present
+
+    - name: Chromium browser
+      apt:
+        name: chromium-browser
+        state: present
+
+    - name: legacy Unix tools
+      apt:
+        name: vim emacs
+        state: present
+
+
+###############################################################################
+# FIRST THINGS FIRST
+###############################################################################
+
+# update and upgrade all packages
+
+
+###############################################################################
+# SUGGESTED DEVELOPMENT ENVIRONMENT
+#
+# mandatory programming tools for CPSC 120, 121, 131, 301
+#
+# point person: CS undergraduate committee
+###############################################################################
+
+# basic build tools
+
+###############################################################################
+# CPSC 484
+# point person: Kevin Wortman
+###############################################################################
+
+# OpenGL and related libraries
+
+###############################################################################
+# CPSC 598, SCHOLARLY PAPER PRODUCTION
+# point person: Kevin Wortman
+###############################################################################
+
+# latex
+
+###############################################################################
+# MISCELLANEOUS COMFORT PACKAGES
+# point person: CS undergraduate committee
+###############################################################################
+
+# Chromium
+
+...
