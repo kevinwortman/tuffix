@@ -40,7 +40,6 @@
         - emacs
         - enigmail
         - evolution
-        - gauche
         - gnupg2
         - graphviz
         - gthumb
@@ -85,6 +84,16 @@
 
     - name: Atom gdb support
       command: /usr/bin/apm install dbg-gdb dbg output-panel
+
+    # this playbook is run as root, so the apm command above creates a ~/.atom
+    # owned by root, so the tuffix user does not have permissions into it, and
+    # Atom fails to load properly and shows a debug interface. This makes the
+    # directory owned by tuffix, solving the problem.
+    - name: .atom owned by user instead of root
+      file:
+        path: /home/tuffix/.atom
+        owner: tuffix
+        group: tuffix
 
     - name: source code control
       apt: name={{item}} state=present
@@ -156,7 +165,7 @@
       apt: name={{item}} state=present
       with_items:
         - python
-        - python-de
+        - python-dev
         - python-pip
         - python-virtualenv
         - python3
@@ -206,19 +215,12 @@
     - name: 484 graphics environment
       apt: name={{item}} state=present
       with_items:
-        - freeglut3
-        - freeglut3-dbg
         - freeglut3-dev
-        - libfreeimage3
-        - libfreeimage3-dbg
         - libfreeimage-dev
         - libglu1-mesa-dev
-        - libglew-dbg
         - libglew-dev
-        - libglew1.10
         - libgl1-mesa-dev
         - libopenctm-dev
-        - libopenctm1
         - libx11-dev
         - libxi-dev
         - libxrandr-dev
