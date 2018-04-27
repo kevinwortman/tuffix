@@ -17,7 +17,6 @@
 
     - name: remove obsolete packages
       apt:
-        autoclean: yes
         autoremove: yes
 
     - name: VirtualBox guest additions
@@ -242,4 +241,16 @@
     - name: LaTeX
       apt: name=texlive-full state=present
 
+###############################################################################
+# cleanup
+# point person: undergraduate committee
+###############################################################################
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+    - name: apt-get clean
+      command: apt-get clean
+    
 ...
