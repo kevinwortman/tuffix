@@ -23,9 +23,9 @@ programming assignments, and courses aside from 120-121-131.
 
 Creating a Tuffix install is a multi-step process:
 
-1. Install Xubuntu 18.04 LTS (April 26 2018 release). Create a user
-   account with username "student" and password "student". This may be
-   done on bare metal or inside of a virtual machine.
+1. Install Xubuntu 18.04 LTS 64-bit (April 26 2018 release). Create a
+   user account with username "student" and password "student". This
+   may be done on bare metal or inside of a virtual machine.
    
 2. Use Ansible to run the tuffix.yml playbook. This will upgrade
    existing packages, install very many new packages, and do some other
