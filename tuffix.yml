@@ -5,6 +5,7 @@
 # general configuration, not tied to any specific course
 # point person: undergraduate committee
 ###############################################################################
+
 - hosts: localhost
   remote_user: root
   tasks:
@@ -14,6 +15,10 @@
         update_cache: yes
         upgrade: dist
 
+    - name: remove obsolete packages
+      apt:
+        autoremove: yes
+
     - name: VirtualBox guest additions
       apt: name={{item}} state=present
       with_items:
@@ -21,17 +26,44 @@
         - virtualbox-guest-utils
         - virtualbox-guest-x11
 
-    - name: convenient packages
+    - name: kitchen sink packages
       apt: name={{item}} state=present
       with_items:
+        - a2ps
         - chromium-browser
+        - cifs-utils
+        - curl
+        - default-jdk
+        - dkms
+        - eclipse
         - emacs
+        - enigmail
+        - evolution
+        - gnupg2
+        - graphviz
+        - gthumb
+        - lynx
+        - octave
+        - openssh-client
+        - openssh-server
+        - pgpgpg
+        - pidgin
+        - racket
+        - seahorse
+        - stow
+        - thunderbird
+        - thunderbird-locale-en
+        - vagrant
         - vim
+        - xfce4-goodies
+        - xfce4-weather-plugin
+        - zsh
 
 ###############################################################################
 # CPSC 120-121-131 official environment
 # point person: undergraduate committee
 ###############################################################################
+
 - hosts: localhost
   remote_user: root
   tasks:
@@ -40,6 +72,7 @@
       apt: name={{item}} state=present
       with_items:
         - build-essential
+        - gcc-5
         - g++-5
 
     - name: gdb debugger
@@ -51,33 +84,150 @@
     - name: Atom gdb support
       command: /usr/bin/apm install dbg-gdb dbg output-panel
 
-    - name: git
-      apt: name=git state=present
+    # this playbook is run as root, so the apm command above creates a ~/.atom
+    # owned by root, so the student user does not have permissions into it, and
+    # Atom fails to load properly and shows a debug interface. This makes the
+    # directory owned by student, solving the problem.
+    - name: .atom owned by user instead of root
+      file:
+        path: /home/student/.atom
+        owner: student
+        group: student
 
-    - name: media computation
+    - name: source code control
+      apt: name={{item}} state=present
+      with_items:
+        - git
+        - subversion
+
+    - name: media computation tools
       apt: name={{item}} state=present
       with_items:
         - audacity
+        - blender
         - gimp
+        - imagemagick
+        - sox
+        - vlc
+
+    - name: additional C++ libraries and tools
+      apt: name={{item}} state=present
+      with_items:
+        - autoconf
+        - automake
+        - clang
+        - cmake
+        - cscope
+        - gobjc++
+        - gobjc
+        - libboost-all-dev
+        - libglib2.0-dev
+        - libgtest-dev
         - libsdl2-dev
+        - libsqlite3-dev
+        - libssl-dev
+        - lldb
+        - meld
         - nlohmann-json-dev
+        - scons
+        - sqlite3
+        - valgrind
 
 ###############################################################################
-# CPSC 484
-# point person: Kevin Wortman
+# CPSC 223J
+# point person: Floyd Holliday
 ###############################################################################
 
 - hosts: localhost
   remote_user: root
   tasks:
 
-    - name: OpenGL and related libraries
+    - name: 223J Java environment
+      apt: name={{item}} state=present
+      with_items:
+        - geany
+        - gthumb
+        - netbeans
+        - openjdk-8-jdk
+        - openjdk-8-jre
+
+###############################################################################
+# CPSC 223P
+# point person: Michael Shafae
+###############################################################################
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+    - name: 223P Python environment
+      apt: name={{item}} state=present
+      with_items:
+        - python
+        - python-dev
+        - python-pip
+        - python-virtualenv
+        - python3
+        - python3-dev
+        - python3-pip
+        - virtualenvwrapper
+
+###############################################################################
+# CPSC 223N
+# point person: Floyd Holliday
+###############################################################################
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+    - name: 223N C# environment
+      apt: name={{item}} state=present
+      with_items:
+        - mono-complete
+        - netbeans
+
+###############################################################################
+# CPSC 240
+# point person: Floyd Holliday
+###############################################################################
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+    - name: 240 assembly environment
+      apt: name={{item}} state=present
+      with_items:
+        - intel2gas
+        - nasm
+
+###############################################################################
+# CPSC 484
+# point person: Michael Shafae, Kevin Wortman
+###############################################################################
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+    - name: 484 graphics environment
       apt: name={{item}} state=present
       with_items:
         - freeglut3-dev
+        - libfreeimage-dev
         - libglu1-mesa-dev
         - libglew-dev
         - libgl1-mesa-dev
+        - libopenctm-dev
+        - libx11-dev
+        - libxi-dev
+        - libxrandr-dev
+        - mesa-utils
+        - mesa-utils-extra
+        - openctm-tools
+        - openctm-doc
+        - python-openctm
 
 ###############################################################################
 # CPSC 598, scholarly papers
@@ -91,4 +241,16 @@
     - name: LaTeX
       apt: name=texlive-full state=present
 
+###############################################################################
+# cleanup
+# point person: undergraduate committee
+###############################################################################
+
+- hosts: localhost
+  remote_user: root
+  tasks:
+
+    - name: apt-get clean
+      command: apt-get clean
+    
 ...
