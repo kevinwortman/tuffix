@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  
+
   config.vm.box = "kevinwortman/xubuntu-bionic"
   config.vm.box_version = "0.0.1"
 
@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
   
   config.vm.provider :virtualbox do |vb|    
-    vb.name = "Tuffix 2018-Summer Beta"
+    vb.name = "Tuffix 2018-Summer Beta 1"
     vb.gui = true
     vb.memory = 2048
 
@@ -23,12 +23,17 @@ Vagrant.configure("2") do |config|
     
   end
 
-  config.vm.provision "shell",
-    inline: "sudo apt --yes install ansible"
+  config.vm.provision "shell", path: "create_student_user.sh"
+
+  config.vm.provision "shell", inline: "sudo apt --yes install ansible"
   
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "tuffix.yml"
     ansible.become = true
   end
   
+  config.vm.provision "shell", path: "configure_student_user.sh"
+
+  config.vm.provision "shell", inline: "sudo reboot"
+
 end

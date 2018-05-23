@@ -83,7 +83,7 @@
     # directory owned by student, solving the problem.
     - name: .atom owned by user instead of root
       file:
-        path: /home/student/.atom
+        path: ~/.atom
         owner: student
         group: student
 
