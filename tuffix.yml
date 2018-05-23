@@ -19,13 +19,6 @@
       apt:
         autoremove: yes
 
-    - name: VirtualBox guest additions
-      apt: name={{item}} state=present
-      with_items:
-        - virtualbox-guest-dkms
-        - virtualbox-guest-utils
-        - virtualbox-guest-x11
-
     - name: kitchen sink packages
       apt: name={{item}} state=present
       with_items:
