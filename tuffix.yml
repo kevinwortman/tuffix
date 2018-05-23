@@ -6,7 +6,7 @@
 # point person: undergraduate committee
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -64,7 +64,7 @@
 # point person: undergraduate committee
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -138,7 +138,7 @@
 # point person: Floyd Holliday
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -156,7 +156,7 @@
 # point person: Michael Shafae
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -177,7 +177,7 @@
 # point person: Floyd Holliday
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -192,7 +192,7 @@
 # point person: Floyd Holliday
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -207,7 +207,7 @@
 # point person: Michael Shafae, Kevin Wortman
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -234,7 +234,7 @@
 # point person: Kevin Wortman
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
@@ -246,7 +246,7 @@
 # point person: undergraduate committee
 ###############################################################################
 
-- hosts: localhost
+- hosts: all
   remote_user: root
   tasks:
 
