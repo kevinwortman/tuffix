@@ -13,7 +13,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
   
   config.vm.provider :virtualbox do |vb|    
-    vb.name = "Tuffix 2018 Summer Beta"
+    vb.name = "Tuffix 2018-Summer Beta"
     vb.gui = true
     vb.memory = 2048
 
@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
   
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "tuffix.yml"
+    ansible.become = true
   end
   
 end
