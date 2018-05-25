@@ -34,6 +34,10 @@ Vagrant.configure("2") do |config|
   
   config.vm.provision "shell", path: "configure_student_user.sh"
 
+  # disable /vagrant shared folder, otherwise we get a cryptic warning
+  # message on first boot
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+  
   config.vm.provision "shell", inline: "sudo reboot"
 
 end
