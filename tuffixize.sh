@@ -11,6 +11,6 @@ fi
 
 sudo apt --yes install ansible wget
 
-wget $(TUFFIX_YML_URL) | sudo $(ANSIBLE_COMMAND)
+wget $TUFFIX_YML_URL | sudo $ANSIBLE_COMMAND
 
 sudo chown -R $USER:$USER ~/.atom
