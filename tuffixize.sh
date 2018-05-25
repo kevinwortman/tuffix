@@ -9,7 +9,7 @@ sudo apt --yes install ansible wget
 
 wget https://raw.githubusercontent.com/kevinwortman/tuffix/master/tuffix.yml
 
-sudo ansible-playbook --inventory localhost, --connection local
+sudo ansible-playbook --inventory localhost, --connection local tuffix.yml
 
 rm -f tuffix.yml
 
