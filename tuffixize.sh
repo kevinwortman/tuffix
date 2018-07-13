@@ -1,6 +1,6 @@
 #! /bin/bash
 
-TUFFIXYML_SRC="https://raw.githubusercontent.com/kevinwortman/tuffix/master/tuffix.yml"
+TUFFIXYML_SRC="https://raw.githubusercontent.com/mshafae/tuffix/package-changes-mshafae/tuffix.yml"
 
 TUFFIXYML=/tmp/tuffix.$$.yml
 
