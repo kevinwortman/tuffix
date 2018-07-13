@@ -15,11 +15,12 @@ else
   VMUSER=${USER}
 fi
 
+VMUSER=${USER}
+
 if [ "${VMUSER}x" -eq "x" ]; then
   echo "Environment missing USER variable; using student."
   VMUSER=student
 fi
-
 
 sudo apt --yes install ansible wget
 
