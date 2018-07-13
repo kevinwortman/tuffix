@@ -1,16 +1,30 @@
 #! /bin/bash
 
+TUFFIXYML_SRC="https://raw.githubusercontent.com/kevinwortman/tuffix/master/tuffix.yml"
+
+TUFFIXYML=/tmp/tuffix.$$.yml
+
 if (( EUID == 0 )); then
     echo "error: do not run tuffixize.sh as root"
     exit 1
 fi
 
+if [ $# > 0 ]; then
+  VMUSER=student
+else
+  VMUSER=${USER}
+fi
+
+if [ "${VMUSER}x" -eq "x" ]; then
+  echo "Environment missing USER variable; using student."
+  VMUSER=student
+fi
+
+
 sudo apt --yes install ansible wget
 
-wget https://raw.githubusercontent.com/kevinwortman/tuffix/master/tuffix.yml
+wget -o ${TUFFIXYML} ${TUFFIXYML_SRC}
 
-sudo ansible-playbook --inventory localhost, --connection local tuffix.yml
+sudo ansible-playbook --extra-vars="login=${VMUSER}" --inventory localhost, --connection local ${TUFFIXYML}
 
-rm -f tuffix.yml
-
-sudo chown -R $USER:$USER ~/.atom
+rm -f ${TUFFIXYML}

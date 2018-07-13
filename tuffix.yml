@@ -23,34 +23,28 @@
       apt: name={{item}} state=present
       with_items:
         - a2ps
-        - chromium-browser
-        - cifs-utils
+        #- cifs-utils
         - curl
-        - default-jdk
+        #- default-jdk
         - dkms
         - eclipse
         - emacs
-        - enigmail
-        - evolution
         - gnupg2
         - graphviz
         - gthumb
-        - lynx
-        - octave
+        #- lynx
+        #- octave
         - openssh-client
         - openssh-server
         - pgpgpg
-        - pidgin
-        - racket
+        #- racket
         - seahorse
         - stow
-        - thunderbird
-        - thunderbird-locale-en
         - vagrant
         - vim
         - xfce4-goodies
         - xfce4-weather-plugin
-        - zsh
+        - readline
 
 ###############################################################################
 # CPSC 120-121-131 official environment
@@ -84,8 +78,8 @@
     - name: .atom owned by user instead of root
       file:
         path: ~/.atom
-        owner: student
-        group: student
+        owner: {{ login }}
+        group: {{ login }}
 
     - name: source code control
       apt: name={{item}} state=present
