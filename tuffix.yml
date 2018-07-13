@@ -78,8 +78,8 @@
     - name: .atom owned by user instead of root
       file:
         path: ~/.atom
-        owner: {{ login }}
-        group: {{ login }}
+        owner: "{{ login }}"
+        group: "{{ login }}"
 
     - name: source code control
       apt: name={{item}} state=present
