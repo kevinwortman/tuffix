@@ -10,12 +10,12 @@
   remote_user: root
   tasks:
 
-    - name: update system packages
+    - name: Update repositories cache and update all packages to the latest version
       apt:
         update_cache: yes
         upgrade: dist
 
-    - name: remove obsolete packages
+    - name: Remove dependencies that are no longer required
       apt:
         autoremove: yes
 

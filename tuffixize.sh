@@ -26,6 +26,6 @@ sudo apt --yes install ansible wget
 
 wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
 
-sudo ansible-playbook --extra-vars="login=${VMUSER}" --inventory localhost, --connection local ${TUFFIXYML}
+sudo ansible-playbook --extra-vars=\"login=${VMUSER}\" --inventory localhost, --connection local ${TUFFIXYML}
 
 rm -f ${TUFFIXYML}
