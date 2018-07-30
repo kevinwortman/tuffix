@@ -193,6 +193,24 @@
         - nasm
 
 ###############################################################################
+# CPSC 351
+# point person: Michael Shafae
+###############################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: 351 libraries
+      apt: name={{item}} state=present
+      with_items:
+        - libreadline-dev
+        - manpages-posix
+        - manpages-posix-dev
+        - glibc-doc
+
+
+###############################################################################
 # CPSC 484
 # point person: Michael Shafae, Kevin Wortman
 ###############################################################################
