@@ -27,16 +27,16 @@
         - curl
         #- default-jdk
         - dkms
-        - eclipse
+        #- eclipse
         - emacs
-        - gnupg2
+        #- gnupg2
+        #- pgpgpg
         - graphviz
         - gthumb
         #- lynx
         #- octave
         - openssh-client
         - openssh-server
-        - pgpgpg
         #- racket
         - seahorse
         - stow
@@ -74,12 +74,19 @@
     # this playbook is run as root, so the apm command above creates a ~/.atom
     # owned by root, so the student user does not have permissions into it, and
     # Atom fails to load properly and shows a debug interface. This makes the
-    # directory owned by student, solving the problem.
+    # directory owned by {{ login }}, by default `student`, thus
+    # solving the problem.
     - name: .atom owned by user instead of root
       file:
         path: ~/.atom
         owner: "{{ login }}"
         group: "{{ login }}"
+
+    - name: Adding current user {{ login }} to groups
+      user:
+        name: "{{ login }}"
+        groups: sudo vboxsf
+        append: yes
 
     - name: source code control
       apt: name={{item}} state=present
