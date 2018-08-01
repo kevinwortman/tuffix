@@ -1,6 +1,6 @@
 #! /bin/bash
 
-TUFFIXYML_SRC="https://raw.githubusercontent.com/mshafae/tuffix/package-changes-mshafae/tuffix.yml"
+TUFFIXYML_SRC="https://raw.githubusercontent.com/kevinwortman/tuffix/master/tuffix.yml"
 
 TUFFIXYML=/tmp/tuffix.$$.yml
 
@@ -39,4 +39,4 @@ wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
 
 sudo ansible-playbook --extra-vars="login=${VMUSER}" --inventory localhost, --connection local ${TUFFIXYML}
 
-#rm -f ${TUFFIXYML}
+rm -f ${TUFFIXYML}
