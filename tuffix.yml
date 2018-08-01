@@ -19,6 +19,12 @@
       apt:
         autoremove: yes
 
+    - name: Ensure that the vboxsf group exists to premptively add the user to it.
+      group:
+        name: vboxsf
+        gid: 999
+        state: present
+    
     - name: kitchen sink packages
       apt: name={{item}} state=present
       with_items:
