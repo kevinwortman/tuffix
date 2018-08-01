@@ -130,7 +130,7 @@
         - libssl-dev
         - lldb
         - meld
-        - nlohmann-json-dev
+        #- nlohmann-json-dev Not available for 16.04.4 LTS See https://packages.ubuntu.com/search?suite=default&section=all&arch=any&keywords=nlohmann-json-dev&searchon=names
         - scons
         - sqlite3
         - valgrind
