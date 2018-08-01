@@ -9,12 +9,6 @@ if (( EUID == 0 )); then
     exit 1
 fi
 
-if [ $# > 0 ]; then
-  VMUSER=student
-else
-  VMUSER=${USER}
-fi
-
 VMUSER=${USER}
 
 if [ "${VMUSER}x" == "x" ]; then
