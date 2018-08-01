@@ -17,7 +17,7 @@ fi
 
 VMUSER=${USER}
 
-if [ "${VMUSER}x" -eq "x" ]; then
+if [ "${VMUSER}x" == "x" ]; then
   echo "Environment missing USER variable; using student."
   VMUSER=student
 fi
