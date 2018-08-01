@@ -22,10 +22,19 @@ if [ "${VMUSER}x" == "x" ]; then
   VMUSER=student
 fi
 
+
 sudo apt --yes install ansible wget
+
+ANSIBLE_MAJOR_RELEASE=`ansible --version | head -1 | cut -f 2 -d\  | cut -f 1 -d.`
+ANSIBLE_MINOR_RELEASE=`ansible --version | head -1 | cut -f 2 -d\  | cut -f 2 -d.`
+
+# The tuffix YAML file requires Ansible version 2.1 or later.
+if [ ${ANSIBLE_MAJOR_VERSION} -le 2 -a ${ANSIBLE_MINOR_RELEASE} -lt 1 ]; then
+  # Old version of Ansible; install 
+fi
 
 wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
 
 sudo ansible-playbook --extra-vars=\"login=${VMUSER}\" --inventory localhost, --connection local ${TUFFIXYML}
 
-rm -f ${TUFFIXYML}
+#rm -f ${TUFFIXYML}
