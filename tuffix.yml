@@ -44,7 +44,6 @@
         - vim
         - xfce4-goodies
         - xfce4-weather-plugin
-        - readline
 
 ###############################################################################
 # CPSC 120-121-131 official environment
