@@ -24,7 +24,7 @@
         name: vboxsf
         gid: 999
         state: present
-    
+
     - name: kitchen sink packages
       apt: name={{item}} state=present
       with_items:
@@ -87,10 +87,10 @@
         owner: "{{ login }}"
         group: "{{ login }}"
 
-    - name: Adding current user {{ login }} to groups
+    - name: Adding current user {{ login }} to group vboxsf preemptively
       user:
         name: "{{ login }}"
-        groups: sudo vboxsf
+        groups: vboxsf
         append: yes
 
     - name: source code control
