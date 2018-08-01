@@ -130,7 +130,8 @@
         - libssl-dev
         - lldb
         - meld
-        #- nlohmann-json-dev Not available for 16.04.4 LTS See https://packages.ubuntu.com/search?suite=default&section=all&arch=any&keywords=nlohmann-json-dev&searchon=names
+        # Not available for Ubuntu 16.04 LTS
+        - nlohmann-json-dev
         - scons
         - sqlite3
         - valgrind
@@ -270,7 +271,7 @@
   remote_user: root
   tasks:
 
-    - name: apt-get clean
-      command: apt-get clean
+    - name: apt clean
+      command: apt clean
     
 ...

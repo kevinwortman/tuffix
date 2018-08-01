@@ -9,6 +9,15 @@ if (( EUID == 0 )); then
     exit 1
 fi
 
+MAJOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 1 -d.`
+MINOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 2 -d.`
+if [ ${MAJOR_RELEASE} -lt 18 ]; then
+  echo "error: this is meant for Ubuntu 18.04 and later. Your release information is:"
+  lsb_release -a
+  exit 1
+fi
+
+
 VMUSER=${USER}
 
 if [ "${VMUSER}x" == "x" ]; then
@@ -16,28 +25,15 @@ if [ "${VMUSER}x" == "x" ]; then
   VMUSER=student
 fi
 
-sudo apt-get --yes update
-sudo apt-get install --yes software-properties-common
-sudo apt-add-repository --yes ppa:ansible/ansible
-sudo apt-get --yes update
-sudo apt-get install --yes ansible
-sudo apt-get install --yes wget
+# This was for installing the latest version of Ansible.
+#sudo apt-get --yes update
+#sudo apt-get install --yes software-properties-common
+#sudo apt-add-repository --yes ppa:ansible/ansible
+#sudo apt-get --yes update
+#sudo apt-get install --yes ansible
+#sudo apt-get install --yes wget
 
-
-#sudo apt --yes install ansible wget
-
-#ANSIBLE_MAJOR_RELEASE=`ansible --version | head -1 | cut -f 2 -d\  | cut -f 1 -d.`
-#ANSIBLE_MINOR_RELEASE=`ansible --version | head -1 | cut -f 2 -d\  | cut -f 2 -d.`
-
-# The tuffix YAML file requires Ansible version 2.1 or later.
-#if [ ${ANSIBLE_MAJOR_VERSION} -le 2 -a ${ANSIBLE_MINOR_RELEASE} -lt 1 ]; then
-  # Old version of Ansible; install
-  #sudo apt-get --yes update
-  #sudo apt-get install --yes software-properties-common
-  #sudo apt-add-repository --yes ppa:ansible/ansible
-  #sudo apt-get --yes update
-  #sudo apt-get install --yes ansible
-#fi
+sudo apt --yes install ansible wget
 
 wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
 
