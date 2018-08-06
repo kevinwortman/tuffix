@@ -1,6 +1,9 @@
 #! /bin/bash
 
-TUFFIXYML_SRC="https://raw.githubusercontent.com/kevinwortman/tuffix/master/tuffix.yml"
+
+# Use  the default environment defined TUFFIXYML_SRC
+# (see bash (1) Parameter Expansion)
+TUFFIXYML_SRC=${TUFFIXYML_SRC:-"https://raw.githubusercontent.com/kevinwortman/tuffix/master/tuffix.yml"}
 
 TUFFIXYML=/tmp/tuffix.$$.yml
 

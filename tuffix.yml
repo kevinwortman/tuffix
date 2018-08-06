@@ -137,6 +137,20 @@
         - valgrind
 
 ###############################################################################
+# Mikhail Gofman's Packages
+# point person: Mikhail Gofman
+###############################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: Mikhail Gofman's Packages
+      apt: name={{item}} state=present
+      with_items:
+        - tmate
+
+###############################################################################
 # CPSC 223J
 # point person: Floyd Holliday
 ###############################################################################
