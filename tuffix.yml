@@ -10,47 +10,46 @@
   remote_user: root
   tasks:
 
-    - name: update system packages
+    - name: Update repositories cache and update all packages to the latest version
       apt:
         update_cache: yes
         upgrade: dist
 
-    - name: remove obsolete packages
+    - name: Remove dependencies that are no longer required
       apt:
         autoremove: yes
+
+    - name: Ensure that the vboxsf group exists to premptively add the user to it.
+      group:
+        name: vboxsf
+        gid: 999
+        state: present
 
     - name: kitchen sink packages
       apt: name={{item}} state=present
       with_items:
         - a2ps
-        - chromium-browser
-        - cifs-utils
+        #- cifs-utils
         - curl
-        - default-jdk
+        #- default-jdk
         - dkms
-        - eclipse
+        #- eclipse
         - emacs
-        - enigmail
-        - evolution
-        - gnupg2
+        #- gnupg2
+        #- pgpgpg
         - graphviz
         - gthumb
-        - lynx
-        - octave
+        #- lynx
+        #- octave
         - openssh-client
         - openssh-server
-        - pgpgpg
-        - pidgin
-        - racket
+        #- racket
         - seahorse
         - stow
-        - thunderbird
-        - thunderbird-locale-en
         - vagrant
         - vim
         - xfce4-goodies
         - xfce4-weather-plugin
-        - zsh
 
 ###############################################################################
 # CPSC 120-121-131 official environment
@@ -80,12 +79,19 @@
     # this playbook is run as root, so the apm command above creates a ~/.atom
     # owned by root, so the student user does not have permissions into it, and
     # Atom fails to load properly and shows a debug interface. This makes the
-    # directory owned by student, solving the problem.
+    # directory owned by {{ login }}, by default `student`, thus
+    # solving the problem.
     - name: .atom owned by user instead of root
       file:
         path: ~/.atom
-        owner: student
-        group: student
+        owner: "{{ login }}"
+        group: "{{ login }}"
+
+    - name: Adding current user {{ login }} to group vboxsf preemptively
+      user:
+        name: "{{ login }}"
+        groups: vboxsf
+        append: yes
 
     - name: source code control
       apt: name={{item}} state=present
@@ -124,10 +130,25 @@
         - libssl-dev
         - lldb
         - meld
+        # Not available for Ubuntu 16.04 LTS
         - nlohmann-json-dev
         - scons
         - sqlite3
         - valgrind
+
+###############################################################################
+# Mikhail Gofman's Packages
+# point person: Mikhail Gofman
+###############################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: Mikhail Gofman's Packages
+      apt: name={{item}} state=present
+      with_items:
+        - tmate
 
 ###############################################################################
 # CPSC 223J
@@ -199,6 +220,24 @@
         - nasm
 
 ###############################################################################
+# CPSC 351
+# point person: Michael Shafae
+###############################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: 351 libraries
+      apt: name={{item}} state=present
+      with_items:
+        - libreadline-dev
+        - manpages-posix
+        - manpages-posix-dev
+        - glibc-doc
+
+
+###############################################################################
 # CPSC 484
 # point person: Michael Shafae, Kevin Wortman
 ###############################################################################
@@ -246,7 +285,7 @@
   remote_user: root
   tasks:
 
-    - name: apt-get clean
-      command: apt-get clean
+    - name: apt clean
+      command: apt clean
     
 ...
