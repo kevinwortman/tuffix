@@ -46,6 +46,7 @@
         #- racket
         - seahorse
         - stow
+        - synaptic
         - vagrant
         - vim
         - xfce4-goodies
@@ -287,5 +288,5 @@
 
     - name: apt clean
       command: apt clean
-    
+
 ...
