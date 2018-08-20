@@ -30,6 +30,7 @@
       with_items:
         - a2ps
         #- cifs-utils
+        - chromium-browser
         - curl
         #- default-jdk
         - dkms
