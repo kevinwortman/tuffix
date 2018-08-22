@@ -21,26 +21,22 @@ The major components of Tuffix are
 Additional tools and libraries are also included to support rich
 programming assignments, and courses aside from 120-121-131.
 
-Creating a Tuffix install is a multi-step process:
+## Installation
 
-1. Install Xubuntu 18.04 LTS 64-bit (April 26 2018 release). Create a
-   user account with username "student" and password "student". This
-   may be done on bare metal or inside of a virtual machine.
-   
-2. Use Ansible to run the tuffix.yml playbook. This will upgrade
-   existing packages, install very many new packages, and do some other
-   minor configuration to set up a smooth environment.
+See the
+[Tuffix Installation Instructions](https://docs.google.com/document/d/1HZtBl9qtT-9t1mU6LAmXn3_ayCfMni39GNLFGQ14s4M/edit?usp=sharing)
+Doc.
 
-3. Reboot.
+## Community
 
-## Status
+CSUF students: join the
+[Tuffix Students](https://communities.fullerton.edu/course/view.php?id=1547)
+community in Titanium (Moodle). There are detailed instructions for joining the
+community in the installation instructions Doc linked above.
 
-This is currently in an "alpha" state.
-
-We would like to use Vagrant for a step-1 VM install, but this is not
-working yet.
-
-The step-2 Ansible playbook works but needs some fine tuning.
+CSUF instructors: email Kevin Wortman and ask him to add you to the
+[Tuffix Instructors](https://communities.fullerton.edu/course/view.php?id=1544)
+community in Titanium.
 
 ## Acknowledgements
 
