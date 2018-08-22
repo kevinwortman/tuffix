@@ -27,7 +27,7 @@ See the
 [Tuffix Installation Instructions](https://docs.google.com/document/d/1HZtBl9qtT-9t1mU6LAmXn3_ayCfMni39GNLFGQ14s4M/edit?usp=sharing)
 Doc.
 
-## Community
+## Community and Documentation
 
 CSUF students: join the
 [Tuffix Students](https://communities.fullerton.edu/course/view.php?id=1547)
