@@ -276,7 +276,7 @@
   tasks:
 
     - name: LaTeX
-      apt: name=texlive-full state=present
+      apt: name=texlive-base state=present
 
 ###############################################################################
 # cleanup
