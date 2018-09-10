@@ -23,9 +23,7 @@ programming assignments, and courses aside from 120-121-131.
 
 ## Installation
 
-See the
-[Tuffix Installation Instructions](https://docs.google.com/document/d/1HZtBl9qtT-9t1mU6LAmXn3_ayCfMni39GNLFGQ14s4M/edit?usp=sharing)
-Doc.
+See the *Tuffix Installation Instructions Doc* at <https://csufcs.com/tuffixinstall/>.
 
 ## Community and Documentation
 
