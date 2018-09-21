@@ -32,7 +32,7 @@ fi
 TUFFIX_WALLPAPER_BUCKET="https://storage.googleapis.com/csufcs/"
 TUFFIX_WALLPAPER_FILENAME="Tuffix_Background_V2_1920x1080_JeffreyLo.png"
 XUBUNTU_BACKDROPS_DIRECTORY="/usr/share/xfce4/backdrops/"
-wget ${TUFFIX_WALLPAPER_BUCKET}${TUFFIX_WALLPAPER_FILENAME} \
+sudo wget ${TUFFIX_WALLPAPER_BUCKET}${TUFFIX_WALLPAPER_FILENAME} \
      -P ${XUBUNTU_BACKDROPS_DIRECTORY}
 xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/image-path \
              -s ${XUBUNTU_BACKDROPS_DIRECTORY}${TUFFIX_WALLPAPER_FILENAME}
