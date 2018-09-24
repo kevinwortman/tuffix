@@ -28,6 +28,17 @@ if [ "${VMUSER}x" == "x" ]; then
   VMUSER=student
 fi
 
+# Set desktop background to Tuffix wallpaper.
+TUFFIX_WALLPAPER_BUCKET="https://storage.googleapis.com/csufcs/"
+TUFFIX_WALLPAPER_FILENAME="Tuffix_Background_V2_1920x1080_JeffreyLo.png"
+XUBUNTU_BACKDROPS_DIRECTORY="/usr/share/xfce4/backdrops/"
+sudo wget ${TUFFIX_WALLPAPER_BUCKET}${TUFFIX_WALLPAPER_FILENAME} \
+     -P ${XUBUNTU_BACKDROPS_DIRECTORY}
+xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/image-path \
+             -s ${XUBUNTU_BACKDROPS_DIRECTORY}${TUFFIX_WALLPAPER_FILENAME}
+xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image \
+             -s ${XUBUNTU_BACKDROPS_DIRECTORY}${TUFFIX_WALLPAPER_FILENAME}
+
 # This was for installing the latest version of Ansible.
 #sudo apt-get --yes update
 #sudo apt-get install --yes software-properties-common
