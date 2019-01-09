@@ -62,6 +62,14 @@
   remote_user: root
   tasks:
 
+    - name: clang toolchain
+      apt: name={{item}} state=present
+      with_items:
+        - build-essential
+        - clang
+        - clang-tidy
+        - clang-format
+
     - name: g++ 5 compiler
       apt: name={{item}} state=present
       with_items:
@@ -101,6 +109,12 @@
         - git
         - subversion
 
+    - name: gtest
+      apt: name={{item}} state=present
+      with_items:
+        - libgtest-dev
+        - cmake
+
     - name: media computation tools
       apt: name={{item}} state=present
       with_items:
@@ -116,8 +130,6 @@
       with_items:
         - autoconf
         - automake
-        - clang
-        - cmake
         - cscope
         - gobjc++
         - gobjc
