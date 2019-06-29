@@ -14,7 +14,7 @@ fi
 
 MAJOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 1 -d.`
 MINOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 2 -d.`
-if [ ${MAJOR_RELEASE} -lt 18 ]; then
+if [ ${MAJOR_RELEASE} -lt 19 ]; then
   echo "error: this is meant for Ubuntu 18.04 and later. Your release information is:"
   lsb_release -a
   exit 1
