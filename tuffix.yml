@@ -271,9 +271,11 @@
       unarchive:
         src: http://eclipse.bluemix.net/packages/2019-06/data/eclipse-java-2019-06-R-linux-gtk-x86_64.tar.gz
         dest: /opt
+        remote_src: yes
 
     - name: Link Eclipse executable
       file:
+        state: link
         src: /opt/eclipse/eclipse
         dest: /usr/local/bin/eclipse
 
