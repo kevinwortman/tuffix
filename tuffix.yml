@@ -111,27 +111,27 @@
         - git
         - subversion
 
-    - name: googletest: dependencies
+    - name: googletest dependencies
       apt: name={{item}} state=present
       with_items:
         - build-essential
         - cmake
 
-    - name: googletest: clone git repo
+    - name: googletest clone
       git:
         repo: https://github.com/google/googletest.git
         dest: /tmp/googletest
 
-    - name: googletest: cmake
+    - name: googletest cmake
       shell: cmake CMakeLists.txt
       args:
         chdir: /tmp/googletest
 
-    - name: googletest: make
+    - name: googletest make
       make:
         chdir: /tmp/googletest
 
-    - name: googletest: install
+    - name: googletest install
       shell: |
         cp -r googletest/include/. /usr/include
         cp -r googlemock/include/. /usr/include
@@ -139,7 +139,7 @@
       args:
         chdir: /tmp/googletest
 
-    - name: googletest: clean
+    - name: googletest clean
       file:
         state: absent
         path: /tmp/googletest
