@@ -52,7 +52,5 @@ You may self-enroll in the community; first login to your portal, then navigate 
   If the sum that is printed out does not match, that is an indication that either you did not actually download the entire file (most likely) or [hackers tampered with your download](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (only a remote possibility).
 
   5. In the VirtualBox user interface, Import the .ova file. This may take several minutes.
-Run the virtual machine, and login using username “student” and password “student”.
 
-  6. In the VirtualBox user interface, Import the .ova file. This may take several minutes.
-Run the virtual machine, and login using username “student” and password “student”.
+  6. Run the virtual machine, and login using username “student” and password “student”.
