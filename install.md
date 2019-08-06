@@ -1,9 +1,10 @@
+# Tuffix Installation Instructions
 
-# Version
+## Version
 
 This is the process for the **Tuffix 2019 release**.
 
-# Type of Install
+## Type of Install
 
 You can install Tuffix in two ways:
 
@@ -14,13 +15,13 @@ Option 1 (native) is recommended for students because running natively allows Tu
 
 Option 2 (virtual machine) will be a clunkier experience, but may be more convenient because you can run Tuffix inside a computer you already own without permanently altering that computer. Since your computer’s RAM memory will be divided between the guest Tuffix OS, and your native host OS, memory will be scarce and programs may run slowly due to [paging and thrashing](https://en.wikipedia.org/wiki/Paging).
 
-# Tuffix Students Community
+## Tuffix Students Community
 
 Everyone using Tuffix should join the Tuffix Students community in Titanium. This is where you can find these sorts of instructions, a support discussion forum, and other resources.
 
 You may self-enroll in the community; first login to your portal, then navigate to ‘Titanium communities’, next under the dashboard to the left – click ‘Site home’, then click ‘Search Courses’ on the right, search for ‘Tuffix’, in the results click ‘Tuffix Students’, under the gear in the upper right select ‘Enrol me in this course’, finally click on the button ‘Enrol me’. You may unenroll at any time.
 
-# Native Install
+## Native Install
 
   1. Confirm that your computer meets the [Xubuntu system requirements](https://xubuntu.org/requirements/), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
   2. Install **Xubuntu 19.04 64-bit** (https://xubuntu.org/download/ ).
@@ -34,7 +35,7 @@ You may self-enroll in the community; first login to your portal, then navigate 
   4. The script will ask for your password, and will install very many packages. The process may take up to an hour. It may ask for your password again depending how long this takes.
   5. Reboot your computer, and you’re done!
 
-# Virtual Machine
+## Virtual Machine
 
   1. Install VirtualBox 6.0.10 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_0).
     - Apple computers with OS X 10.13 or later may encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
