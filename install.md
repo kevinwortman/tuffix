@@ -46,12 +46,12 @@ You may self-enroll in the community; first login to your portal, then navigate 
   2. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
   3. Download the .ova file from https://drive.google.com/file/d/1DaKb3VrF18xS4jvzLQCV-0HMTD7EVq-w/view?usp=sharing .
   4. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches:
-  `222b6ce6c6a6af261894017c114507d6716ea90288b3070d5434b58340ed7812`.
+  `36971cecbb1f65d4930173e8cb512dc2ed227a0e81c07bfe6627775e0f8cb1ad`.
   On a Linux or Mac host, open a terminal window and use the shasum command:
   ```
   $ cd ~/Downloads
   $ shasum --algorithm 256 "Tuffix Spring 2019 r1.ova"
-222b6ce6c6a6af261894017c114507d6716ea90288b3070d5434b58340ed7812  Tuffix Spring 2019 r1.ova
+36971cecbb1f65d4930173e8cb512dc2ed227a0e81c07bfe6627775e0f8cb1ad  Tuffix Spring 2019 r1.ova
   ```
   If the sum that is printed out does not match, that is an indication that either you did not actually download the entire file (most likely) or [hackers tampered with your download](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (only a remote possibility).
 
