@@ -13,8 +13,9 @@ code with one another.
 
 The major components of Tuffix are
 
-* Xubuntu 18.04 LTS
-* GNU g++5 C++ compiler
+* Xubuntu 19.04 LTS
+* clang compiler
+* GNU g++9 C++ compiler
 * Atom text editor
 * gdb debugger and Atom's dgb-gdb frontend
 

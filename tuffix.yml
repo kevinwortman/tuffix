@@ -37,6 +37,7 @@
         - emacs
         #- gnupg2
         #- pgpgpg
+        - gpg
         - graphviz
         - gthumb
         #- lynx
@@ -71,12 +72,12 @@
         - clang-tidy
         - clang-format
 
-    - name: g++ 7 compiler
+    - name: g++ 9 compiler
       apt: name={{item}} state=present
       with_items:
         - build-essential
-        - gcc-7
-        - g++-7
+        - gcc-9
+        - g++-9
 
     - name: gdb debugger
       apt: name=gdb state=present
@@ -110,11 +111,10 @@
         - git
         - subversion
 
-    - name: gtest
+    - name: gtest compile dependencies
       apt: name={{item}} state=present
       with_items:
-        - libgtest-dev
-        - libgmock-dev
+        - build-essential
         - cmake
 
     - name: media computation tools
@@ -310,18 +310,6 @@
         - openctm-tools
         - openctm-doc
         - python-openctm
-
-###############################################################################
-# CPSC 598, scholarly papers
-# point person: Kevin Wortman
-###############################################################################
-
-- hosts: all
-  remote_user: root
-  tasks:
-
-    - name: LaTeX
-      apt: name=texlive-base state=present
 
 ###############################################################################
 # cleanup
