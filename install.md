@@ -42,7 +42,7 @@ You may self-enroll in the community; first login to your portal, then navigate 
      BIOS settings. Most models of
      computer have this turned on by default, but some have it turned off. If VirtualBox
      gives errors about CPU virtualization, enter your BIOS settings and turn this feature
-     on. You can usually find instructions by googling for "<computer model> enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
+     on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
   2. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
   3. Download the .ova file from https://drive.google.com/file/d/1DaKb3VrF18xS4jvzLQCV-0HMTD7EVq-w/view?usp=sharing .
   4. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches:
