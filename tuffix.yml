@@ -306,10 +306,10 @@
         src: /opt/eclipse/eclipse
         dest: /usr/local/bin/eclipse
 
-    - name: Create Eclipse menu item
-      copy:
-        src: eclipse.desktop
-        dest: /usr/share/applications/eclipse.desktop
+#    - name: Create Eclipse menu item
+#      copy:
+#        src: eclipse.desktop
+#        dest: /usr/share/applications/eclipse.desktop
 
 ###############################################################################
 # CPSC 484
