@@ -41,6 +41,7 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
     - Fall 2018: [Tuffix-Background-v2-1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=1QFt8kOPKjpd18fjnDWEVCxVmi4512xNy)
     - Spring 2019: [Tuffix Background v3.3 1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=16aBkkGTcgG40m4ayiuGNYbLM5BmDVjEC)
     - 2019 Edition: [Wallpaper Tux meets Tuffy - Brenda Valls - Edited.jpg](https://drive.google.com/open?id=1xKmzS8ilw-c1jdHSIQhd4j1mi36blIBC)
+    - **pick a new image for each release**
   - Update all packages
   ```
   $ sudo apt update
@@ -82,6 +83,6 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
   - Upload the .ova to Google Drive
 10. Publish
   - Update the following documents:
-    - these VM build instructions
-    - installation instructions
+    - these VM build instructions (the bold text, and filename in the shasum command above)
+    - installation instructions (the Xubuntu version, VirtualBox version, and shasum)
     - Tuffix Students community (add a link)
