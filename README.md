@@ -22,10 +22,6 @@ The major components of Tuffix are
 Additional tools and libraries are also included to support rich
 programming assignments, and courses aside from 120-121-131.
 
-## Installation
-
-See the *Tuffix Installation Instructions Doc* at <http://csufcs.com/tuffixinstall>.
-
 ## Community and Documentation
 
 CSUF students: join the
@@ -36,6 +32,14 @@ community in the installation instructions Doc linked above.
 CSUF instructors: email Kevin Wortman and ask him to add you to the
 [Tuffix Instructors](https://communities.fullerton.edu/course/view.php?id=1544)
 community in Titanium.
+
+## Installation
+
+See the [Tuffix Installation Instructions in install.md](https://github.com/kevinwortman/tuffix/blob/master/install.md)
+
+## Building a Release VM
+
+See the [Tuffix VM Build Process in vm-build-process.md](https://github.com/kevinwortman/tuffix/blob/master/vm-build-process.md)
 
 ## Acknowledgements
 
