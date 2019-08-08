@@ -8,7 +8,7 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
   - Download the latest Xubuntu 64-bit release .iso file, as of this writing **xubuntu-19.04-desktop-amd64.iso** (https://xubuntu.org/download/).
 2. In VirtualBox on the host computer
   - New VM
-    - Name: Tuffix 2019
+    - Name: **Tuffix 2019 Edition**
     - Type: Linux
     - Version: Ubuntu (64-bit)
     - Memory: 2048 MB
