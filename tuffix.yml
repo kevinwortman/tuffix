@@ -165,7 +165,6 @@
         - libboost-all-dev
         - libfccp-dev
         - libglib2.0-dev
-        - libgtest-dev
         - libgtkmm-3.0-dev
         - libsdl2-dev
         - libsdl2-gfx-dev
