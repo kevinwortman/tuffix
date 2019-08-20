@@ -85,4 +85,6 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
   - Update the following documents:
     - these VM build instructions (the bold text, and filename in the shasum command above)
     - installation instructions (the Xubuntu version, VirtualBox version, and shasum)
+    - upload the .ova to Google Drive, and set the file's sharing settings to
+      "On - Anyone with the link".
     - Tuffix Students community (add a link)
