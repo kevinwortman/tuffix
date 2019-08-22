@@ -82,9 +82,9 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
   - `$ shasum -a 256 "Tuffix 2019 Edition.ova"`
   - Upload the .ova to Google Drive
 10. Publish
+  - Upload the .ova to Google Drive, and set the file's sharing settings to
+    "On - Anyone with the link".
   - Update the following documents:
     - these VM build instructions (the bold text, and filename in the shasum command above)
-    - installation instructions (the Xubuntu version, VirtualBox version, and shasum)
-    - upload the .ova to Google Drive, and set the file's sharing settings to
-      "On - Anyone with the link".
+    - installation instructions (the Xubuntu version, VirtualBox version, URL to .ova, and shasum)
     - Tuffix Students community (add a link)
