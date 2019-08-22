@@ -13,7 +13,7 @@ code with one another.
 
 The major components of Tuffix are
 
-* Xubuntu 19.04 LTS
+* Xubuntu 19.04
 * clang compiler
 * GNU g++9 C++ compiler
 * Atom text editor
