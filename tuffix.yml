@@ -111,6 +111,12 @@
         - git
         - subversion
 
+    -name: googletest remove conflicting packages
+      apt: name={{item}} state=absent
+      with_items:
+        - googletest
+        - libgtest-dev
+        
     - name: googletest dependencies
       apt: name={{item}} state=present
       with_items:
