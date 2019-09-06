@@ -111,7 +111,7 @@
         - git
         - subversion
 
-    -name: googletest remove conflicting packages
+    - name: googletest remove conflicting packages
       apt: name={{item}} state=absent
       with_items:
         - googletest
