@@ -57,4 +57,4 @@ You may self-enroll in the community; first login to your portal, then navigate 
 
   5. In the VirtualBox user interface, Import the .ova file. This may take several minutes.
 
-  6. Run the virtual machine, and login using username “student” and password “student”.
+  6. Start the virtual machine, and login using username “student” and password “student”.
