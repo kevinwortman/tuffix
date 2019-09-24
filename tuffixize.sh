@@ -30,7 +30,13 @@ fi
 
 sudo apt --yes install ansible wget
 
-wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
+REGEX='(https?)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+if [[ $TUFFIXYML_SRC =~ $REGEX ]]; then
+  wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
+else
+  cp ${TUFFIXYML_SRC} ${TUFFIXYML}
+fi
 
 sudo ansible-playbook --extra-vars="login=${VMUSER}" --inventory localhost, --connection local ${TUFFIXYML}
 
