@@ -1,0 +1,10 @@
+    - name: media computation tools
+      apt: name={{item}} state=present
+      with_items:
+        - audacity
+        - blender
+        - gimp
+        - imagemagick
+        - sox
+        - vlc
+
