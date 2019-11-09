@@ -38,8 +38,8 @@
         - openssh-server
         - seahorse
         - synaptic
-        - vagrant
         - vim
+        - vim-gnome
         - libreadline-dev
         - manpages-posix
         - manpages-posix-dev
@@ -144,14 +144,8 @@
         - autoconf
         - automake
         - cscope
-        - gobjc++
-        - gobjc
         - libboost-all-dev
         - libfccp-dev
-        - libglib2.0-dev
-        - libgtkmm-3.0-dev
-        - libsdl2-dev
-        - libsdl2-gfx-dev
         - libsqlite3-dev
         - libssl-dev
         - lldb
