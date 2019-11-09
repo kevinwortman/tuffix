@@ -14,7 +14,6 @@ SRC=${SRC:-"/usr/src/gtest"}
 PKGNAME="libgtest-dev"
 PKGEXISTS=`dpkg-query -W -f '${binary:Package}\n' --no-pager ${PKGNAME}`
 
-if []
 if [ ${PKGEXISTS}"x" = "x" ]; then
   echo "${PKGNAME} is not installed. Exiting."
   exit 1

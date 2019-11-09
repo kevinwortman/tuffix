@@ -1,0 +1,15 @@
+#####################################################################
+# CPSC 223N
+# point person: Floyd Holliday
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: 223N C# environment
+      apt: name={{item}} state=present
+      with_items:
+        - mono-complete
+        - netbeans
+
