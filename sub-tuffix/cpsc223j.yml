@@ -1,0 +1,18 @@
+#####################################################################
+# CPSC 223J
+# point person: Floyd Holliday
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: 223J Java environment
+      apt: name={{item}} state=present
+      with_items:
+        - geany
+        - gthumb
+        - netbeans
+        - openjdk-8-jdk
+        - openjdk-8-jre
+
