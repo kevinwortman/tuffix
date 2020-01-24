@@ -23,19 +23,19 @@ You may self-enroll in the community; first login to your portal, then navigate 
 
 ## Native Install
 
-  1. Confirm that your computer meets the [Xubuntu system requirements](https://xubuntu.org/requirements/), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
-  2. Burn an ISO image to a USB memory stick to install Xubuntu. Download an Xubuntu 19.04 64-bit ISO image from an Ubuntu mirror site. (You may skip this step if you ask your instructor for a pre-made USB memory stick or attend an ACM Linux Installfest.)
-  ..1. Go to http://mirror.us.leaseweb.net/ubuntu-cdimage/xubuntu/releases/ and look for `19.04`. Click the link and then click `release`.
-  ..2. Download the file `xubuntu-19.04-desktop-amd64.iso`.
-  ..3. Burn the ISO image to a USB memory stick that is at least 4 GB. **All data on the USB memory stick will be deleted forever.** Instructions on how to do this are online for [Ubuntu](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0), [macOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0), and [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0).
-  ..4. Install Xubuntu onto your computer. **All data on computer will be deleted forever including all your programs like Microsoft Word and Excel. You cannot reinstall these programs.** The steps are similar to the steps in the online [Install Ubuntu Desktop tutorial](https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#3). You may need expert help on this step so please consult with your instructor.
-  ..5. Reboot the computer and login. Setup WiFi - if you're using Eduroam, use the [Tuffix Eduroam Authentication Instructions](https://github.com/kevinwortman/tuffix/blob/master/eduroam.md).
-  3. Open a terminal window, and run the tuffixize.sh script (without using sudo):
-  ```
-  $ wget https://csufcs.com/tuffixize -O - | bash
-  ```
-  4. The script will ask for your password, and will install very many packages. The process may take up to an hour. It may ask for your password again depending how long this takes.
-  5. Reboot your computer, and you’re done!
+1. Confirm that your computer meets the [Xubuntu system requirements](https://xubuntu.org/requirements/), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
+2. Burn an ISO image to a USB memory stick to install Xubuntu. Download an Xubuntu 19.04 64-bit ISO image from an Ubuntu mirror site. (You may skip this step if you ask your instructor for a pre-made USB memory stick or attend an ACM Linux Installfest.)
+..1. Go to http://mirror.us.leaseweb.net/ubuntu-cdimage/xubuntu/releases/ and look for `19.04`. Click the link and then click `release`.
+..2. Download the file `xubuntu-19.04-desktop-amd64.iso`.
+..3. Burn the ISO image to a USB memory stick that is at least 4 GB. **All data on the USB memory stick will be deleted forever.** Instructions on how to do this are online for [Ubuntu](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0), [macOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0), and [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0).
+..4. Install Xubuntu onto your computer. **All data on computer will be deleted forever including all your programs like Microsoft Word and Excel. You cannot reinstall these programs.** The steps are similar to the steps in the online [Install Ubuntu Desktop tutorial](https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#3). You may need expert help on this step so please consult with your instructor.
+..5. Reboot the computer and login. Setup WiFi - if you're using Eduroam, use the [Tuffix Eduroam Authentication Instructions](https://github.com/kevinwortman/tuffix/blob/master/eduroam.md).
+3. Open a terminal window, and run the tuffixize.sh script (without using sudo):
+```
+$ wget https://csufcs.com/tuffixize -O - | bash
+```
+4. The script will ask for your password, and will install very many packages. The process may take up to an hour. It may ask for your password again depending how long this takes.
+5. Reboot your computer, and you’re done!
 
 ## Virtual Machine
 
