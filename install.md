@@ -51,23 +51,23 @@ $ wget https://csufcs.com/tuffixize -O - | bash
 
 1. Install VirtualBox 6.0.10 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_0).
 
-  - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
+    - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
 
-   - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
+    - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
 
 1. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
 
 1. Download the .ova file from https://drive.google.com/file/d/1OOyFnpd4Y4BB5Kd3HxcLfYaYgd_ROlHU/view .
 
-  1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches:
-  `fddc18782756dff5b163cc96e120f71252f0c84e777c4d52ff5becc1c7830e2c`.
-  On a Linux or Mac host, open a terminal window and use the shasum command:
-  ```
-  $ cd ~/Downloads
-  $ shasum --algorithm 256 "Tuffix 2019 Edition r2.ova"
-fddc18782756dff5b163cc96e120f71252f0c84e777c4d52ff5becc1c7830e2c  Tuffix Spring 2019 r2.ova
-  ```
-  If the sum that is printed out does not match, that is an indication that either you did not actually download the entire file (most likely) or [hackers tampered with your download](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (only a remote possibility).
+    1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches:
+    `fddc18782756dff5b163cc96e120f71252f0c84e777c4d52ff5becc1c7830e2c`.
+    On a Linux or Mac host, open a terminal window and use the shasum command:
+    ```
+    $ cd ~/Downloads
+    $ shasum --algorithm 256 "Tuffix 2019 Edition r2.ova"
+    fddc18782756dff5b163cc96e120f71252f0c84e777c4d52ff5becc1c7830e2c  Tuffix Spring 2019 r2.ova
+    ```
+    If the sum that is printed out does not match, that is an indication that either you did not actually download the entire file (most likely) or [hackers tampered with your download](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (only a remote possibility).
 
 1. In the VirtualBox user interface, Import the .ova file. This may take several minutes.
 
