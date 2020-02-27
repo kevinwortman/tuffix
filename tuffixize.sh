@@ -39,7 +39,7 @@ fi
 test_dns_web
 
 sudo apt update
-sudo apt --yes install ansible wget
+sudo apt --yes install ansible wget aptitude
 
 REGEX='(https?)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 

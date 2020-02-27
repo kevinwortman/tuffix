@@ -25,26 +25,27 @@
         state: present
 
     - name: kitchen sink packages
-      apt: name={{item}} state=present
-      with_items:
-        - a2ps
-        - chromium-browser
-        - curl
-        - dkms
-        - emacs
-        - gpg
-        - gthumb
-        - openssh-client
-        - openssh-server
-        - seahorse
-        - synaptic
-        - vim
-        - vim-gnome
-        - libreadline-dev
-        - manpages-posix
-        - manpages-posix-dev
-        - glibc-doc
-        - tmate
+      apt:
+        pkg:
+          - a2ps
+          - chromium-browser
+          - curl
+          - dkms
+          - emacs
+          - enscript
+          - gpg
+          - gthumb
+          - openssh-client
+          - openssh-server
+          - seahorse
+          - synaptic
+          - vim
+          - vim-gtk3
+          - libreadline-dev
+          - manpages-posix
+          - manpages-posix-dev
+          - glibc-doc
+          - tmate
 
 #####################################################################
 # CPSC 120-121-131 official environment
@@ -58,22 +59,21 @@
   tasks:
 
     - name: clang toolchain
-      apt: name={{item}} state=present
-      with_items:
-        - build-essential
-        - clang
-        - clang-tidy
-        - clang-format
+      apt:
+        pkg:
+          - build-essential
+          - clang
+          - clang-tidy
+          - clang-format
+          - lldb
 
     - name: g++ 9 compiler
-      apt: name={{item}} state=present
-      with_items:
-        - build-essential
-        - gcc-9
-        - g++-9
-
-    - name: gdb debugger
-      apt: name=gdb state=present
+      apt:
+        pkg:
+          - build-essential
+          - gcc-9
+          - g++-9
+          - gdb
 
     - name: Atom editor
       apt: deb=https://atom.io/download/deb
@@ -100,16 +100,16 @@
         append: yes
 
     - name: source code control
-      apt: name={{item}} state=present
-      with_items:
-        - git
-        - subversion
+      apt:
+        pkg:
+          - git
+          - subversion
 
     - name: googletest dependencies
-      apt: name={{item}} state=present
-      with_items:
-        - build-essential
-        - cmake
+      apt:
+        pkg:
+          - build-essential
+          - cmake
 
     - name: googletest clone
       git:
@@ -139,20 +139,19 @@
         path: /tmp/googletest
 
     - name: additional C++ libraries and tools
-      apt: name={{item}} state=present
-      with_items:
-        - autoconf
-        - automake
-        - cscope
-        - libboost-all-dev
-        - libfccp-dev
-        - libsqlite3-dev
-        - libssl-dev
-        - lldb
-        - meld
-        - nlohmann-json-dev
-        - sqlite3
-        - valgrind
+      apt:
+        pkg:
+          - autoconf
+          - automake
+          - cscope
+          #- libboost-all-dev
+          #- libfccp-dev
+          #- libsqlite3-dev
+          #- libssl-dev
+          - meld
+          #- nlohmann-json-dev
+          #- sqlite3
+          #- valgrind
 
 
 #####################################################################
@@ -165,10 +164,10 @@
   tasks:
 
     - name: 240 assembly environment
-      apt: name={{item}} state=present
-      with_items:
-        - intel2gas
-        - nasm
+      apt:
+        pkg:
+          - intel2gas
+          - nasm
 
 #####################################################################
 # cleanup
