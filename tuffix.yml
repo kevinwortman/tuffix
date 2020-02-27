@@ -83,7 +83,7 @@
 
     # this playbook is run as root, so the apm command above
     # creates a ~/.atom owned by root, so the student user does
-    # not have permissions into it, and Atom fails to load 
+    # not have permissions into it, and Atom fails to load
     # properly and shows a debug interface. This makes the
     # directory owned by {{ login }}, by default `student`, thus
     # solving the problem.
