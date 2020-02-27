@@ -105,38 +105,26 @@
           - git
           - subversion
 
-    - name: googletest dependencies
+    - name: Google Test Package Install
       apt:
         pkg:
+          - libgtest-dev
           - build-essential
           - cmake
+          - clang
+          - gcc-9
+          - g++-9
 
-    - name: googletest clone
-      git:
-        repo: https://github.com/google/googletest.git
-        dest: /tmp/googletest
-
-    - name: googletest cmake
-      shell: cmake CMakeLists.txt
-      args:
-        chdir: /tmp/googletest
-
-    - name: googletest make
-      make:
-        chdir: /tmp/googletest
-
-    - name: googletest install
+    - name: Google Test Library Build
       shell: |
-        cp -r googletest/include/. /usr/include
-        cp -r googlemock/include/. /usr/include
-        cp lib/*.a /usr/lib
-      args:
-        chdir: /tmp/googletest
-
-    - name: googletest clean
-      file:
-        state: absent
-        path: /tmp/googletest
+        BUILDDIR="/tmp/gtestbuild.$$"
+        DESTROOT="/usr/local/"
+        mkdir -p ${BUILDDIR}
+        cd ${BUILDDIR}
+        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
+        make
+        install -o root -g root -m 644 libgtest.a ${DESTROOT}/lib
+        install -o root -g root -m 644 libgtest_main.a ${DESTROOT}/lib
 
     - name: additional C++ libraries and tools
       apt:
