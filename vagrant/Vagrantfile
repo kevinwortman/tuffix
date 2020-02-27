@@ -3,7 +3,7 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/ubuntu1904"
-  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder "..", "/vagrant"
 
    config.vm.provider "virtualbox" do |vb|
      # Customize the amount of memory on the VM:
@@ -11,6 +11,6 @@ Vagrant.configure("2") do |config|
    end
   config.vm.provision "shell", inline: <<-SHELL
     TUFFIXYML_SRC="/vagrant/tuffix.yml"; export TUFFIXYML_SRC
-    bash /vagrant/tuffixize
+    bash /vagrant/tuffixize.sh
   SHELL
 end
