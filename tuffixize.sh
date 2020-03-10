@@ -15,11 +15,6 @@ test_dns_web ( ){
   fi
 }
 
-if (( EUID == 0 )); then
-    echo "error: do not run tuffixize.sh as root"
-    exit 1
-fi
-
 MAJOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 1 -d.`
 MINOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 2 -d.`
 if [ ${MAJOR_RELEASE} -lt 19 ]; then
@@ -34,12 +29,16 @@ VMUSER=${USER}
 if [ "${VMUSER}x" == "x" ]; then
   echo "Environment missing USER variable; using student."
   VMUSER=student
+elif [ ${EUID} -eq 0 ]; then
+  echo "Warning: you are running this script as root. This is not advisable."
+  echo "Push ctrl-c to exit. You have 5 seconds."
+  sleep 5
 fi
 
 test_dns_web
 
 sudo apt update
-sudo apt --yes install ansible wget
+sudo apt --yes install ansible wget aptitude python
 
 REGEX='(https?)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
