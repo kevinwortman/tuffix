@@ -18,9 +18,8 @@ test_dns_web ( ){
 MAJOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 1 -d.`
 MINOR_RELEASE=`lsb_release -r | cut -f 2 | cut -f 2 -d.`
 if [ ${MAJOR_RELEASE} -lt 19 ]; then
-  echo "error: this is meant for Ubuntu 19.04 and later. Your release information is:"
+  echo "Warning: this is meant for Ubuntu 19.04 and later. Your release information is:"
   lsb_release -a
-  exit 1
 fi
 
 
@@ -38,7 +37,7 @@ fi
 test_dns_web
 
 sudo apt update
-sudo apt --yes install ansible wget aptitude python
+sudo apt --yes install ansible wget aptitude python python3-distutils
 
 REGEX='(https?)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
@@ -46,6 +45,7 @@ if [[ $TUFFIXYML_SRC =~ $REGEX ]]; then
   wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
 else
   # Useful for debugging
+  echo "Overriding TUFFIXYML_SRC: ${TUFFIXYML_SRC}"
   cp ${TUFFIXYML_SRC} ${TUFFIXYML}
 fi
 

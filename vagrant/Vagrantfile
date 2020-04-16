@@ -2,15 +2,18 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "generic/ubuntu1904"
-  config.vm.synced_folder "..", "/vagrant"
+  config.vm.box = "generic/ubuntu1910"
 
-   config.vm.provider "virtualbox" do |vb|
-     # Customize the amount of memory on the VM:
-     vb.memory = "512"
-   end
+  config.vm.synced_folder "..", "/tuffix"
+  config.vm.synced_folder Dir.home, "/hosthome"
+
+  config.vm.provider "virtualbox" do |vb|
+    # Customize the amount of memory on the VM
+    vb.memory = "512"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
-    TUFFIXYML_SRC="/vagrant/tuffix.yml"; export TUFFIXYML_SRC
-    bash /vagrant/tuffixize.sh
+    TUFFIXYML_SRC="/tuffix/tuffix.yml"; export TUFFIXYML_SRC
+    bash /tuffix/tuffixize.sh
   SHELL
 end
