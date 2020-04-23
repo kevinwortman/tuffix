@@ -35,11 +35,11 @@ community in Titanium.
 
 ## Installation
 
-See the [Tuffix Installation Instructions in install.md](https://github.com/kevinwortman/tuffix/blob/master/install.md)
+See the [Tuffix Installation Instructions in install.md](install.md)
 
 ## Building a Release VM
 
-See the [Tuffix VM Build Process in vm-build-process.md](https://github.com/kevinwortman/tuffix/blob/master/vm-build-process.md)
+See the [Tuffix VM Build Process in vm-build-process.md](vm-build-process.md)
 
 ## Acknowledgements
 
