@@ -56,7 +56,7 @@ You may self-enroll in the community; first login to your portal, then navigate 
 
 1. Install Xubuntu onto your computer. **All data on computer will be deleted forever including all your programs like Microsoft Word and Excel. You cannot reinstall these programs.** The steps are similar to the steps in the online [Install Ubuntu Desktop tutorial](https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#3). You may need expert help on this step so please consult with your instructor.
 
-1. Reboot the computer and login. Setup WiFi - if you're using Eduroam, use the [Tuffix Eduroam Authentication Instructions](https://github.com/kevinwortman/tuffix/blob/master/eduroam.md).
+1. Reboot the computer and login. Setup WiFi - if you're using Eduroam, use the [Tuffix Eduroam Authentication Instructions](eduroam.md).
 
 1. Open a terminal window, and run the tuffixize.sh script (without using sudo):
 ```
