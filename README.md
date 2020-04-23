@@ -13,7 +13,7 @@ code with one another.
 
 The major components of Tuffix are
 
-* Xubuntu 19.04
+* Xubuntu 19.10
 * clang compiler
 * GNU g++9 C++ compiler
 * Atom text editor
@@ -33,7 +33,7 @@ CSUF instructors: email Kevin Wortman and ask him to add you to the
 [Tuffix Instructors](https://communities.fullerton.edu/course/view.php?id=1544)
 community in Titanium.
 
-## Installation
+## Installation & Hardware Requirements
 
 See the [Tuffix Installation Instructions in install.md](install.md)
 
