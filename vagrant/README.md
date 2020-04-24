@@ -1,6 +1,7 @@
 # Vagrant VM
 This is the *right* way to run a Tuffix VM on your computer. It does not require too much memory (512 MB) and allows you to use all your regular Windows or Mac tools that you are used to. It is a lightweight way to have access to the Linux tools you need to get your class work completed.
 
+A short video that demonstrates basic use of this VM on a macOS host computer is online at https://youtu.be/xO3eSnkwk74.
 ## Prerequisites
 Windows and macOS users, first install [Vagrant](https://www.vagrantup.com/downloads.html).
 
