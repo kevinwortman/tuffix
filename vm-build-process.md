@@ -1,6 +1,8 @@
 
 # Tuffix VM Build Process
 
+These are instructions that were used up to Spring 2019. We are no longer building Xubuntu appliances. Instead use https://www.osboxes.org/ubuntu/ for Ubuntu desktop VMs.
+
 These are the instructions to create a Tuffix VM. Ordinarily, they only need to be followed by the instructors who create the release VM.
 
 1. On host OS
