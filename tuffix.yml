@@ -45,7 +45,7 @@
           - manpages-posix
           - manpages-posix-dev
           - glibc-doc
-          - tmate
+          - nfs-common
 
 #####################################################################
 # CPSC 120-121-131 official environment
