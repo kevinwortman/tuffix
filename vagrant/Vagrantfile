@@ -9,10 +9,17 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
     # Customize the amount of memory on the VM
+    # You ought to be OK with 512 MB; increase if you need more.
     vb.memory = "512"
   end
 
   config.vm.provision "shell", inline: <<-SHELL
+    # If you have a local mirror, use the URL here
+    #TUFFIX_APT_SOURCES_HOSTURL="http://10.0.1.2/ubuntu"; export TUFFIX_APT_SOURCES_HOSTURL
+    # If you'd like the change to be permanent, say YES
+    #TUFFIX_APT_SOURCES_HOST_PERMANENT="YES"; export TUFFIX_APT_SOURCES_HOST_PERMANENT
+    # Don't change this; it uses `config.vm.synced_folder "..", "/tuffix"`
+    # to grab the YML file rather than the web.
     TUFFIXYML_SRC="/tuffix/tuffix.yml"; export TUFFIXYML_SRC
     bash /tuffix/tuffixize.sh
   SHELL
