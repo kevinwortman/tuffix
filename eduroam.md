@@ -4,7 +4,7 @@ Ask for assistance from a professor or a more experienced peer to help you if th
 
 ## Version
 
-The instructions are valid as of Fall 2019.
+The instructions are valid as of Spring 2020.
 
 ## CSUF IT Wizard
 
