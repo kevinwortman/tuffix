@@ -1,0 +1,28 @@
+#####################################################################
+# CPSC 223W
+# point person: Paul Inventado
+# https://swift.org/getting-started/#installing-swift
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: 223W Swift environment
+      apt: name={{item}} state=present
+      with_items:
+        - libcurl4
+        - libxml2
+        - libedit2
+        - libsqlite3-0
+        - libc6-dev
+        - binutils
+        - libgcc-9-dev
+        - libstdc++-9-dev
+        - zlib1g-dev
+        - libz3-dev
+        - libpython2.7
+        - tzdata
+        - pkg-config
+        - gnupg2
+        - curl  
