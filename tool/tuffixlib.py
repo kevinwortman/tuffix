@@ -1,9 +1,3 @@
-"""
-TODO:
-- Split this file into components, I.E) make this a stand alone lib
-  - Eventually merge with my project?
-- change Fetch to look at /var/lib/tuffix/state.json for installed packages
-"""
 ################################################################################
 # imports
 ################################################################################
