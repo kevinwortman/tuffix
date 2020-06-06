@@ -9,10 +9,10 @@ TODO:
 ################################################################################
 
 # standard library
-import io, json, os, pathlib, sys, unittest
+import io, json, os, pathlib, sys, unittest, requests
 
 # packages
-import apt.cache, packaging.version
+import apt.cache, packaging.version, apt.debfile
 
 # our lib imports
 
@@ -299,10 +299,12 @@ class BaseKeyword(AbstractKeyword):
     # TODO: install Atom, googletest, g++?
     
     packages = ['build-essential',
+                'cmake',
                 'clang',
+                'clang-format',
                 'clang-tidy',
                 'git',
-                'clang-format']
+                'libgtest-dev']
     
     def __init__(self, build_config):
         super().__init__(build_config,
@@ -311,9 +313,38 @@ class BaseKeyword(AbstractKeyword):
         
     def add(self):
         add_deb_packages(self.packages)
+        self.atom()
         
     def remove(self):
         remove_deb_packages(self.packages)
+
+    def atom(self):
+      """
+      GOAL: Get and install Atom
+      AUTHOR: Jared Dyreson
+      INSTITUTION: California State University Fullerton
+      SIDE EFFECT: Atom requires Python2.7, which needs to be properly addressed in either the above packages list or needs to be apart of the init process.
+      """
+
+      AtomURL = "https://atom.io/download/deb"
+      AtomDest = "/tmp/atom.deb"
+
+      print("[INFO] Downloading Atom Debian installer....")
+      with open(AtomDest, 'wb') as fp:
+        fp.write(requests.get(AtomURL).content)
+      print("[INFO] Finished downloading...")
+      print("[INFO] Installing atom....")
+      apt.debfile.DebPackage(filename=AtomDest).install()
+      print("[INFO] Finished installing Atom")
+
+  def googletest(self):
+      """
+      GOAL: Get and install GoogleTest
+      AUTHOR: Jared Dyreson
+      INSTITUTION: California State University Fullerton
+      SIDE EFFECT: Google Test requires to built from source
+      """
+
 
 class C439Keyword(AbstractKeyword):
 

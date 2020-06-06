@@ -1,0 +1,17 @@
+#!/usr/bin/env python3.8
+
+"""
+Run Bash scripts from Python program
+"""
+
+import subprocess
+
+
+def run(path : str):
+
+  return subprocess.Popen([path],
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT).communicate()
+
+out, _ = run("./google_test_installer")
+print(out.decode("utf-8"))
