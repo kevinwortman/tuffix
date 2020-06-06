@@ -1,0 +1,3 @@
+/home/jared/Projects/tuffix/tool/helper_scripts/googleTest/CMakeFiles/rebuild_cache.dir
+/home/jared/Projects/tuffix/tool/helper_scripts/googleTest/CMakeFiles/runTests.dir
+/home/jared/Projects/tuffix/tool/helper_scripts/googleTest/CMakeFiles/edit_cache.dir

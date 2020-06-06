@@ -9,6 +9,7 @@ function perm_err_(){
 }
 
 function build_(){
+  CURRENT="$PWD"
   [[ "$(whoami)" != "root" ]] && perm_err_
 
   cd /tmp
@@ -19,11 +20,22 @@ function build_(){
   make -j8
   sudo make install
   sudo ldconfig
+  cd "$CURRENT"
+  test_
 
 }
 
+function test_(){
+  # https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/ #
+  [[ ! -d "/var/lib/tuffix/GoogleTest" ]] && exit
+  cd googleTest
+  cmake CMakeLists.txt
+  make
+  ./runTests
+}
+
 function aarch_err_(){
-  >&2 echo "[-] Wrong OS, stop"
+  >&2 echo "[-] Wrong OS, stop."
   exit 1
 }
 

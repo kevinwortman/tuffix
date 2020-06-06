@@ -13,8 +13,6 @@ import apt.cache, packaging.version, apt.debfile
 from TuffixExceptions import *
 from TuffixLang.Fetch import Fetch 
 
-Fetch()
-
 ################################################################################
 # constants
 ################################################################################
@@ -287,109 +285,6 @@ class AbstractKeyword:
     def remove(self):
         raise NotImplementedError
 
-# Keyword names may begin with a course code (digits), but Python
-# identifiers may not. If a keyword name starts with a digit, prepend
-# the class name with C (for Course).
-
-class BaseKeyword(AbstractKeyword):
-
-    # TODO: install Atom, googletest, g++?
-    
-    packages = ['build-essential',
-                'cmake',
-                'clang',
-                'clang-format',
-                'clang-tidy',
-                'git',
-                'libgtest-dev']
-    
-    def __init__(self, build_config):
-        super().__init__(build_config,
-                         'base',
-                         'CPSC 120-121-131-301 C++ development environment')
-        
-    def add(self):
-        add_deb_packages(self.packages)
-        self.atom()
-        
-    def remove(self):
-        remove_deb_packages(self.packages)
-
-    def atom(self):
-      """
-      GOAL: Get and install Atom
-      AUTHOR: Jared Dyreson
-      INSTITUTION: California State University Fullerton
-      SIDE EFFECT: Atom requires Python2.7, which needs to be properly addressed in either the above packages list or needs to be apart of the init process.
-      """
-
-      AtomURL = "https://atom.io/download/deb"
-      AtomDest = "/tmp/atom.deb"
-
-      print("[INFO] Downloading Atom Debian installer....")
-      with open(AtomDest, 'wb') as fp:
-        fp.write(requests.get(AtomURL).content)
-      print("[INFO] Finished downloading...")
-      print("[INFO] Installing atom....")
-      apt.debfile.DebPackage(filename=AtomDest).install()
-      print("[INFO] Finished installing Atom")
-
-    def googletest(self):
-        """
-        GOAL: Get and install GoogleTest
-        AUTHOR: Jared Dyreson
-        INSTITUTION: California State University Fullerton
-        SIDE EFFECT: Google Test requires to built from source
-        """
-        print("Implement me please!")
-        pass
-
-
-class C439Keyword(AbstractKeyword):
-
-    packages = ['minisat2']
-    
-    def __init__(self, build_config):
-        super().__init__(build_config, '439', 'CPSC 439')
-         
-    def add(self):
-        add_deb_packages(self.packages)
-        
-    def remove(self):
-        remove_deb_packages(self.packages)
-
-class LatexKeyword(AbstractKeyword):
-    packages = ['texlive-full']
-
-    def __init__(self, build_config):
-        super().__init__(build_config,
-                         'latex',
-                         'LaTeX typesetting environment (large)')
-         
-    def add(self):
-        add_deb_packages(self.packages)
-        
-    def remove(self):
-        remove_deb_packages(self.packages)
-
-# TODO: more keywords...
-
-def all_keywords(build_config):
-    if not isinstance(build_config, BuildConfig):
-        raise ValueError
-    # alphabetical order, but put digits after letters
-    return [ BaseKeyword(build_config),
-             LatexKeyword(build_config),
-             C439Keyword(build_config) ]
-
-def find_keyword(build_config, name):
-    if not (isinstance(build_config, BuildConfig) and
-            isinstance(name, str)):
-        raise ValueError
-    for keyword in all_keywords(build_config):
-        if keyword.name == name:
-            return keyword
-    raise UsageError('unknown keyword "' + name + '", see valid keyword names with $ tuffix list')
 
 ################################################################################
 # system probing functions (gathering info about the environment)
