@@ -1,4 +1,9 @@
-
+"""
+TODO:
+- Split this file into components, I.E) make this a stand alone lib
+  - Eventually merge with my project?
+- change Fetch to look at /var/lib/tuffix/state.json for installed packages
+"""
 ################################################################################
 # imports
 ################################################################################
@@ -8,6 +13,10 @@ import io, json, os, pathlib, sys, unittest
 
 # packages
 import apt.cache, packaging.version
+
+# our lib imports
+
+from TuffixExceptions import *
 
 ################################################################################
 # constants
@@ -19,37 +28,6 @@ STATE_PATH = pathlib.Path('/var/lib/tuffix/state.json')
 
 KEYWORD_MAX_LENGTH = 8
 
-################################################################################
-# exception types
-################################################################################
-
-# base types for exceptions that include a string message
-class MessageException(Exception):
-    def __init__(self, message):
-        if not (isinstance(message, str)):
-            raise ValueError
-        self.message = message
-
-# commandline usage error
-class UsageError(MessageException):
-    def __init__(self, message):
-        super().__init__(message)
-
-# problem with the environment (wrong OS, essential shell command missing, etc.)
-class EnvironmentError(MessageException):
-    def __init__(self, message):
-        super().__init__(message)
-
-# issue reported by the `status` command, that's at the level of a fatal error
-class StatusError(MessageException):
-    def __init__(self, message):
-        super().__init__(message)
-
-# issue reported by the `status` command, that's at the level of a nonfatal
-# warning
-class StatusWarning(MessageException):
-    def __init__(self, message):
-        super().__init__(message)
 
 ################################################################################
 # configuration
@@ -323,6 +301,7 @@ class BaseKeyword(AbstractKeyword):
     packages = ['build-essential',
                 'clang',
                 'clang-tidy',
+                'git',
                 'clang-format']
     
     def __init__(self, build_config):
