@@ -11,6 +11,9 @@ import apt.cache, packaging.version, apt.debfile
 # our lib imports
 
 from TuffixExceptions import *
+from TuffixLang.Fetch import Fetch 
+
+Fetch()
 
 ################################################################################
 # constants
@@ -331,13 +334,15 @@ class BaseKeyword(AbstractKeyword):
       apt.debfile.DebPackage(filename=AtomDest).install()
       print("[INFO] Finished installing Atom")
 
-  def googletest(self):
-      """
-      GOAL: Get and install GoogleTest
-      AUTHOR: Jared Dyreson
-      INSTITUTION: California State University Fullerton
-      SIDE EFFECT: Google Test requires to built from source
-      """
+    def googletest(self):
+        """
+        GOAL: Get and install GoogleTest
+        AUTHOR: Jared Dyreson
+        INSTITUTION: California State University Fullerton
+        SIDE EFFECT: Google Test requires to built from source
+        """
+        print("Implement me please!")
+        pass
 
 
 class C439Keyword(AbstractKeyword):
