@@ -52,7 +52,6 @@ class BaseKeyword(AbstractKeyword):
       AtomPlugins = ['dbg-gdb', 
                     'dbg', 
                     'output-panel']
-      AtomConfDir = os.path.join(os.environ["HOME"], ".atom")
 
       print("[INFO] Downloading Atom Debian installer....")
       with open(AtomDest, 'wb') as fp:
@@ -62,12 +61,7 @@ class BaseKeyword(AbstractKeyword):
       apt.debfile.DebPackage(filename=AtomDest).install()
       for plugin in AtomPlugins:
         subprocess.run(['/usr/bin/apm', 'install', plugin])
-      if(not os.path.isdir(AtomConfDir)):
-        AtomProcess = subprocess.Popen('atom', stdout=subprocess.PIPE,
-                                       shell=True, preexec_fn=os.setsid)
-        time.sleep(5)
-        os.killpg(os.getpgid(AtomProcess.pid), signal.SIGKILL)
-      subprocess.run(['chown', os.environ["USER"], '-R', AtomConfDir])
+      subprocess.run(['chown', os.listdir("/home")[0], '-R', AtomConfDir])
       print("[INFO] Finished installing Atom")
 
     def googletest(self):
@@ -76,8 +70,13 @@ class BaseKeyword(AbstractKeyword):
         SIDE EFFECT: Google Test requires to built from source
         """
 
-        print("Implement me please!")
-        pass
+        run = lambda path : subprocess.Popen([path],
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT).communicate()
+        out, _ = run("./google_test_installer")
+        print(out.decode("utf-8"))
+
+
 
 ###### Class Keywords ######
 

@@ -1,0 +1,8 @@
+Package: tuffix
+Version: 1.0-1
+Section: base
+Priority: optional
+Architecture: amd64
+Maintainer: Jared Dyreson <jareddyreson@csu.fullerton.edu>
+Description: Program to aide in the management of software dependencies for California State University Fullerton Computer Science courses.
+Depends: vim, git, python3-pip, ansible, wget, python3
