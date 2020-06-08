@@ -11,5 +11,5 @@
 
 - [X] status command
 - [X] git, atom
-- [ ] googletest
+- [X] googletest
 - [ ] adding more keywords from older ansible scripts

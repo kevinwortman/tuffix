@@ -269,21 +269,6 @@ def all_commands(build_config):
 # keywords
 ################################################################################
 
-class AbstractKeyword:
-    def __init__(self, build_config, name, description):
-        if not (isinstance(build_config, BuildConfig) and
-                isinstance(name, str) and
-                len(name) <= KEYWORD_MAX_LENGTH and
-                isinstance(description, str)):
-            raise ValueError
-        self.name = name
-        self.description = description
-
-    def add(self):
-        raise NotImplementedError
-        
-    def remove(self):
-        raise NotImplementedError
 
 
 ################################################################################
