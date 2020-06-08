@@ -7,7 +7,6 @@ import sys
 
 # local modules
 import tuffixlib
-from TuffixInstallKeywords import *
 
 if __name__ == '__main__':
     sys.exit(tuffixlib.main(tuffixlib.DEFAULT_BUILD_CONFIG, sys.argv))
