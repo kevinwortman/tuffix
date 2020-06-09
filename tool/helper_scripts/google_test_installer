@@ -13,6 +13,7 @@ function build_(){
   [[ "$(whoami)" != "root" ]] && perm_err_
 
   cd /tmp
+  [[ -d googletest  ]] && rm -rf googletest
   git clone https://github.com/google/googletest.git
   cd googletest
   mkdir build && cd build
@@ -27,8 +28,7 @@ function build_(){
 
 function test_(){
   # https://www.eriksmistad.no/getting-started-with-google-test-on-ubuntu/ #
-  [[ ! -d "/var/lib/tuffix/GoogleTest" ]] && exit
-  cd googleTest
+  cd helper_scripts/googleTest
   cmake CMakeLists.txt
   make
   ./runTests

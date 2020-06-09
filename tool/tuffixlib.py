@@ -4,10 +4,26 @@
 ################################################################################
 
 # standard library
-import io, json, os, pathlib, sys, unittest
+
+from datetime import datetime
+from natsort import natsorted, ns
+# ^ might need to be replaced with just standard sort
+from termcolor import colored
+import io
+import json
+import os
+import pathlib
+import re
+import requests
+import socket
+import subprocess
+import sys
+import unittest
 
 # packages
-import apt.cache, packaging.version
+import apt.cache
+import apt.debfile
+import packaging.version
 
 ################################################################################
 # constants
@@ -246,6 +262,20 @@ class ListCommand(AbstractCommand):
                   '  ' +
                   keyword.description)
 
+class StatusCommand(AbstractCommand):
+    def __init__(self, build_config):
+        super().__init__(build_config, 'status', 'status of the current host')
+
+    def execute(self, arguments):
+        if not (isinstance(arguments, list) and
+                all([isinstance(argument, str) for argument in arguments])):
+                raise ValueError
+
+        if len(arguments) != 0:
+            raise UsageError("status command does not accept arguments")
+
+        print(status())
+
 class RemoveCommand(AbstractCommand):
     def __init__(self, build_config):
         super().__init__(build_config, 'remove', 'remove (uninstall) keywords')
@@ -290,6 +320,7 @@ def all_commands(build_config):
              InitCommand(build_config),
              InstalledCommand(build_config),
              ListCommand(build_config),
+             StatusCommand(build_config),
              RemoveCommand(build_config) ]
 
 ################################################################################
@@ -318,18 +349,78 @@ class AbstractKeyword:
 
 class BaseKeyword(AbstractKeyword):
 
-    # TODO: install Atom, googletest, g++?
+  """
+  NOTE:
+  We probably do not need to include g++
+  Clang is a formidable compiler and can be used as a direct replacement for it
+  """
     
-    packages = ['build-essential',
-                'clang',
-                'clang-tidy',
-                'clang-format']
+  packages = ['build-essential',
+              'cmake',
+              'clang',
+              'clang-format',
+              'clang-tidy',
+              'libgconf-2-4',
+              'git',
+              'libgtest-dev']
+  
+  def __init__(self, build_config):
+      super().__init__(build_config,
+                       'base',
+                       'CPSC 120-121-131-301 C++ development environment')
+      
+  def add(self):
+      print("[INFO] Adding all packages to APT queue...")
+      add_deb_packages(self.packages)
+      self.atom()
+      self.google_test()
+      
+  def remove(self):
+      remove_deb_packages(self.packages)
+
+  def atom(self):
+    """
+    GOAL: Get and install Atom
+    """
+
+    atom_url = "https://atom.io/download/deb"
+    atom_dest = "/tmp/atom.deb"
+    atom_plugins = ['dbg-gdb', 
+                    'dbg', 
+                    'output-panel']
+    atom_conf_dir = os.path.join("/home", current_non_root_user(), ".atom")
+
+    print("[INFO] Downloading Atom Debian installer....")
+    with open(atom_dest, 'wb') as fp:
+      fp.write(requests.get(atom_url).content)
+    print("[INFO] Finished downloading...")
+    print("[INFO] Installing atom....")
+    apt.debfile.DebPackage(filename=atom_dest).install()
+    for plugin in atom_plugins:
+      subprocess.run(['/usr/bin/apm', 'install', plugin])
+    subprocess.run(['chown', os.listdir("/home")[0], '-R', atom_conf_dir])
+    print("[INFO] Finished installing Atom")
+
+  def google_test(self):
+      """
+      GOAL: Get and install GoogleTest
+      SIDE EFFECT: Google Test requires to built from source and
+      a shell script is required to be called (can be changed)
+      TODO: restructure this function
+      """
+
+      print("[INFO] Compiling google test from source...")
+      subprocess.run(["./helper_scripts/google_test_installer"])
+      print("[INFO] Finished compiling")
+
+class C240Keyword(AbstractKeyword):
+
+    packages = ['intel2gas',
+                'nasm']
     
     def __init__(self, build_config):
-        super().__init__(build_config,
-                         'base',
-                         'CPSC 120-121-131-301 C++ development environment')
-        
+        super().__init__(build_config, '240', 'CPSC 240')
+         
     def add(self):
         add_deb_packages(self.packages)
         
@@ -520,6 +611,265 @@ def parse_distrib_codename(stream):
     codename = tokens[1].strip()
     return codename
 
+
+################################################################################
+# status API
+################################################################################
+
+def cpu_information() -> str:
+  """
+  Goal: get current CPU model name and the amount of cores
+  """
+
+  path = "/proc/cpuinfo"
+  _r_cpu_core_count = re.compile("cpu cores.*(?P<count>[0-9].*)")
+  _r_general_model_name = re.compile("model name.*\:(?P<name>.*)")
+  with open(path, "r") as fp:
+    contents = fp.readlines()
+
+  cores = None
+  name = None
+
+  for line in contents:
+    core_match = _r_cpu_core_count.match(line)
+    model_match = _r_general_model_name.match(line)
+    if(core_match and cores is None):
+      cores = core_match.group("count")
+    elif(model_match and name is None):
+      name = model_match.group("name")
+    elif(cores and name):
+      return "{} ({} cores)".format(' '.join(name.split()), cores)
+
+def current_non_root_user() -> str:
+    """
+    Goal: Attempt to get the current user who is not root
+    """
+
+    return os.listdir("/home")[0]
+
+def host() -> str:
+    """
+    Goal: get the current user logged in and the computer they are logged into
+    """
+
+    return "{}@{}".format(current_non_root_user(), socket.gethostname())
+
+def current_operating_system() -> str:
+    """
+    Goal: get current Linux distribution name
+    """
+
+    path = "/etc/os-release"
+    _r_OS = r'NAME\=\"(?P<release>[a-zA-Z].*)\"'
+    with open(path, "r") as fp: line = fp.readline()
+    return re.compile(_r_OS).match(line).group("release")
+
+def current_kernel_revision() -> str:
+    """
+    Goal: get the current kernel version
+    """
+
+    path = "/proc/version"
+    with open(path, "r") as fp:
+        return fp.readline().split()[2]
+
+def current_time() -> str:
+    """
+    Goal: return the current date and time
+    """
+
+    return datetime.now().strftime("%a %d %B %Y %H:%M:%S")
+
+def current_model() -> str:
+    """
+    Goal: retrieve the current make and model of the host
+    """
+
+    product_name = "/sys/devices/virtual/dmi/id/product_name"
+    product_family = "/sys/devices/virtual/dmi/id/product_family"
+    vendor_name = "/sys/devices/virtual/dmi/id/sys_vendor"
+    with open(product_name, "r") as fp:
+        name = fp.readline().strip('\n')
+    with open(product_family, "r") as fp:
+        family = fp.readline().strip('\n')
+    with open(vendor_name, "r") as fp:
+        vendor = fp.read().split()[0].strip('\n')
+    return "{} {}{}".format("" if vendor in name else vendor, name, "" if name not in family else family)
+
+def current_uptime() -> str:
+    """
+    Goal: pretty print the contents of /proc/uptime
+    Source: https://thesmithfam.org/blog/2005/11/19/python-uptime-script/
+    """
+
+    path = "/proc/uptime"
+    with open(path, 'r') as f:
+        total_seconds = float(f.readline().split()[0])
+
+    MINUTE  = 60
+    HOUR    = MINUTE * 60
+    DAY     = HOUR * 24
+
+    days    = int( total_seconds / DAY )
+    hours   = int( ( total_seconds % DAY ) / HOUR )
+    minutes = int( ( total_seconds % HOUR ) / MINUTE )
+    seconds = int( total_seconds % MINUTE )
+
+    return "{} {}, {} {}, {} {}, {} {}".format(
+      days, "days" if (days > 1) else "day",
+      hours, "hours" if (hours > 1) else "hour",
+      minutes, "minutes" if (minutes > 1) else "minute",
+      seconds, "seconds" if (seconds > 1) else "second"
+    )
+
+def memory_information() -> int:
+    """
+    Goal: get total amount of ram on system
+    """
+    
+    formatting = lambda quantity, power: quantity/(1000**power) 
+    path = "/proc/meminfo"
+    with open(path, "r") as fp:
+        total = int(fp.readline().split()[1])
+    return int(formatting(total, 2))
+
+def graphics_information() -> str:
+  """
+  Use lspci to get the current graphics card in use
+  Requires pciutils to be installed (seems to be installed by default on Ubuntu)
+  Source: https://stackoverflow.com/questions/13867696/python-in-linux-obtain-vga-specifications-via-lspci-or-hal 
+  """
+
+  one, two =  tuple(subprocess.check_output("lspci | awk -F':' '/VGA|3_d/ {print $3}'", shell=True, executable='/bin/bash').decode("utf-8").split("\n"))
+
+  return colored(one, 'green'), colored("None" if not two else two, 'red')
+
+
+def git_configuration() -> str:
+    """
+    Retrieve Git configuration information about the current user
+    """
+
+    command = "sudo -H -u {} bash -c 'git config --list | grep -E 'user\.' | cut -d '=' -f2'".format(current_non_root_user())
+    git_config_output = subprocess.check_output(command, shell=True, executable='/bin/bash').decode("utf-8").split('\n')[:2]
+
+    return tuple(git_config_output)
+
+def has_internet() -> bool:
+    """
+    GOAL: Check if there is an internet connection by attempting to open a socket to Google.
+    If a connection cannot be established, it will return false.
+    SOURCE: https://stackoverflow.com/questions/20913411/test-if-an-internet-connection-is-present-in-python/20913928
+    """
+
+    SERVER = "1.1.1.1"
+    try:
+      host = socket.gethostbyname(SERVER)
+      socket.create_connection((host, 80), 2).close()
+      return True
+    except Exception as e: 
+      pass
+    return False
+
+def currently_installed_targets() -> list:
+  """
+  GOAL: list all installed codewords in a formatted list
+  """
+
+  try:
+    with open(STATE_PATH, "r") as fp:
+      content = json.load(fp)["installed"]
+    return [f'{"- ": >4}{element}' for element in natsorted(content, alg=ns.IC)]
+  except file_not_found_error as error:
+    # raise proper exception defined in tuffix_lib
+    print("[INFO] Please initalize tuffix")
+    return None
+  
+
+def status() -> str:
+  """
+  GOAL: Driver code for all the components defined above
+  """
+
+  git_email, git_username = git_configuration()
+  primary, secondary = graphics_information()
+  installed_targets = currently_installed_targets()
+
+  return """
+{}
+-----
+
+OS: {}
+Model: {}
+Kernel: {}
+Uptime: {}
+Shell: {}
+Terminal: {}
+CPU: {}
+GPU:
+  - Primary: {}
+  - Secondary: {}
+Memory: {} GB
+Current Time: {}
+Git Configuration:
+  - Email: {}
+  - Username: {}
+Installed codewords:
+  {}
+Connected to Internet: {}
+""".format(
+    host(),
+    current_operating_system(),
+    current_model(),
+    current_kernel_revision(),
+    current_uptime(),
+    system_shell(),
+    system_terminal_emulator(),
+    cpu_information(),
+    primary,
+    secondary,
+    memory_information(),
+    current_time(),
+    git_email,
+    git_username,
+    '\n'.join(installed_targets).strip() if (len(installed_targets) !=  0) else "None",
+    "Yes" if has_internet() else "No"
+ )
+
+def system_shell():
+  """
+  Goal: find the current shell of the user, rather than assuming they are using Bash
+  """
+
+  path = "/etc/passwd"
+  cu = current_non_root_user()
+  _r_shell = re.compile("^{}.*\:\/home\/{}\:(?P<path>.*)".format(cu, cu))
+  with open(path, "r") as fp:
+    contents = fp.readlines()
+
+  for line in contents:
+    shell_match = _r_shell.match(line)
+    if(shell_match):
+      shell_path = shell_match.group("path")
+      version, _ = subprocess.Popen([shell_path, '--version'],
+                                          stdout=subprocess.PIPE,
+                                          stderr=subprocess.STDOUT).communicate()
+      shell_out = re.compile("(?P<shell>[a-z]?.*sh)\s(?P<version>[0-9].*\.[0-9])").match(version.decode("utf-8"))
+      return "{} {}".format(shell_out.group("shell"), shell_out.group("version"))
+
+  return None
+
+def system_terminal_emulator() -> str:
+  """
+  Goal: find the default terminal emulator
+  """
+  return os.environ["TERM"]
+
+
+################################################################################
+# END status API
+################################################################################
+
 ################################################################################
 # main, argument parsing, and usage errors
 ################################################################################
@@ -544,6 +894,7 @@ def print_usage(build_config):
         print(cmd.name.ljust(name_width) + cmd.description)
 
     print('')
+
 
 # Run the whole tuffix program. This is a self-contained function for unit
 # testing purposes.
