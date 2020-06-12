@@ -375,7 +375,7 @@ class BaseKeyword(AbstractKeyword):
       print("[INFO] Adding all packages to APT queue...")
       add_deb_packages(self.packages)
       self.atom()
-      self.google_test()
+      self.google_test_all()
       
   def remove(self):
       remove_deb_packages(self.packages)
@@ -418,6 +418,7 @@ class BaseKeyword(AbstractKeyword):
       subprocess.run (['sudo', 'cp', '-r', 'googletest/include/.', '/usr/include'])
       subprocess.run(['sudo', 'cp', '-r', 'googlemock/include/.', '/usr/include'])
       subprocess.run(['sudo', 'cp', '-r', 'lib/.', '/usr/lib'])
+      subprocess.run(['sudo', 'chown', 'root:root', '/usr/lib'])
 
   def google_test_attempt(self):
     """
