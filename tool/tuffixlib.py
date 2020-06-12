@@ -12,9 +12,11 @@ from termcolor import colored
 import io
 import json
 import os
+import os
 import pathlib
 import re
 import requests
+import shutil
 import socket
 import subprocess
 import sys
@@ -401,17 +403,43 @@ class BaseKeyword(AbstractKeyword):
     subprocess.run(['chown', os.listdir("/home")[0], '-R', atom_conf_dir])
     print("[INFO] Finished installing Atom")
 
-  def google_test(self):
+  def google_test_build(self):
       """
       GOAL: Get and install GoogleTest
-      SIDE EFFECT: Google Test requires to built from source and
-      a shell script is required to be called (can be changed)
-      TODO: restructure this function
       """
 
-      print("[INFO] Compiling google test from source...")
-      subprocess.run(["./helper_scripts/google_test_installer"])
-      print("[INFO] Finished compiling")
+      os.chdir("/tmp")
+      if(os.path.isdir(GOOGLE_DEST)):
+        shutil.rmtree(GOOGLE_DEST)
+      subprocess.run(['git', 'clone', GOOGLE_TEST_URL, GOOGLE_DEST])
+      os.chdir(GOOGLE_DEST)
+      subprocess.run(['cmake', 'CMakeLists.txt'])
+      subprocess.run(['make', '-j8'])
+      subprocess.run (['sudo', 'cp', '-r', 'googletest/include/.', '/usr/include'])
+      subprocess.run(['sudo', 'cp', '-r', 'googlemock/include/.', '/usr/include'])
+      subprocess.run(['sudo', 'cp', '-r', 'lib/.', '/usr/lib'])
+
+  def google_test_attempt(self):
+    """
+    Goal: small test to check if Google Test works after install
+    """ 
+
+    os.chdir("/tmp")
+    if(os.path.isdir(TEST_DEST)):
+      shutil.rmtree(TEST_DEST)
+    subprocess.run(['git', 'clone', TEST_URL, TEST_DEST])
+    os.chdir(TEST_DEST)
+    shutil.copyfile("solution/main.cpp", "problem/main.cpp")
+    os.chdir("problem")
+    subprocess.run(['make', 'test'])
+
+  def google_test_all(self):
+    """
+    Goal: make and test Google Test library install
+    """
+
+    self.google_test_build()
+    self.google_test_attempt()
 
 class C240Keyword(AbstractKeyword):
 
@@ -433,6 +461,23 @@ class C439Keyword(AbstractKeyword):
     
     def __init__(self, build_config):
         super().__init__(build_config, '439', 'CPSC 439')
+         
+    def add(self):
+        add_deb_packages(self.packages)
+        
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C474Keyword(AbstractKeyword):
+
+    packages = ['mpi-default-dev',
+                'mpich',
+                'openmpi-bin',
+                'openmpi-common',
+                'libopenmpi-dev']
+    
+    def __init__(self, build_config):
+        super().__init__(build_config, '474', 'CPSC 474')
          
     def add(self):
         add_deb_packages(self.packages)
@@ -462,7 +507,9 @@ def all_keywords(build_config):
     # alphabetical order, but put digits after letters
     return [ BaseKeyword(build_config),
              LatexKeyword(build_config),
-             C439Keyword(build_config) ]
+             C240Keyword(build_config),
+             C439Keyword(build_config),
+             C474Keyword(build_config) ]
 
 def find_keyword(build_config, name):
     if not (isinstance(build_config, BuildConfig) and
@@ -489,6 +536,11 @@ def distrib_codename():
 
 # Raises EnvironmentError if there is no connected network adapter.
 def ensure_network_connected():
+    """
+    NOTE: has been duplicated in has_internet
+    Please discard when necessary
+    """
+
     PARENT_DIR = '/sys/class/net'
     LOOPBACK_ADAPTER = 'lo'
     if not os.path.isdir(PARENT_DIR):
@@ -756,20 +808,29 @@ def git_configuration() -> str:
     return tuple(git_config_output)
 
 def has_internet() -> bool:
-    """
-    GOAL: Check if there is an internet connection by attempting to open a socket to Google.
-    If a connection cannot be established, it will return false.
-    SOURCE: https://stackoverflow.com/questions/20913411/test-if-an-internet-connection-is-present-in-python/20913928
-    """
 
-    SERVER = "1.1.1.1"
-    try:
-      host = socket.gethostbyname(SERVER)
-      socket.create_connection((host, 80), 2).close()
-      return True
-    except Exception as e: 
-      pass
-    return False
+    PARENT_DIR = '/sys/class/net'
+    LOOPBACK_ADAPTER = 'lo'
+    if not os.path.isdir(PARENT_DIR):
+        raise EnvironmentError('no ' + PARENT_DIR + '; this does not seem to be Linux')
+    adapter_path = None
+    for entry in os.listdir(PARENT_DIR):
+        subdir_path = os.path.join(PARENT_DIR, entry)
+        if (entry.startswith('.') or
+            entry == LOOPBACK_ADAPTER or
+            not os.path.isdir(subdir_path)):
+            continue
+        carrier_path = os.path.join(subdir_path, 'carrier')
+        try:
+            with open(carrier_path) as f:
+                state = int(f.read())
+                if state != 0:
+                    return True# found one, stop
+        except OSError: # file not found
+            pass
+        except ValueError: # int(...) parse error
+            pass
+    raise EnvironmentError('no connected network adapter, internet is down')
 
 def currently_installed_targets() -> list:
   """
@@ -864,11 +925,6 @@ def system_terminal_emulator() -> str:
   Goal: find the default terminal emulator
   """
   return os.environ["TERM"]
-
-
-################################################################################
-# END status API
-################################################################################
 
 ################################################################################
 # main, argument parsing, and usage errors
