@@ -408,6 +408,9 @@ class BaseKeyword(AbstractKeyword):
       GOAL: Get and install GoogleTest
       """
 
+      GOOGLE_TEST_URL="https://github.com/google/googletest.git"
+      GOOGLE_DEST="google"
+
       os.chdir("/tmp")
       if(os.path.isdir(GOOGLE_DEST)):
         shutil.rmtree(GOOGLE_DEST)
@@ -424,6 +427,9 @@ class BaseKeyword(AbstractKeyword):
     """
     Goal: small test to check if Google Test works after install
     """ 
+
+    TEST_URL="https://github.com/ilxl-ppr/restaurant-bill.git"
+    TEST_DEST="test"
 
     os.chdir("/tmp")
     if(os.path.isdir(TEST_DEST)):
