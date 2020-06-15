@@ -799,9 +799,20 @@ def graphics_information() -> str:
   Source: https://stackoverflow.com/questions/13867696/python-in-linux-obtain-vga-specifications-via-lspci-or-hal 
   """
 
-  one, two =  tuple(subprocess.check_output("lspci | awk -F':' '/VGA|3_d/ {print $3}'", shell=True, executable='/bin/bash').decode("utf-8").split("\n"))
+  primary, secondary = None, None
+  vga_regex, controller_regex = re.compile("VGA.*\:(?P<model>(?:(?!\s\().)*)"), re.compile("3D.*\:(?P<model>(?:(?!\s\().)*)")
 
-  return colored(one, 'green'), colored("None" if not two else two, 'red')
+  for line in subprocess.check_output("lspci", shell=True, executable='/bin/bash').decode("utf-8").splitlines():
+    primary_match, secondary_match = vga_regex.search(line), controller_regex.search(line)
+    if(primary_match and not primary):
+      primary = primary_match
+    elif(secondary_match and not secondary):
+      secondary = secondary_match
+    elif(primary and secondary):
+      break
+  p, s = primary.group("model").strip(), secondary.group("model").strip()
+
+  return colored(p, 'green'), colored("None" if not s else s, 'red')
 
 
 def git_configuration() -> str:
