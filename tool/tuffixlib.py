@@ -6,8 +6,6 @@
 # standard library
 
 from datetime import datetime
-from natsort import natsorted, ns
-# ^ might need to be replaced with just standard sort
 from termcolor import colored
 import io
 import json
@@ -858,7 +856,7 @@ def currently_installed_targets() -> list:
   try:
     with open(STATE_PATH, "r") as fp:
       content = json.load(fp)["installed"]
-    return [f'{"- ": >4}{element}' for element in natsorted(content, alg=ns.IC)]
+    return [f'{"- ": >4}{element}' for element in content.sorted()]
   except file_not_found_error as error:
     # raise proper exception defined in tuffix_lib
     print("[INFO] Please initalize tuffix")
