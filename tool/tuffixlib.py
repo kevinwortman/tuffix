@@ -6,14 +6,12 @@
 # standard library
 
 from datetime import datetime
-from termcolor import colored
 import io
 import json
 import os
 import os
 import pathlib
 import re
-import requests
 import shutil
 import socket
 import subprocess
@@ -24,6 +22,8 @@ import unittest
 import apt.cache
 import apt.debfile
 import packaging.version
+from termcolor import colored
+import requests
 
 ################################################################################
 # constants
