@@ -362,7 +362,8 @@ class BaseKeyword(AbstractKeyword):
               'clang-tidy',
               'libgconf-2-4',
               'git',
-              'libgtest-dev']
+              'libgtest-dev',
+              'python2']
   
   def __init__(self, build_config):
       super().__init__(build_config,
