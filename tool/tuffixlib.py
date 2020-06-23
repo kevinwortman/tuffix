@@ -349,13 +349,7 @@ class AbstractKeyword:
 
 class BaseKeyword(AbstractKeyword):
 
-  """
-  NOTE:
-  We probably do not need to include g++
-  Clang is a formidable compiler and can be used as a direct replacement for it
-  """
-    
-  packages = ['build-essential',
+    packages = ['build-essential',
               'cmake',
               'clang',
               'clang-format',
@@ -365,112 +359,126 @@ class BaseKeyword(AbstractKeyword):
               'libgtest-dev',
               'python2']
   
-  def __init__(self, build_config):
-      super().__init__(build_config,
+    def __init__(self, build_config):
+        super().__init__(build_config,
                        'base',
                        'CPSC 120-121-131-301 C++ development environment')
       
-  def add(self):
-      print("[INFO] Adding all packages to APT queue...")
-      add_deb_packages(self.packages)
-      self.atom()
-      self.google_test_all()
+    def add(self):
+        print("[INFO] Adding all packages to APT queue...")
+        add_deb_packages(self.packages)
+        self.atom()
+        self.google_test_all()
+        self.configure_git()
       
-  def remove(self):
-      remove_deb_packages(self.packages)
+    def remove(self):
+        remove_deb_packages(self.packages)
 
-  def atom(self):
-    """
-    GOAL: Get and install Atom
-    """
+    def configure_git(self):
+        """
+        GOAL: Configure git
+        NOTE: should be run before invoking sudo
+        """ 
 
-    atom_url = "https://atom.io/download/deb"
-    atom_dest = "/tmp/atom.deb"
-    atom_plugins = ['dbg-gdb', 
-                    'dbg', 
-                    'output-panel']
-    atom_conf_dir = os.path.join("/home", current_non_root_user(), ".atom")
+        username = input("Git username: ")
+        mail = input("Git email: ")
+        user, email =  "git config --global user.name {}".format(username), "git config --global user.email {}".format(mail)
+        subprocess.run(user.split())
+        subprocess.run(email.split())
+        print(colored("Successfully configured git", 'green'))
 
-    print("[INFO] Downloading Atom Debian installer....")
-    with open(atom_dest, 'wb') as fp:
-      fp.write(requests.get(atom_url).content)
-    print("[INFO] Finished downloading...")
-    print("[INFO] Installing atom....")
-    apt.debfile.DebPackage(filename=atom_dest).install()
-    for plugin in atom_plugins:
-      subprocess.run(['/usr/bin/apm', 'install', plugin])
-    subprocess.run(['chown', os.listdir("/home")[0], '-R', atom_conf_dir])
-    print("[INFO] Finished installing Atom")
+    def atom(self):
+        """
+        GOAL: Get and install Atom
+        """
 
-  def google_test_build(self):
-      """
-      GOAL: Get and install GoogleTest
-      """
+        atom_url = "https://atom.io/download/deb"
+        atom_dest = "/tmp/atom.deb"
+        atom_plugins = ['dbg-gdb', 
+                        'dbg', 
+                        'output-panel']
+        atom_conf_dir = os.path.join("/home", current_non_root_user(), ".atom")
 
-      GOOGLE_TEST_URL="https://github.com/google/googletest.git"
-      GOOGLE_DEST="google"
+        print("[INFO] Downloading Atom Debian installer....")
+        with open(atom_dest, 'wb') as fp:
+            fp.write(requests.get(atom_url).content)
+        print("[INFO] Finished downloading...")
+        print("[INFO] Installing atom....")
+        apt.debfile.DebPackage(filename=atom_dest).install()
+        for plugin in atom_plugins:
+            subprocess.run(['/usr/bin/apm', 'install', plugin])
+            subprocess.run(['chown', os.listdir("/home")[0], '-R', atom_conf_dir])
+        print("[INFO] Finished installing Atom")
 
-      os.chdir("/tmp")
-      if(os.path.isdir(GOOGLE_DEST)):
-        shutil.rmtree(GOOGLE_DEST)
-      subprocess.run(['git', 'clone', GOOGLE_TEST_URL, GOOGLE_DEST])
-      os.chdir(GOOGLE_DEST)
-      subprocess.run(['cmake', 'CMakeLists.txt'])
-      subprocess.run(['make', '-j8'])
-      subprocess.run (['sudo', 'cp', '-r', 'googletest/include/.', '/usr/include'])
-      subprocess.run(['sudo', 'cp', '-r', 'googlemock/include/.', '/usr/include'])
-      subprocess.run(['sudo', 'cp', '-r', 'lib/.', '/usr/lib'])
-      subprocess.run(['sudo', 'chown', 'root:root', '/usr/lib'])
+    def google_test_build(self):
+        """
+        GOAL: Get and install GoogleTest
+        """
 
-  def google_test_attempt(self):
-    """
-    Goal: small test to check if Google Test works after install
-    """ 
+        GOOGLE_TEST_URL="https://github.com/google/googletest.git"
+        GOOGLE_DEST="google"
 
-    TEST_URL="https://github.com/ilxl-ppr/restaurant-bill.git"
-    TEST_DEST="test"
+        os.chdir("/tmp")
+        if(os.path.isdir(GOOGLE_DEST)):
+            shutil.rmtree(GOOGLE_DEST)
+        subprocess.run(['git', 'clone', GOOGLE_TEST_URL, GOOGLE_DEST])
+        os.chdir(GOOGLE_DEST)
+        subprocess.run(['cmake', 'CMakeLists.txt'])
+        subprocess.run(['make', '-j8'])
+        subprocess.run (['sudo', 'cp', '-r', 'googletest/include/.', '/usr/include'])
+        subprocess.run(['sudo', 'cp', '-r', 'googlemock/include/.', '/usr/include'])
+        subprocess.run(['sudo', 'cp', '-r', 'lib/.', '/usr/lib'])
+        subprocess.run(['sudo', 'chown', 'root:root', '/usr/lib'])
 
-    os.chdir("/tmp")
-    if(os.path.isdir(TEST_DEST)):
-      shutil.rmtree(TEST_DEST)
-    subprocess.run(['git', 'clone', TEST_URL, TEST_DEST])
-    os.chdir(TEST_DEST)
-    shutil.copyfile("solution/main.cpp", "problem/main.cpp")
-    os.chdir("problem")
-    subprocess.run(['make', 'test'])
+    def google_test_attempt(self):
+        """
+        Goal: small test to check if Google Test works after install
+        """ 
 
-  def google_test_all(self):
-    """
-    Goal: make and test Google Test library install
-    """
+        TEST_URL="https://github.com/ilxl-ppr/restaurant-bill.git"
+        TEST_DEST="test"
 
-    self.google_test_build()
-    self.google_test_attempt()
+        os.chdir("/tmp")
+        if(os.path.isdir(TEST_DEST)):
+            shutil.rmtree(TEST_DEST)
+        subprocess.run(['git', 'clone', TEST_URL, TEST_DEST])
+        os.chdir(TEST_DEST)
+        shutil.copyfile("solution/main.cpp", "problem/main.cpp")
+        os.chdir("problem")
+        subprocess.run(['make', 'test'])
+
+    def google_test_all(self):
+        """
+        Goal: make and test Google Test library install
+        """
+
+        self.google_test_build()
+        self.google_test_attempt()
 
 class C240Keyword(AbstractKeyword):
 
     packages = ['intel2gas',
                 'nasm']
-    
+
     def __init__(self, build_config):
         super().__init__(build_config, '240', 'CPSC 240')
-         
+ 
     def add(self):
         add_deb_packages(self.packages)
-        
+
     def remove(self):
         remove_deb_packages(self.packages)
 
 class C439Keyword(AbstractKeyword):
 
     packages = ['minisat2']
-    
+
     def __init__(self, build_config):
         super().__init__(build_config, '439', 'CPSC 439')
-         
+
     def add(self):
         add_deb_packages(self.packages)
-        
+
     def remove(self):
         remove_deb_packages(self.packages)
 
@@ -674,29 +682,43 @@ def parse_distrib_codename(stream):
 # status API
 ################################################################################
 
+"""
+SOURCE: https://stackoverflow.com/questions/1770209/run-child-processes-as-different-user-from-a-long-running-python-process/
+"""
+
+def demote(user_id: int, user_gid: int):
+    os.setgid(user_gid)
+    os.setuid(user_id)
+
+def run_as(command: str, user: str):
+    records = pwd.getpwnam(user)
+    u_id, u_gid = records.pw_uid, records.pw_gid
+    return subprocess.check_output(command.split(), 
+            preexec_fn=demote(u_id, u_gid)).decode("utf-8").split('\n')
+
 def cpu_information() -> str:
-  """
-  Goal: get current CPU model name and the amount of cores
-  """
+    """
+    Goal: get current CPU model name and the amount of cores
+    """
 
-  path = "/proc/cpuinfo"
-  _r_cpu_core_count = re.compile("cpu cores.*(?P<count>[0-9].*)")
-  _r_general_model_name = re.compile("model name.*\:(?P<name>.*)")
-  with open(path, "r") as fp:
-    contents = fp.readlines()
+    path = "/proc/cpuinfo"
+    _r_cpu_core_count = re.compile("cpu cores.*(?P<count>[0-9].*)")
+    _r_general_model_name = re.compile("model name.*\:(?P<name>.*)")
+    with open(path, "r") as fp:
+        contents = fp.readlines()
 
-  cores = None
-  name = None
+    cores = None
+    name = None
 
-  for line in contents:
-    core_match = _r_cpu_core_count.match(line)
-    model_match = _r_general_model_name.match(line)
-    if(core_match and cores is None):
-      cores = core_match.group("count")
-    elif(model_match and name is None):
-      name = model_match.group("name")
-    elif(cores and name):
-      return "{} ({} cores)".format(' '.join(name.split()), cores)
+    for line in contents:
+        core_match = _r_cpu_core_count.match(line)
+        model_match = _r_general_model_name.match(line)
+        if(core_match and cores is None):
+            cores = core_match.group("count")
+        elif(model_match and name is None):
+            name = model_match.group("name")
+        elif(cores and name):
+            return "{} ({} cores)".format(' '.join(name.split()), cores)
 
 def current_non_root_user() -> str:
     """
@@ -792,37 +814,47 @@ def memory_information() -> int:
     return int(formatting(total, 2))
 
 def graphics_information() -> str:
-  """
-  Use lspci to get the current graphics card in use
-  Requires pciutils to be installed (seems to be installed by default on Ubuntu)
-  Source: https://stackoverflow.com/questions/13867696/python-in-linux-obtain-vga-specifications-via-lspci-or-hal 
-  """
+    """
+    Use lspci to get the current graphics card in use
+    Requires pciutils to be installed (seems to be installed by default on Ubuntu)
+    Source: https://stackoverflow.com/questions/13867696/python-in-linux-obtain-vga-specifications-via-lspci-or-hal 
+    """
 
-  primary, secondary = None, None
-  vga_regex, controller_regex = re.compile("VGA.*\:(?P<model>(?:(?!\s\().)*)"), re.compile("3D.*\:(?P<model>(?:(?!\s\().)*)")
+    primary, secondary = None, None
+    vga_regex, controller_regex = re.compile("VGA.*\:(?P<model>(?:(?!\s\().)*)"), re.compile("3D.*\:(?P<model>(?:(?!\s\().)*)")
 
-  for line in subprocess.check_output("lspci", shell=True, executable='/bin/bash').decode("utf-8").splitlines():
-    primary_match, secondary_match = vga_regex.search(line), controller_regex.search(line)
-    if(primary_match and not primary):
-      primary = primary_match
-    elif(secondary_match and not secondary):
-      secondary = secondary_match
-    elif(primary and secondary):
-      break
-  p, s = primary.group("model").strip(), secondary.group("model").strip()
+    for line in subprocess.check_output("lspci", shell=True, executable='/bin/bash').decode("utf-8").splitlines():
+        primary_match, secondary_match = vga_regex.search(line), controller_regex.search(line)
+        if(primary_match and not primary):
+            primary = primary_match
+        elif(secondary_match and not secondary):
+            secondary = secondary_match
+        elif(primary and secondary):
+            break
 
-  return colored(p, 'green'), colored("None" if not s else s, 'red')
+    p, s = primary.group("model").strip(), secondary.group("model").strip()
+
+    return colored(p, 'green'), colored("None" if not s else s, 'red')
 
 
-def git_configuration() -> str:
+def git_configuration() -> tuple:
     """
     Retrieve Git configuration information about the current user
     """
 
-    command = "sudo -H -u {} bash -c 'git config --list | grep -E 'user\.' | cut -d '=' -f2'".format(current_non_root_user())
-    git_config_output = subprocess.check_output(command, shell=True, executable='/bin/bash').decode("utf-8").split('\n')[:2]
+    username_regex = re.compile("user.name\=(?P<user>.*$)")
+    email_regex = re.compile("user.email\=(?P<email>.*$)")
 
-    return tuple(git_config_output)
+    out = run_as("git --no-pager config --list", current_non_root_user())
+    u, e = None, None
+    for line in out:
+        u_match = username_regex.match(line)
+        e_match = email_regex.match(line)
+        if(u is None and u_match):
+            u = u_match.group("user")
+        elif(e is None and e_match):
+            e = e_match.group("email")
+    return u, e
 
 def has_internet() -> bool:
 
@@ -850,30 +882,31 @@ def has_internet() -> bool:
     raise EnvironmentError('no connected network adapter, internet is down')
 
 def currently_installed_targets() -> list:
-  """
-  GOAL: list all installed codewords in a formatted list
-  """
+    """
+    GOAL: list all installed codewords in a formatted list
+    """
 
-  try:
-    with open(STATE_PATH, "r") as fp:
-      content = json.load(fp)["installed"]
-    return [f'{"- ": >4}{element}' for element in content.sorted()]
-  except file_not_found_error as error:
-    # raise proper exception defined in tuffix_lib
-    print("[INFO] Please initalize tuffix")
-    return None
+    try:
+        with open(STATE_PATH, "r") as fp:
+            content = json.load(fp)["installed"]
+            return [f'{"- ": >4}{element}' for element in content.sorted()]
+    except FileNotFoundError:
+        raise EnvironmentError("Tuffix is not initalized, stop")
   
 
 def status() -> str:
-  """
-  GOAL: Driver code for all the components defined above
-  """
+    """
+    GOAL: Driver code for all the components defined above
+    """
+    try:
+        git_email, git_username = git_configuration()
+    except Exception:
+        git_email, git_username = "None", "None"
 
-  git_email, git_username = git_configuration()
-  primary, secondary = graphics_information()
-  installed_targets = currently_installed_targets()
+    primary, secondary = graphics_information()
+    installed_targets = currently_installed_targets()
 
-  return """
+    return """
 {}
 -----
 
@@ -915,33 +948,36 @@ Connected to Internet: {}
  )
 
 def system_shell():
-  """
-  Goal: find the current shell of the user, rather than assuming they are using Bash
-  """
+    """
+    Goal: find the current shell of the user, rather than assuming they are using Bash
+    """
 
-  path = "/etc/passwd"
-  cu = current_non_root_user()
-  _r_shell = re.compile("^{}.*\:\/home\/{}\:(?P<path>.*)".format(cu, cu))
-  with open(path, "r") as fp:
-    contents = fp.readlines()
+    path = "/etc/passwd"
+    cu = current_non_root_user()
+    _r_shell = re.compile("^{}.*\:\/home\/{}\:(?P<path>.*)".format(cu, cu))
+    with open(path, "r") as fp:
+        contents = fp.readlines()
 
-  for line in contents:
-    shell_match = _r_shell.match(line)
-    if(shell_match):
-      shell_path = shell_match.group("path")
-      version, _ = subprocess.Popen([shell_path, '--version'],
-                                          stdout=subprocess.PIPE,
-                                          stderr=subprocess.STDOUT).communicate()
-      shell_out = re.compile("(?P<shell>[a-z]?.*sh)\s(?P<version>[0-9].*\.[0-9])").match(version.decode("utf-8"))
-      return "{} {}".format(shell_out.group("shell"), shell_out.group("version"))
+    for line in contents:
+        shell_match = _r_shell.match(line)
+        if(shell_match):
+              shell_path = shell_match.group("path")
+              version, _ = subprocess.Popen([shell_path, '--version'],
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT).communicate()
+    shell_out = re.compile("(?P<shell>[a-z]?.*sh)\s(?P<version>[0-9].*\.[0-9])").match(version.decode("utf-8"))
+    return "{} {}".format(shell_out.group("shell"), shell_out.group("version"))
 
-  return None
+    raise EnvironmentError("Cannot find default shell, please install one")
 
 def system_terminal_emulator() -> str:
-  """
-  Goal: find the default terminal emulator
-  """
-  return os.environ["TERM"]
+    """
+    Goal: find the default terminal emulator
+    """
+    try:
+        return os.environ["TERM"]
+    except KeyError:
+        raise EnvironmentError("Cannot find default terminal")
 
 ################################################################################
 # main, argument parsing, and usage errors
