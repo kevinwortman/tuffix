@@ -67,6 +67,18 @@ class StatusWarning(MessageException):
     def __init__(self, message):
         super().__init__(message)
 
+# issue reported when gatekeeper class cannot find a given user
+# use for internal API
+class UnknownUserException(MessageException):
+    def __init__(self, message):
+        super().__init__(message)
+
+# issue reported when root code execution is invoked by non privilaged user
+# use for internal API
+class PrivilageExecutionException(MessageException):
+    def __init__(self, message):
+        super().__init__(message)
+
 ################################################################################
 # configuration
 ################################################################################
@@ -380,11 +392,14 @@ class BaseKeyword(AbstractKeyword):
         NOTE: should be run before invoking sudo
         """ 
 
+        keeper = gatekeeper()
+        whoami = keeper.set_user()
         username = input("Git username: ")
         mail = input("Git email: ")
-        user, email =  "git config --global user.name {}".format(username), "git config --global user.email {}".format(mail)
-        subprocess.run(user.split())
-        subprocess.run(email.split())
+        git_conf_file = "/home/{}/.gitconfig".format(whoami)
+        commands = ["git config --file {} user.name {}".format(git_conf_file, username), "git config --file {} user.email {}".format(git_conf_file, mail)]
+        for command in commands:
+            keeper.run_soft(command, whoami)
         print(colored("Successfully configured git", 'green'))
 
     def atom(self):
@@ -683,26 +698,99 @@ def parse_distrib_codename(stream):
 ################################################################################
 
 """
-SOURCE: https://stackoverflow.com/questions/1770209/run-child-processes-as-different-user-from-a-long-running-python-process/
+Used for managing code execution by one user on the behalf of another
+For example: root creating a file in Jared's home directory but Jared is still the sole owner of the file
 """
 
-def escalte(user_id, user_gid):
-    """
-    Might only work if current user is apart of the sudoers file,
-    please investigate
-    """
-    os.setgid(user_gid)
-    os.setuid(user_id)
+class gatekeeper():
+    def __init__(self):
+        self.main_user = ""
+        pass
 
-def run_as(command: str, current_user: str, desired_user: str):
-    du_records, cu_records = pwd.getpwnam(desired_user), pwd.getpwnam(current_user)
-    du_id, du_gid = du_records.pw_uid, du_records.pw_gid
-    cu_id, cu_gid = cu_records.pw_uid, cu_records.pw_gid
-    out = subprocess.check_output(command.split(), 
-                preexec_fn=escalte(du_id, du_gid)).decode("utf-8").split('\n')
-    escalte(cu_id, cu_gid)
+    def current_user(self) -> str:
+        return subprocess.check_output(["whoami"], encoding="utf-8").strip()
 
-    return out
+    def currently_logged_in(self) -> list:
+        return [user for user in subprocess.check_output(["users"], encoding="utf-8").split('\n') if user]
+
+    def set_user(self) -> str:
+        logged_in = self.currently_logged_in()
+        if(len(logged_in) > 1 or not self.main_user):
+            whoami = None
+            while(whoami is None):
+                selection = {}
+                for index, user in enumerate(logged_in):
+                    selection[index] =  user
+                    print("[{}] {}".format(index, user))
+                whoami = input("Select who you are: ")
+                try:
+                    whoami = self.main_user = selection[int(whoami)]
+                    return whoami
+                except KeyError:
+                    whoami = None
+                    os.system("clear")
+                    print(colored("[INFO] Invalid selection, please try again", 'red'))
+        self.main_user = logged_in[0]
+        return logged_in[0]
+
+    def chuser(self, user_id: int, user_gid: int):
+        """
+        GOAL: permanently change the user in the context of the running program
+        """
+
+        os.setgid(user_gid)
+        os.setuid(user_id)
+
+    def check_user(self, user: str):
+        try:
+            pwd.getpwnam(user)
+            return True
+        except KeyError:
+            return False
+
+    def run_permanent(self, command: str, current_user: str, desired_user: str):
+        """
+        GOAL: run command as another user but permanently changing to that user
+        Cannot be run twice in a row if script is originated with sudo
+        Only root can set UID and GID back to itself, ultimately making it redundant
+        Used primarliy for descalation of privilages, handing back to userspace
+        """
+
+        if(self.check_user(desired_user)):
+            du_records, cu_records = pwd.getpwnam(desired_user), pwd.getpwnam(current_user)
+        else:
+            raise UnknownUserException("Unknown user: {}".format(desired_user))
+
+        du_id, du_gid = du_records.pw_uid, du_records.pw_gid
+        cu_id, cu_gid = cu_records.pw_uid, cu_records.pw_gid
+        try:
+            stdout, stderr = subprocess.Popen(command.split(), 
+                                close_fds=True,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT,
+                                preexec_fn=chuser(du_id, du_gid),
+                                encoding="utf-8").communicate()
+        except PermissionError:
+            raise PrivilageExecutionException("{} does not have permission to run the command {} as the user {}".format(
+                            current_user,
+                            command,
+                            desired_user
+            ))
+        return stdout
+
+    def run_soft(self, command: str, desired_user: str):
+        command = "sudo -H -u {} bash -c '{}'".format(desired_user, command)
+        try:
+            out =  subprocess.check_output(command, 
+                                            shell=True, 
+                                            executable='/bin/bash',
+                                            encoding="utf-8").split("\n")
+        except subprocess.CalledProcessError as e:
+            if(e.returncode != 129):
+                out = ""
+            else:
+                raise Exception("Segmentation fault")
+        return out
 
 def cpu_information() -> str:
     """
@@ -728,19 +816,12 @@ def cpu_information() -> str:
         elif(cores and name):
             return "{} ({} cores)".format(' '.join(name.split()), cores)
 
-def current_non_root_user() -> str:
-    """
-    Goal: Attempt to get the current user who is not root
-    """
-
-    return os.listdir("/home")[0]
-
 def host() -> str:
     """
     Goal: get the current user logged in and the computer they are logged into
     """
 
-    return "{}@{}".format(current_non_root_user(), socket.gethostname())
+    return "{}@{}".format(gatekeeper().set_user(), socket.gethostname())
 
 def current_operating_system() -> str:
     """
@@ -845,15 +926,16 @@ def graphics_information() -> str:
     return colored(p, 'green'), colored("None" if not s else s, 'red')
 
 
-def git_configuration() -> tuple:
+def list_git_configuration() -> tuple:
     """
     Retrieve Git configuration information about the current user
     """
+    keeper = gatekeeper()
 
     username_regex = re.compile("user.name\=(?P<user>.*$)")
     email_regex = re.compile("user.email\=(?P<email>.*$)")
 
-    out = run_as("git --no-pager config --list", "root", current_non_root_user())
+    out = keeper.run_soft(command="git --no-pager config --list", desired_user=keeper.set_user())
     u, e = None, None
     for line in out:
         u_match = username_regex.match(line)
@@ -862,7 +944,7 @@ def git_configuration() -> tuple:
             u = u_match.group("user")
         elif(e is None and e_match):
             e = e_match.group("email")
-    return u, e
+    return (u, e) if(u and e) else ("None", "None")
 
 def has_internet() -> bool:
 
