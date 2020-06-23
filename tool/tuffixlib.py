@@ -686,15 +686,23 @@ def parse_distrib_codename(stream):
 SOURCE: https://stackoverflow.com/questions/1770209/run-child-processes-as-different-user-from-a-long-running-python-process/
 """
 
-def demote(user_id: int, user_gid: int):
+def escalte(user_id, user_gid):
+    """
+    Might only work if current user is apart of the sudoers file,
+    please investigate
+    """
     os.setgid(user_gid)
     os.setuid(user_id)
 
-def run_as(command: str, user: str):
-    records = pwd.getpwnam(user)
-    u_id, u_gid = records.pw_uid, records.pw_gid
-    return subprocess.check_output(command.split(), 
-            preexec_fn=demote(u_id, u_gid)).decode("utf-8").split('\n')
+def run_as(command: str, current_user: str, desired_user: str):
+    du_records, cu_records = pwd.getpwnam(desired_user), pwd.getpwnam(current_user)
+    du_id, du_gid = du_records.pw_uid, du_records.pw_gid
+    cu_id, cu_gid = cu_records.pw_uid, cu_records.pw_gid
+    out = subprocess.check_output(command.split(), 
+                preexec_fn=escalte(du_id, du_gid)).decode("utf-8").split('\n')
+    escalte(cu_id, cu_gid)
+
+    return out
 
 def cpu_information() -> str:
     """
@@ -845,7 +853,7 @@ def git_configuration() -> tuple:
     username_regex = re.compile("user.name\=(?P<user>.*$)")
     email_regex = re.compile("user.email\=(?P<email>.*$)")
 
-    out = run_as("git --no-pager config --list", current_non_root_user())
+    out = run_as("git --no-pager config --list", "root", current_non_root_user())
     u, e = None, None
     for line in out:
         u_match = username_regex.match(line)
