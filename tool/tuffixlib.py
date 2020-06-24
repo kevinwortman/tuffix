@@ -422,7 +422,7 @@ class BaseKeyword(AbstractKeyword):
         apt.debfile.DebPackage(filename=atom_dest).install()
         for plugin in atom_plugins:
             subprocess.run(['/usr/bin/apm', 'install', plugin])
-            subprocess.run(['chown', os.listdir("/home")[0], '-R', atom_conf_dir])
+            subprocess.run(['chown', gatekeeper().set_user(), '-R', atom_conf_dir])
         print("[INFO] Finished installing Atom")
 
     def google_test_build(self):
@@ -700,6 +700,7 @@ def parse_distrib_codename(stream):
 """
 Used for managing code execution by one user on the behalf of another
 For example: root creating a file in Jared's home directory but Jared is still the sole owner of the file
+We probably should instantiate a global gatekeeper instead of re running it everytime in each function it's used in
 """
 
 class gatekeeper():
