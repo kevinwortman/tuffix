@@ -67,7 +67,7 @@ class StatusWarning(MessageException):
     def __init__(self, message):
         super().__init__(message)
 
-# issue reported when gatekeeper class cannot find a given user
+# issue reported when sudo_execute class cannot find a given user
 # use for internal API
 class UnknownUserException(MessageException):
     def __init__(self, message):
@@ -392,7 +392,7 @@ class BaseKeyword(AbstractKeyword):
         NOTE: should be run before invoking sudo
         """ 
 
-        keeper = gatekeeper()
+        keeper = sudo_execute()
         whoami = keeper.set_user()
         username = input("Git username: ")
         mail = input("Git email: ")
@@ -412,7 +412,7 @@ class BaseKeyword(AbstractKeyword):
         atom_plugins = ['dbg-gdb', 
                         'dbg', 
                         'output-panel']
-        atom_conf_dir = os.path.join("/home", current_non_root_user(), ".atom")
+        atom_conf_dir = os.path.join("/home", sudo_execute.set_user(), ".atom")
 
         print("[INFO] Downloading Atom Debian installer....")
         with open(atom_dest, 'wb') as fp:
@@ -422,7 +422,7 @@ class BaseKeyword(AbstractKeyword):
         apt.debfile.DebPackage(filename=atom_dest).install()
         for plugin in atom_plugins:
             subprocess.run(['/usr/bin/apm', 'install', plugin])
-            subprocess.run(['chown', gatekeeper().set_user(), '-R', atom_conf_dir])
+            subprocess.run(['chown', sudo_execute().set_user(), '-R', atom_conf_dir])
         print("[INFO] Finished installing Atom")
 
     def google_test_build(self):
@@ -700,10 +700,11 @@ def parse_distrib_codename(stream):
 """
 Used for managing code execution by one user on the behalf of another
 For example: root creating a file in Jared's home directory but Jared is still the sole owner of the file
-We probably should instantiate a global gatekeeper instead of re running it everytime in each function it's used in
+We probably should instantiate a global sudo_execute instead of re running it everytime in each function it's used in
+^ This is going to be put inside the SiteConfig and BuildConfig later so it can be referenced for unit testing
 """
 
-class gatekeeper():
+class sudo_execute():
     def __init__(self):
         self.main_user = ""
         pass
@@ -716,7 +717,7 @@ class gatekeeper():
 
     def set_user(self) -> str:
         logged_in = self.currently_logged_in()
-        if(len(logged_in) > 1 or not self.main_user):
+        if(len(logged_in) > 1):
             whoami = None
             while(whoami is None):
                 selection = {}
@@ -822,7 +823,7 @@ def host() -> str:
     Goal: get the current user logged in and the computer they are logged into
     """
 
-    return "{}@{}".format(gatekeeper().set_user(), socket.gethostname())
+    return "{}@{}".format(sudo_execute().set_user(), socket.gethostname())
 
 def current_operating_system() -> str:
     """
@@ -931,7 +932,7 @@ def list_git_configuration() -> tuple:
     """
     Retrieve Git configuration information about the current user
     """
-    keeper = gatekeeper()
+    keeper = sudo_execute()
 
     username_regex = re.compile("user.name\=(?P<user>.*$)")
     email_regex = re.compile("user.email\=(?P<email>.*$)")
@@ -1044,7 +1045,7 @@ def system_shell():
     """
 
     path = "/etc/passwd"
-    cu = current_non_root_user()
+    cu = sudo_execute().set_user()
     _r_shell = re.compile("^{}.*\:\/home\/{}\:(?P<path>.*)".format(cu, cu))
     with open(path, "r") as fp:
         contents = fp.readlines()
