@@ -308,7 +308,7 @@ class RemoveCommand(AbstractCommand):
             raise UsageError('cannot remove keyword "' + keyword.name + '", it is not installed')
 
         ensure_root_access()
-        
+        print("removing " + keyword.name) 
         keyword.remove()
 
         new_installed = list(state.installed)
@@ -369,7 +369,7 @@ class BaseKeyword(AbstractKeyword):
               'libgconf-2-4',
               'git',
               'libgtest-dev',
-              'python2']
+              'python']
   
     def __init__(self, build_config):
         super().__init__(build_config,
@@ -412,7 +412,7 @@ class BaseKeyword(AbstractKeyword):
         atom_plugins = ['dbg-gdb', 
                         'dbg', 
                         'output-panel']
-        atom_conf_dir = os.path.join("/home", sudo_execute.set_user(), ".atom")
+        atom_conf_dir = os.path.join("/home", sudo_execute().set_user(), ".atom")
 
         print("[INFO] Downloading Atom Debian installer....")
         with open(atom_dest, 'wb') as fp:
@@ -917,15 +917,13 @@ def graphics_information() -> str:
     for line in subprocess.check_output("lspci", shell=True, executable='/bin/bash').decode("utf-8").splitlines():
         primary_match, secondary_match = vga_regex.search(line), controller_regex.search(line)
         if(primary_match and not primary):
-            primary = primary_match
+            primary = primary_match.group("model").strip()
         elif(secondary_match and not secondary):
-            secondary = secondary_match
+            secondary = secondary_match.group("model").strip()
         elif(primary and secondary):
             break
 
-    p, s = primary.group("model").strip(), secondary.group("model").strip()
-
-    return colored(p, 'green'), colored("None" if not s else s, 'red')
+    return colored(primary, 'green'), colored("None" if not secondary else secondary, 'red')
 
 
 def list_git_configuration() -> tuple:
@@ -946,6 +944,7 @@ def list_git_configuration() -> tuple:
             u = u_match.group("user")
         elif(e is None and e_match):
             e = e_match.group("email")
+
     return (u, e) if(u and e) else ("None", "None")
 
 def has_internet() -> bool:
@@ -981,7 +980,7 @@ def currently_installed_targets() -> list:
     try:
         with open(STATE_PATH, "r") as fp:
             content = json.load(fp)["installed"]
-            return [f'{"- ": >4}{element}' for element in content.sorted()]
+            return [f'{"- ": >4}{element}' for element in sorted(content)]
     except FileNotFoundError:
         raise EnvironmentError("Tuffix is not initalized, stop")
   
@@ -991,8 +990,8 @@ def status() -> str:
     GOAL: Driver code for all the components defined above
     """
     try:
-        git_email, git_username = git_configuration()
-    except Exception:
+        git_email, git_username = list_git_configuration()
+    except Exception as e:
         git_email, git_username = "None", "None"
 
     primary, secondary = graphics_information()
@@ -1047,9 +1046,9 @@ def system_shell():
     path = "/etc/passwd"
     cu = sudo_execute().set_user()
     _r_shell = re.compile("^{}.*\:\/home\/{}\:(?P<path>.*)".format(cu, cu))
+    shell_name = None
     with open(path, "r") as fp:
         contents = fp.readlines()
-
     for line in contents:
         shell_match = _r_shell.match(line)
         if(shell_match):
@@ -1057,10 +1056,12 @@ def system_shell():
               version, _ = subprocess.Popen([shell_path, '--version'],
                                       stdout=subprocess.PIPE,
                                       stderr=subprocess.STDOUT).communicate()
-    shell_out = re.compile("(?P<shell>[a-z]?.*sh)\s(?P<version>[0-9].*\.[0-9])").match(version.decode("utf-8"))
-    return "{} {}".format(shell_out.group("shell"), shell_out.group("version"))
+              shell_name = os.path.basename(shell_path)
 
-    raise EnvironmentError("Cannot find default shell, please install one")
+    version = version.decode("utf-8").splitlines()[0]
+
+    return version
+
 
 def system_terminal_emulator() -> str:
     """
