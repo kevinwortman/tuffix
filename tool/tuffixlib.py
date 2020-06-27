@@ -308,7 +308,7 @@ class RemoveCommand(AbstractCommand):
             raise UsageError('cannot remove keyword "' + keyword.name + '", it is not installed')
 
         ensure_root_access()
-        print("removing " + keyword.name) 
+        print("tuffix: removing " + keyword.name) 
         keyword.remove()
 
         new_installed = list(state.installed)
@@ -362,12 +362,12 @@ class AbstractKeyword:
 class BaseKeyword(AbstractKeyword):
 
     packages = ['build-essential',
-              'cmake',
               'clang',
               'clang-format',
               'clang-tidy',
-              'libgconf-2-4',
+              'cmake',
               'git',
+              'libgconf-2-4',
               'libgtest-dev',
               'python']
   
@@ -381,7 +381,7 @@ class BaseKeyword(AbstractKeyword):
         add_deb_packages(self.packages)
         self.atom()
         self.google_test_all()
-        self.configure_git()
+        self.configure_git)
       
     def remove(self):
         remove_deb_packages(self.packages)
@@ -389,15 +389,16 @@ class BaseKeyword(AbstractKeyword):
     def configure_git(self):
         """
         GOAL: Configure git
-        NOTE: should be run before invoking sudo
         """ 
 
         keeper = sudo_execute()
         whoami = keeper.set_user()
+
         username = input("Git username: ")
         mail = input("Git email: ")
         git_conf_file = "/home/{}/.gitconfig".format(whoami)
-        commands = ["git config --file {} user.name {}".format(git_conf_file, username), "git config --file {} user.email {}".format(git_conf_file, mail)]
+        commands = ["git config --file {} user.name {}".format(git_conf_file, username), 
+                    "git config --file {} user.email {}".format(git_conf_file, mail)]
         for command in commands:
             keeper.run_soft(command, whoami)
         print(colored("Successfully configured git", 'green'))
@@ -430,28 +431,29 @@ class BaseKeyword(AbstractKeyword):
         GOAL: Get and install GoogleTest
         """
 
-        GOOGLE_TEST_URL="https://github.com/google/googletest.git"
-        GOOGLE_DEST="google"
+        GOOGLE_TEST_URL = "https://github.com/google/googletest.git"
+        GOOGLE_DEST = "google"
 
         os.chdir("/tmp")
         if(os.path.isdir(GOOGLE_DEST)):
             shutil.rmtree(GOOGLE_DEST)
         subprocess.run(['git', 'clone', GOOGLE_TEST_URL, GOOGLE_DEST])
         os.chdir(GOOGLE_DEST)
-        subprocess.run(['cmake', 'CMakeLists.txt'])
-        subprocess.run(['make', '-j8'])
-        subprocess.run (['sudo', 'cp', '-r', 'googletest/include/.', '/usr/include'])
-        subprocess.run(['sudo', 'cp', '-r', 'googlemock/include/.', '/usr/include'])
-        subprocess.run(['sudo', 'cp', '-r', 'lib/.', '/usr/lib'])
-        subprocess.run(['sudo', 'chown', 'root:root', '/usr/lib'])
+        script = ["cmake CMakeLists.txt",
+                   "make -j8",
+                   "sudo cp -r -v googletest/include/. /usr/include",
+                   "sudo cp -r -v googlemock/include/. /usr/include",
+                   "sudo chown -v root:root /usr/lib"]
+        for command in script:
+          subprocess.run(command.split())
 
     def google_test_attempt(self):
         """
         Goal: small test to check if Google Test works after install
         """ 
 
-        TEST_URL="https://github.com/ilxl-ppr/restaurant-bill.git"
-        TEST_DEST="test"
+        TEST_URL = "https://github.com/ilxl-ppr/restaurant-bill.git"
+        TEST_DEST = "test"
 
         os.chdir("/tmp")
         if(os.path.isdir(TEST_DEST)):
@@ -460,7 +462,12 @@ class BaseKeyword(AbstractKeyword):
         os.chdir(TEST_DEST)
         shutil.copyfile("solution/main.cpp", "problem/main.cpp")
         os.chdir("problem")
-        subprocess.run(['make', 'test'])
+        subprocess.run(['clang++', 'main.cpp', '-o', 'main'])
+        ret_code = subprocess.run(['make', 'all']).returncode
+        if(ret_code != 0):
+          print(colored("[ERR] Google Unit test failed!", "red"))
+        else:
+          print(colored("[SUCCESS] Google unit test succeeded!", "green"))
 
     def google_test_all(self):
         """

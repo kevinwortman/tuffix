@@ -1,9 +1,13 @@
-#!/usr/bin/env python3.8
+import subprocess
 
-import os, sys
+command = """
+cmake CMakeLists.txt
+make -j8
+sudo cp -r googletest/include/. /usr/include
+sudo cp -r googlemock/include/. /usr/include
+sudo cp -r lib/. /usr/lib
+sudo chown root:root /usr/lib
+"""
 
-_here = os.path.abspath(os.path.dirname(__file__))
-encoding = "utf-8" if sys.version_info[0] < 3 else None
-
-with open(os.path.join(_here, 'README.md'), encoding=encoding) as f:
-    long_description = f.read()
+for subcommand in command.splitlines():
+  print(subcommand)
