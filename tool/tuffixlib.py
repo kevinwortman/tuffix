@@ -381,7 +381,7 @@ class BaseKeyword(AbstractKeyword):
         add_deb_packages(self.packages)
         self.atom()
         self.google_test_all()
-        self.configure_git)
+        self.configure_git()
       
     def remove(self):
         remove_deb_packages(self.packages)
@@ -846,10 +846,7 @@ def current_kernel_revision() -> str:
     """
     Goal: get the current kernel version
     """
-
-    path = "/proc/version"
-    with open(path, "r") as fp:
-        return fp.readline().split()[2]
+    return os.uname().release
 
 def current_time() -> str:
     """
