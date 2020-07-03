@@ -19,28 +19,28 @@
       apt:
         autoremove: yes
 
-    - name: Ensure that the vboxsf group exists to premptively add the user to it.
-      group:
-        name: vboxsf
-        state: present
+    #- name: Ensure that the vboxsf group exists to premptively add the user to it.
+    #  group:
+    #    name: vboxsf
+    #    state: present
 
     - name: kitchen sink packages
       apt:
         pkg:
-          - a2ps
-          - chromium-browser
+          #- a2ps
+          #- chromium-browser
           - curl
-          - dkms
-          - emacs
+          #- dkms
+          #- emacs
           - enscript
           - gpg
-          - gthumb
+          #- gthumb
           - openssh-client
-          - openssh-server
-          - seahorse
+          #- openssh-server
+          #- seahorse
           - synaptic
           - vim
-          - vim-gtk3
+          #- vim-gtk3
           - libreadline-dev
           - manpages-posix
           - manpages-posix-dev
@@ -58,7 +58,7 @@
     login: student
   tasks:
 
-    - name: clang toolchain
+    - name: clang toolchain (default version for target Ubuntu release)
       apt:
         pkg:
           - build-essential
@@ -67,19 +67,23 @@
           - clang-format
           - lldb
 
-    - name: g++ 9 compiler
+    - name: g++ compiler (default version for target Ubuntu release)
       apt:
         pkg:
           - build-essential
-          - gcc-9
-          - g++-9
+          - gcc
+          - g++
           - gdb
 
-    - name: Atom editor
-      apt: deb=https://atom.io/download/deb
+    # https://code.visualstudio.com/docs/setup/linux
+    - name: VSCode Editor
+      apt: deb=https://go.microsoft.com/fwlink/?LinkID=760868
 
-    - name: Atom gdb support
-      command: /usr/bin/apm install dbg-gdb dbg output-panel
+    #- name: Atom editor
+    #  apt: deb=https://atom.io/download/deb
+
+    #- name: Atom gdb support
+    #  command: /usr/bin/apm install dbg-gdb dbg output-panel
 
     # this playbook is run as root, so the apm command above
     # creates a ~/.atom owned by root, so the student user does
@@ -87,17 +91,17 @@
     # properly and shows a debug interface. This makes the
     # directory owned by {{ login }}, by default `student`, thus
     # solving the problem.
-    - name: atom owned by user instead of root
-      file:
-        path: ~/.atom
-        owner: "{{ login }}"
-        group: "{{ login }}"
+    #- name: atom owned by user instead of root
+    #  file:
+    #    path: ~/.atom
+    #    owner: "{{ login }}"
+    #    group: "{{ login }}"
 
-    - name: Adding current user {{ login }} to group vboxsf preemptively
-      user:
-        name: "{{ login }}"
-        groups: vboxsf
-        append: yes
+    #- name: Adding current user {{ login }} to group vboxsf preemptively
+    #  user:
+    #    name: "{{ login }}"
+    #    groups: vboxsf
+    #    append: yes
 
     - name: source code control
       apt:
@@ -109,11 +113,11 @@
       apt:
         pkg:
           - libgtest-dev
-          - build-essential
+          #- build-essential
           - cmake
-          - clang
-          - gcc-9
-          - g++-9
+          #- clang
+          #- gcc
+          #- g++
 
     - name: Google Test Library Build
       shell: |
@@ -131,12 +135,12 @@
         pkg:
           - autoconf
           - automake
-          - cscope
+          #- cscope
           #- libboost-all-dev
           #- libfccp-dev
           #- libsqlite3-dev
           #- libssl-dev
-          - meld
+          #- meld
           #- nlohmann-json-dev
           #- sqlite3
           #- valgrind
