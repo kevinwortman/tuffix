@@ -368,10 +368,10 @@ class BaseKeyword(AbstractKeyword):
               'cmake',
               'git',
               'libc++-dev',
-              'libc++-abi-dev',
+              'libc++abi-dev',
               'libgconf-2-4',
               'libgtest-dev',
-              'python']
+              'python2']
   
     def __init__(self, build_config):
         super().__init__(build_config,
