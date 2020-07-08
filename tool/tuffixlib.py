@@ -415,7 +415,10 @@ class BaseKeyword(AbstractKeyword):
         atom_plugins = ['dbg-gdb', 
                         'dbg', 
                         'output-panel']
-        atom_conf_dir = os.path.join("/home", sudo_execute().set_user(), ".atom")
+
+        executor = sudo_execute()
+        normal_user = executor.set_user()
+        atom_conf_dir = os.path.join("/home", normal_user, ".atom")
 
         print("[INFO] Downloading Atom Debian installer....")
         with open(atom_dest, 'wb') as fp:
@@ -424,8 +427,8 @@ class BaseKeyword(AbstractKeyword):
         print("[INFO] Installing atom....")
         apt.debfile.DebPackage(filename=atom_dest).install()
         for plugin in atom_plugins:
-            subprocess.run(['/usr/bin/apm', 'install', plugin])
-            subprocess.run(['chown', sudo_execute().set_user(), '-R', atom_conf_dir])
+            executor.run_soft(f'/usr/bin/apm install {plugin}', normal_user)
+            executor.run_soft(f'chown {normal_user} -R {atom_conf_dir}', normal_user)
         print("[INFO] Finished installing Atom")
 
     def google_test_build(self):
