@@ -367,6 +367,7 @@ class BaseKeyword(AbstractKeyword):
               'clang-tidy',
               'cmake',
               'git',
+              'g++',
               'libc++-dev',
               'libc++abi-dev',
               'libgconf-2-4',
