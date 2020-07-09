@@ -5,10 +5,7 @@ setuptools.setup(
     version='0.0.0',
     packages=setuptools.find_packages(),
 
-    install_requires=['packaging', 'pyfakefs', 'python-apt', 'requests', 'termcolor'],
-    dependency_links = [
-        'https://github.com/JaredDyreson/sudo_execute.git'
-    ]
+    install_requires=['packaging', 'pyfakefs', 'python-apt', 'requests', 'termcolor', 'sudo_execute @ git+https://github.com/JaredDyreson/sudo_execute']
 )
 
 """
