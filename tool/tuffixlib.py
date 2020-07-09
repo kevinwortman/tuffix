@@ -740,6 +740,8 @@ Used for managing code execution by one user on the behalf of another
 For example: root creating a file in Jared's home directory but Jared is still the sole owner of the file
 We probably should instantiate a global sudo_execute instead of re running it everytime in each function it's used in
 ^ This is going to be put inside the SiteConfig and BuildConfig later so it can be referenced for unit testing
+
+NOTE: update this section with https://github.com/JaredDyreson/sudo_execute/
 """
 
 class sudo_execute():
