@@ -10,7 +10,7 @@ setuptools.setup(
                       'python-apt', 
                       'requests', 
                       'termcolor', 
-                      'sudo_execute @ git+https://github.com/JaredDyreson/sudo_execute']
+                      # 'sudo_execute @ git+https://github.com/JaredDyreson/sudo_execute']
 )
 
 """
