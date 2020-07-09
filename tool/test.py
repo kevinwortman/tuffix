@@ -1,3 +1,7 @@
+"""
+Unit tests for Tuffix utility
+AUTHOR: Kevin Wortman
+"""
 
 import io, pathlib, unittest
 

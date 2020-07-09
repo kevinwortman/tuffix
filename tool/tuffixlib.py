@@ -4,10 +4,26 @@
 ################################################################################
 
 # standard library
-import io, json, os, pathlib, sys, unittest
+
+from datetime import datetime
+import io
+import json
+import os
+import os
+import pathlib
+import re
+import shutil
+import socket
+import subprocess
+import sys
+import unittest
 
 # packages
-import apt.cache, packaging.version
+import apt.cache
+import apt.debfile
+import packaging.version
+from termcolor import colored
+import requests
 
 ################################################################################
 # constants
@@ -48,6 +64,18 @@ class StatusError(MessageException):
 # issue reported by the `status` command, that's at the level of a nonfatal
 # warning
 class StatusWarning(MessageException):
+    def __init__(self, message):
+        super().__init__(message)
+
+# issue reported when sudo_execute class cannot find a given user
+# use for internal API
+class UnknownUserException(MessageException):
+    def __init__(self, message):
+        super().__init__(message)
+
+# issue reported when root code execution is invoked by non privilaged user
+# use for internal API
+class PrivilageExecutionException(MessageException):
     def __init__(self, message):
         super().__init__(message)
 
@@ -246,6 +274,20 @@ class ListCommand(AbstractCommand):
                   '  ' +
                   keyword.description)
 
+class StatusCommand(AbstractCommand):
+    def __init__(self, build_config):
+        super().__init__(build_config, 'status', 'status of the current host')
+
+    def execute(self, arguments):
+        if not (isinstance(arguments, list) and
+                all([isinstance(argument, str) for argument in arguments])):
+                raise ValueError
+
+        if len(arguments) != 0:
+            raise UsageError("status command does not accept arguments")
+
+        print(status())
+
 class RemoveCommand(AbstractCommand):
     def __init__(self, build_config):
         super().__init__(build_config, 'remove', 'remove (uninstall) keywords')
@@ -266,7 +308,7 @@ class RemoveCommand(AbstractCommand):
             raise UsageError('cannot remove keyword "' + keyword.name + '", it is not installed')
 
         ensure_root_access()
-        
+        print("tuffix: removing " + keyword.name) 
         keyword.remove()
 
         new_installed = list(state.installed)
@@ -290,6 +332,7 @@ def all_commands(build_config):
              InitCommand(build_config),
              InstalledCommand(build_config),
              ListCommand(build_config),
+             StatusCommand(build_config),
              RemoveCommand(build_config) ]
 
 ################################################################################
@@ -318,30 +361,165 @@ class AbstractKeyword:
 
 class BaseKeyword(AbstractKeyword):
 
-    # TODO: install Atom, googletest, g++?
-    
     packages = ['build-essential',
-                'clang',
-                'clang-tidy',
-                'clang-format']
-    
+              'clang',
+              'clang-format',
+              'clang-tidy',
+              'cmake',
+              'git',
+              'g++',
+              'libc++-dev',
+              'libc++abi-dev',
+              'libgconf-2-4',
+              'libgtest-dev',
+              'python2']
+  
     def __init__(self, build_config):
         super().__init__(build_config,
-                         'base',
-                         'CPSC 120-121-131-301 C++ development environment')
-        
+                       'base',
+                       'CPSC 120-121-131-301 C++ development environment')
+      
+    def add(self):
+        print("[INFO] Adding all packages to APT queue...")
+        add_deb_packages(self.packages)
+        self.atom()
+        self.google_test_all()
+        self.configure_git()
+      
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+    def configure_git(self):
+        """
+        GOAL: Configure git
+        """ 
+
+        keeper = sudo_execute()
+        whoami = keeper.set_user()
+
+        username = input("Git username: ")
+        mail = input("Git email: ")
+        git_conf_file = "/home/{}/.gitconfig".format(whoami)
+        commands = ["git config --file {} user.name {}".format(git_conf_file, username), 
+                    "git config --file {} user.email {}".format(git_conf_file, mail)]
+        for command in commands:
+            keeper.run_soft(command, whoami)
+        print(colored("Successfully configured git", 'green'))
+
+    def atom(self):
+        """
+        GOAL: Get and install Atom
+        """
+
+        atom_url = "https://atom.io/download/deb"
+        atom_dest = "/tmp/atom.deb"
+        atom_plugins = ['dbg-gdb', 
+                        'dbg', 
+                        'output-panel']
+
+        executor = sudo_execute()
+        normal_user = executor.set_user()
+        atom_conf_dir = os.path.join("/home", normal_user, ".atom")
+
+        print("[INFO] Downloading Atom Debian installer....")
+        with open(atom_dest, 'wb') as fp:
+            fp.write(requests.get(atom_url).content)
+        print("[INFO] Finished downloading...")
+        print("[INFO] Installing atom....")
+        apt.debfile.DebPackage(filename=atom_dest).install()
+        for plugin in atom_plugins:
+            executor.run_soft(f'/usr/bin/apm install {plugin}', normal_user)
+            executor.run_soft(f'chown {normal_user} -R {atom_conf_dir}', normal_user)
+        print("[INFO] Finished installing Atom")
+
+    def google_test_build(self):
+        """
+        GOAL: Get and install GoogleTest
+        """
+
+        GOOGLE_TEST_URL = "https://github.com/google/googletest.git"
+        GOOGLE_DEST = "google"
+
+        os.chdir("/tmp")
+        if(os.path.isdir(GOOGLE_DEST)):
+            shutil.rmtree(GOOGLE_DEST)
+        subprocess.run(['git', 'clone', GOOGLE_TEST_URL, GOOGLE_DEST])
+        os.chdir(GOOGLE_DEST)
+        script = ["cmake CMakeLists.txt",
+                   "make -j8",
+                   "sudo cp -r -v googletest/include/. /usr/include",
+                   "sudo cp -r -v googlemock/include/. /usr/include",
+                   "sudo chown -v root:root /usr/lib"]
+        for command in script:
+          subprocess.run(command.split())
+
+    def google_test_attempt(self):
+        """
+        Goal: small test to check if Google Test works after install
+        """ 
+
+        TEST_URL = "https://github.com/ilxl-ppr/restaurant-bill.git"
+        TEST_DEST = "test"
+
+        os.chdir("/tmp")
+        if(os.path.isdir(TEST_DEST)):
+            shutil.rmtree(TEST_DEST)
+        subprocess.run(['git', 'clone', TEST_URL, TEST_DEST])
+        os.chdir(TEST_DEST)
+        shutil.copyfile("solution/main.cpp", "problem/main.cpp")
+        os.chdir("problem")
+        subprocess.run(['clang++', 'main.cpp', '-o', 'main'])
+        ret_code = subprocess.run(['make', 'all']).returncode
+        if(ret_code != 0):
+          print(colored("[ERR] Google Unit test failed!", "red"))
+        else:
+          print(colored("[SUCCESS] Google unit test succeeded!", "green"))
+
+    def google_test_all(self):
+        """
+        Goal: make and test Google Test library install
+        """
+
+        self.google_test_build()
+        self.google_test_attempt()
+
+class C240Keyword(AbstractKeyword):
+
+    packages = ['intel2gas',
+                'nasm']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, '240', 'CPSC 240')
+ 
     def add(self):
         add_deb_packages(self.packages)
-        
+
     def remove(self):
         remove_deb_packages(self.packages)
 
 class C439Keyword(AbstractKeyword):
 
     packages = ['minisat2']
-    
+
     def __init__(self, build_config):
         super().__init__(build_config, '439', 'CPSC 439')
+
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C474Keyword(AbstractKeyword):
+
+    packages = ['mpi-default-dev',
+                'mpich',
+                'openmpi-bin',
+                'openmpi-common',
+                'libopenmpi-dev']
+    
+    def __init__(self, build_config):
+        super().__init__(build_config, '474', 'CPSC 474')
          
     def add(self):
         add_deb_packages(self.packages)
@@ -371,7 +549,9 @@ def all_keywords(build_config):
     # alphabetical order, but put digits after letters
     return [ BaseKeyword(build_config),
              LatexKeyword(build_config),
-             C439Keyword(build_config) ]
+             C240Keyword(build_config),
+             C439Keyword(build_config),
+             C474Keyword(build_config) ]
 
 def find_keyword(build_config, name):
     if not (isinstance(build_config, BuildConfig) and
@@ -398,6 +578,11 @@ def distrib_codename():
 
 # Raises EnvironmentError if there is no connected network adapter.
 def ensure_network_connected():
+    """
+    NOTE: has been duplicated in has_internet
+    Please discard when necessary
+    """
+
     PARENT_DIR = '/sys/class/net'
     LOOPBACK_ADAPTER = 'lo'
     if not os.path.isdir(PARENT_DIR):
@@ -520,6 +705,383 @@ def parse_distrib_codename(stream):
     codename = tokens[1].strip()
     return codename
 
+
+################################################################################
+# status API
+################################################################################
+
+"""
+Used for managing code execution by one user on the behalf of another
+For example: root creating a file in Jared's home directory but Jared is still the sole owner of the file
+We probably should instantiate a global sudo_execute instead of re running it everytime in each function it's used in
+^ This is going to be put inside the SiteConfig and BuildConfig later so it can be referenced for unit testing
+"""
+
+class sudo_execute():
+    def __init__(self):
+        self.main_user = ""
+        pass
+
+    def current_user(self) -> str:
+        return subprocess.check_output(["whoami"], encoding="utf-8").strip()
+
+    def currently_logged_in(self) -> list:
+        return [user for user in subprocess.check_output(["users"], encoding="utf-8").split('\n') if user]
+
+    def set_user(self) -> str:
+        logged_in = self.currently_logged_in()
+        if(len(logged_in) > 1):
+            whoami = None
+            while(whoami is None):
+                selection = {}
+                for index, user in enumerate(logged_in):
+                    selection[index] =  user
+                    print("[{}] {}".format(index, user))
+                whoami = input("Select who you are: ")
+                try:
+                    whoami = self.main_user = selection[int(whoami)]
+                    return whoami
+                except KeyError:
+                    whoami = None
+                    os.system("clear")
+                    print(colored("[INFO] Invalid selection, please try again", 'red'))
+        self.main_user = logged_in[0]
+        return logged_in[0]
+
+    def chuser(self, user_id: int, user_gid: int):
+        """
+        GOAL: permanently change the user in the context of the running program
+        """
+
+        os.setgid(user_gid)
+        os.setuid(user_id)
+
+    def check_user(self, user: str):
+        try:
+            pwd.getpwnam(user)
+            return True
+        except KeyError:
+            return False
+
+    def run_permanent(self, command: str, current_user: str, desired_user: str):
+        """
+        GOAL: run command as another user but permanently changing to that user
+        Cannot be run twice in a row if script is originated with sudo
+        Only root can set UID and GID back to itself, ultimately making it redundant
+        Used primarliy for descalation of privilages, handing back to userspace
+        """
+
+        if(self.check_user(desired_user)):
+            du_records, cu_records = pwd.getpwnam(desired_user), pwd.getpwnam(current_user)
+        else:
+            raise UnknownUserException("Unknown user: {}".format(desired_user))
+
+        du_id, du_gid = du_records.pw_uid, du_records.pw_gid
+        cu_id, cu_gid = cu_records.pw_uid, cu_records.pw_gid
+        try:
+            stdout, stderr = subprocess.Popen(command.split(), 
+                                close_fds=True,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT,
+                                preexec_fn=chuser(du_id, du_gid),
+                                encoding="utf-8").communicate()
+        except PermissionError:
+            raise PrivilageExecutionException("{} does not have permission to run the command {} as the user {}".format(
+                            current_user,
+                            command,
+                            desired_user
+            ))
+        return stdout
+
+    def run_soft(self, command: str, desired_user: str):
+        command = "sudo -H -u {} bash -c '{}'".format(desired_user, command)
+        try:
+            out =  subprocess.check_output(command, 
+                                            shell=True, 
+                                            executable='/bin/bash',
+                                            encoding="utf-8").split("\n")
+        except subprocess.CalledProcessError as e:
+            if(e.returncode != 129):
+                out = ""
+            else:
+                raise Exception("Segmentation fault")
+        return out
+
+def cpu_information() -> str:
+    """
+    Goal: get current CPU model name and the amount of cores
+    """
+
+    path = "/proc/cpuinfo"
+    _r_cpu_core_count = re.compile("cpu cores.*(?P<count>[0-9].*)")
+    _r_general_model_name = re.compile("model name.*\:(?P<name>.*)")
+    with open(path, "r") as fp:
+        contents = fp.readlines()
+
+    cores = None
+    name = None
+
+    for line in contents:
+        core_match = _r_cpu_core_count.match(line)
+        model_match = _r_general_model_name.match(line)
+        if(core_match and cores is None):
+            cores = core_match.group("count")
+        elif(model_match and name is None):
+            name = model_match.group("name")
+        elif(cores and name):
+            return "{} ({} cores)".format(' '.join(name.split()), cores)
+
+def host() -> str:
+    """
+    Goal: get the current user logged in and the computer they are logged into
+    """
+
+    return "{}@{}".format(sudo_execute().set_user(), socket.gethostname())
+
+def current_operating_system() -> str:
+    """
+    Goal: get current Linux distribution name
+    """
+
+    path = "/etc/os-release"
+    _r_OS = r'NAME\=\"(?P<release>[a-zA-Z].*)\"'
+    with open(path, "r") as fp: line = fp.readline()
+    return re.compile(_r_OS).match(line).group("release")
+
+def current_kernel_revision() -> str:
+    """
+    Goal: get the current kernel version
+    """
+    return os.uname().release
+
+def current_time() -> str:
+    """
+    Goal: return the current date and time
+    """
+
+    return datetime.now().strftime("%a %d %B %Y %H:%M:%S")
+
+def current_model() -> str:
+    """
+    Goal: retrieve the current make and model of the host
+    """
+
+    product_name = "/sys/devices/virtual/dmi/id/product_name"
+    product_family = "/sys/devices/virtual/dmi/id/product_family"
+    vendor_name = "/sys/devices/virtual/dmi/id/sys_vendor"
+    with open(product_name, "r") as fp:
+        name = fp.readline().strip('\n')
+    with open(product_family, "r") as fp:
+        family = fp.readline().strip('\n')
+    with open(vendor_name, "r") as fp:
+        vendor = fp.read().split()[0].strip('\n')
+    return "{} {}{}".format("" if vendor in name else vendor, name, "" if name not in family else family)
+
+def current_uptime() -> str:
+    """
+    Goal: pretty print the contents of /proc/uptime
+    Source: https://thesmithfam.org/blog/2005/11/19/python-uptime-script/
+    """
+
+    path = "/proc/uptime"
+    with open(path, 'r') as f:
+        total_seconds = float(f.readline().split()[0])
+
+    MINUTE  = 60
+    HOUR    = MINUTE * 60
+    DAY     = HOUR * 24
+
+    days    = int( total_seconds / DAY )
+    hours   = int( ( total_seconds % DAY ) / HOUR )
+    minutes = int( ( total_seconds % HOUR ) / MINUTE )
+    seconds = int( total_seconds % MINUTE )
+
+    return "{} {}, {} {}, {} {}, {} {}".format(
+      days, "days" if (days > 1) else "day",
+      hours, "hours" if (hours > 1) else "hour",
+      minutes, "minutes" if (minutes > 1) else "minute",
+      seconds, "seconds" if (seconds > 1) else "second"
+    )
+
+def memory_information() -> int:
+    """
+    Goal: get total amount of ram on system
+    """
+    
+    formatting = lambda quantity, power: quantity/(1000**power) 
+    path = "/proc/meminfo"
+    with open(path, "r") as fp:
+        total = int(fp.readline().split()[1])
+    return int(formatting(total, 2))
+
+def graphics_information() -> str:
+    """
+    Use lspci to get the current graphics card in use
+    Requires pciutils to be installed (seems to be installed by default on Ubuntu)
+    Source: https://stackoverflow.com/questions/13867696/python-in-linux-obtain-vga-specifications-via-lspci-or-hal 
+    """
+
+    primary, secondary = None, None
+    vga_regex, controller_regex = re.compile("VGA.*\:(?P<model>(?:(?!\s\().)*)"), re.compile("3D.*\:(?P<model>(?:(?!\s\().)*)")
+
+    for line in subprocess.check_output("lspci", shell=True, executable='/bin/bash').decode("utf-8").splitlines():
+        primary_match, secondary_match = vga_regex.search(line), controller_regex.search(line)
+        if(primary_match and not primary):
+            primary = primary_match.group("model").strip()
+        elif(secondary_match and not secondary):
+            secondary = secondary_match.group("model").strip()
+        elif(primary and secondary):
+            break
+
+    return colored(primary, 'green'), colored("None" if not secondary else secondary, 'red')
+
+
+def list_git_configuration() -> tuple:
+    """
+    Retrieve Git configuration information about the current user
+    """
+    keeper = sudo_execute()
+
+    username_regex = re.compile("user.name\=(?P<user>.*$)")
+    email_regex = re.compile("user.email\=(?P<email>.*$)")
+
+    out = keeper.run_soft(command="git --no-pager config --list", desired_user=keeper.set_user())
+    u, e = None, None
+    for line in out:
+        u_match = username_regex.match(line)
+        e_match = email_regex.match(line)
+        if(u is None and u_match):
+            u = u_match.group("user")
+        elif(e is None and e_match):
+            e = e_match.group("email")
+
+    return (u, e) if(u and e) else ("None", "None")
+
+def has_internet() -> bool:
+
+    PARENT_DIR = '/sys/class/net'
+    LOOPBACK_ADAPTER = 'lo'
+    if not os.path.isdir(PARENT_DIR):
+        raise EnvironmentError('no ' + PARENT_DIR + '; this does not seem to be Linux')
+    adapter_path = None
+    for entry in os.listdir(PARENT_DIR):
+        subdir_path = os.path.join(PARENT_DIR, entry)
+        if (entry.startswith('.') or
+            entry == LOOPBACK_ADAPTER or
+            not os.path.isdir(subdir_path)):
+            continue
+        carrier_path = os.path.join(subdir_path, 'carrier')
+        try:
+            with open(carrier_path) as f:
+                state = int(f.read())
+                if state != 0:
+                    return True# found one, stop
+        except OSError: # file not found
+            pass
+        except ValueError: # int(...) parse error
+            pass
+    raise EnvironmentError('no connected network adapter, internet is down')
+
+def currently_installed_targets() -> list:
+    """
+    GOAL: list all installed codewords in a formatted list
+    """
+
+    try:
+        with open(STATE_PATH, "r") as fp:
+            content = json.load(fp)["installed"]
+            return [f'{"- ": >4}{element}' for element in sorted(content)]
+    except FileNotFoundError:
+        raise EnvironmentError("Tuffix is not initalized, stop")
+  
+
+def status() -> str:
+    """
+    GOAL: Driver code for all the components defined above
+    """
+    try:
+        git_email, git_username = list_git_configuration()
+    except Exception as e:
+        git_email, git_username = "None", "None"
+
+    primary, secondary = graphics_information()
+    installed_targets = currently_installed_targets()
+
+    return """
+{}
+-----
+
+OS: {}
+Model: {}
+Kernel: {}
+Uptime: {}
+Shell: {}
+Terminal: {}
+CPU: {}
+GPU:
+  - Primary: {}
+  - Secondary: {}
+Memory: {} GB
+Current Time: {}
+Git Configuration:
+  - Email: {}
+  - Username: {}
+Installed codewords:
+  {}
+Connected to Internet: {}
+""".format(
+    host(),
+    current_operating_system(),
+    current_model(),
+    current_kernel_revision(),
+    current_uptime(),
+    system_shell(),
+    system_terminal_emulator(),
+    cpu_information(),
+    primary,
+    secondary,
+    memory_information(),
+    current_time(),
+    git_email,
+    git_username,
+    '\n'.join(installed_targets).strip() if (len(installed_targets) !=  0) else "None",
+    "Yes" if has_internet() else "No"
+ )
+
+def system_shell():
+    """
+    Goal: find the current shell of the user, rather than assuming they are using Bash
+    """
+
+    path = "/etc/passwd"
+    cu = sudo_execute().set_user()
+    _r_shell = re.compile("^{}.*\:\/home\/{}\:(?P<path>.*)".format(cu, cu))
+    shell_name = None
+    with open(path, "r") as fp:
+        contents = fp.readlines()
+    for line in contents:
+        shell_match = _r_shell.match(line)
+        if(shell_match):
+              shell_path = shell_match.group("path")
+              version, _ = subprocess.Popen([shell_path, '--version'],
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT).communicate()
+              shell_name = os.path.basename(shell_path)
+
+    version = version.decode("utf-8").splitlines()[0]
+
+    return version
+
+
+def system_terminal_emulator() -> str:
+    """
+    Goal: find the default terminal emulator
+    """
+    try:
+        return os.environ["TERM"]
+    except KeyError:
+        raise EnvironmentError("Cannot find default terminal")
+
 ################################################################################
 # main, argument parsing, and usage errors
 ################################################################################
@@ -544,6 +1106,7 @@ def print_usage(build_config):
         print(cmd.name.ljust(name_width) + cmd.description)
 
     print('')
+
 
 # Run the whole tuffix program. This is a self-contained function for unit
 # testing purposes.
