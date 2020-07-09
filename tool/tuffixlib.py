@@ -9,7 +9,6 @@ from datetime import datetime
 import io
 import json
 import os
-import os
 import pathlib
 import re
 import shutil
@@ -366,6 +365,7 @@ class BaseKeyword(AbstractKeyword):
               'clang-format',
               'clang-tidy',
               'cmake',
+              'code',
               'git',
               'g++',
               'libc++-dev',
@@ -380,7 +380,10 @@ class BaseKeyword(AbstractKeyword):
                        'CPSC 120-121-131-301 C++ development environment')
       
     def add(self):
-        print("[INFO] Adding all packages to APT queue...")
+        print("[INFO] Adding Microsoft repository...")
+        self.add_vscode_repository()
+        print(f'[INFO] Adding all packages to the APT queue ({len(self.packages)})')
+        # print("[INFO] Adding all packages to APT queue...")
         add_deb_packages(self.packages)
         self.atom()
         self.google_test_all()
@@ -388,6 +391,20 @@ class BaseKeyword(AbstractKeyword):
       
     def remove(self):
         remove_deb_packages(self.packages)
+
+    def add_vscode_repository(self):
+        script = """
+        curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/packages.microsoft.gpg
+        sudo install -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+        """
+
+        for command in script:
+            subprocess.run(command.split())
+        vscode_source = pathlib.Path("/etc/apt/sources.list.d/vscode.list")
+        vscode_ppa = "\"deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main\""
+        with open(vscode_source, "w") as fp:
+            fp.write(vscode_ppa)
+
 
     def configure_git(self):
         """
