@@ -383,11 +383,10 @@ class BaseKeyword(AbstractKeyword):
         print("[INFO] Adding Microsoft repository...")
         self.add_vscode_repository()
         print(f'[INFO] Adding all packages to the APT queue ({len(self.packages)})')
-        # print("[INFO] Adding all packages to APT queue...")
         add_deb_packages(self.packages)
-        # self.atom()
-        # self.google_test_all()
-        # self.configure_git()
+        self.atom()
+        self.google_test_all()
+        self.configure_git()
       
     def remove(self):
         remove_deb_packages(self.packages)
