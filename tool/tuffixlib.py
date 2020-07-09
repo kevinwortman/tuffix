@@ -96,6 +96,7 @@ class BuildConfig:
             raise ValueError
         self.version = version
         self.state_path = state_path
+        # self.executor = sudo_execute()
 
 # Singleton BuildConfig object using the constants declared at the top of
 # this file.
@@ -418,9 +419,11 @@ class BaseKeyword(AbstractKeyword):
 
         username = input("Git username: ")
         mail = input("Git email: ")
-        git_conf_file = "/home/{}/.gitconfig".format(whoami)
-        commands = ["git config --file {} user.name {}".format(git_conf_file, username), 
-                    "git config --file {} user.email {}".format(git_conf_file, mail)]
+        git_conf_file = pathlib.Path(f'/home/{whoami}/.gitconfig')
+        commands = [
+            f'git config --file {git_conf_file} user.name {username}',
+            f'git config --file {git_conf_file} user.email {mail}'
+        ]
         for command in commands:
             keeper.run_soft(command, whoami)
         print(colored("Successfully configured git", 'green'))
@@ -431,14 +434,14 @@ class BaseKeyword(AbstractKeyword):
         """
 
         atom_url = "https://atom.io/download/deb"
-        atom_dest = "/tmp/atom.deb"
+        atom_dest = pathlib.Path("/tmp/atom.deb")
         atom_plugins = ['dbg-gdb', 
                         'dbg', 
                         'output-panel']
 
         executor = sudo_execute()
         normal_user = executor.set_user()
-        atom_conf_dir = os.path.join("/home", normal_user, ".atom")
+        atom_conf_dir = pathlib.Path(f'/home/{normal_user}/.atom')
 
         print("[INFO] Downloading Atom Debian installer....")
         with open(atom_dest, 'wb') as fp:
@@ -447,6 +450,7 @@ class BaseKeyword(AbstractKeyword):
         print("[INFO] Installing atom....")
         apt.debfile.DebPackage(filename=atom_dest).install()
         for plugin in atom_plugins:
+            print(f'[INFO] Installing {plugin}...')
             executor.run_soft(f'/usr/bin/apm install {plugin}', normal_user)
             executor.run_soft(f'chown {normal_user} -R {atom_conf_dir}', normal_user)
         print("[INFO] Finished installing Atom")
