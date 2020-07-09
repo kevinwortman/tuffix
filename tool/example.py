@@ -14,6 +14,7 @@ if(os.path.isdir(TEST_DEST)):
 subprocess.run(['git', 'clone', TEST_URL, TEST_DEST])
 os.chdir(TEST_DEST)
 shutil.copyfile("solution/main.cpp", "problem/main.cpp")
+shutil.copyfile("solution/.clang-format", "problem/.clang-format")
 os.chdir("problem")
 i = input("waiting for enter key")
 subprocess.run(['clang++', 'main.cpp', '-o', 'main'])
