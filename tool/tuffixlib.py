@@ -487,7 +487,7 @@ class BaseKeyword(AbstractKeyword):
         os.chdir(TEST_DEST)
         shutil.copyfile("solution/main.cpp", "problem/main.cpp")
         os.chdir("problem")
-        subprocess.run(['clang++', 'main.cpp', '-o', 'main'])
+        subprocess.check_output(['clang++', '-v', 'main.cpp', '-o', 'main'])
         ret_code = subprocess.run(['make', 'all']).returncode
         if(ret_code != 0):
           print(colored("[ERR] Google Unit test failed!", "red"))
