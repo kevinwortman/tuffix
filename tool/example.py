@@ -14,6 +14,6 @@ with open(microsoft_gpg, "wb") as fp:
 subprocess.run(sudo_install_command.split())
 
 vscode_source = pathlib.Path("/etc/apt/sources.list.d/vscode.list")
-vscode_ppa = "\"deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main\""
+vscode_ppa = "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main"
 with open(vscode_source, "w") as fp:
     fp.write(vscode_ppa)
