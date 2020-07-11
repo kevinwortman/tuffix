@@ -408,7 +408,7 @@ class BaseKeyword(AbstractKeyword):
 
         vscode_source = pathlib.Path("/etc/apt/sources.list.d/vscode.list")
         vscode_ppa = "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main"
-        with open(vscode_source, "w") as fp:
+        with open(vscode_source, "a") as fp:
             fp.write(vscode_ppa)
 
 
@@ -789,7 +789,7 @@ class LatexKeyword(AbstractKeyword):
         remove_deb_packages(self.packages)
 
 class VirtualBoxKeyword(AbstractKeyword):
-    packages = ['virtualbox-6.0']
+    packages = ['virtualbox-6.1']
 
     def __init__(self, build_config):
         super().__init__(build_config,
@@ -797,12 +797,12 @@ class VirtualBoxKeyword(AbstractKeyword):
                          'A powerful x86 and AMD64/Intel64 virtualization product')
          
     def add(self):
-        if(subprocess.run("grep hypervisor /proc/cpuinfo".split(), stdout=subprocess.DEVNULL).returncode == 0):
-            raise EnvironmentError("This is a virtual enviornment, not proceeding")
+        # if(subprocess.run("grep hypervisor /proc/cpuinfo".split(), stdout=subprocess.DEVNULL).returncode == 0):
+            # raise EnvironmentError("This is a virtual enviornment, not proceeding")
 
         sources_path = pathlib.Path("/etc/apt/sources.list")
-        source_link = f'deb https://download.virtualbox.org/virtualbox/debian {distrib_codename()} contrib'
-        with open(sources_path, "w+") as fp:
+        source_link = f'deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian {distrib_codename()} contrib'
+        with open(sources_path, "a") as fp:
             fp.write(source_link)
         
         wget_request = subprocess.Popen(("wget", "-q", "https://www.virtualbox.org/download/oracle_vbox_2016.asc", "-O-"),
@@ -978,7 +978,7 @@ def is_deb_package_installed(package_name):
 def parse_distrib_codename(stream):
     # find a line with DISTRIB_CODENAME=...
     line = None
-    for l in stream.lines():
+    for l in stream.readlines():
         if l.startswith('DISTRIB_CODENAME'):
             line = l
             break
