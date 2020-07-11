@@ -207,6 +207,8 @@ class AddCommand(AbstractCommand):
             raise UsageError('cannot add ' + keyword.name + ', it is already installed')
 
         ensure_root_access()
+
+        print(f'tuffix: adding {keyword.name}')
         
         keyword.add()
 
@@ -310,7 +312,7 @@ class RemoveCommand(AbstractCommand):
             raise UsageError('cannot remove keyword "' + keyword.name + '", it is not installed')
 
         ensure_root_access()
-        print("tuffix: removing " + keyword.name) 
+        print(f'tuffix: removing {keyword.name}')
         keyword.remove()
 
         new_installed = list(state.installed)
@@ -385,7 +387,6 @@ class BaseKeyword(AbstractKeyword):
     def add(self):
         print("[INFO] Adding Microsoft repository...")
         self.add_vscode_repository()
-        print(f'[INFO] Adding all packages to the APT queue ({len(self.packages)})')
         add_deb_packages(self.packages)
         self.atom()
         self.google_test_all()
@@ -436,7 +437,7 @@ class BaseKeyword(AbstractKeyword):
         """
 
         atom_url = "https://atom.io/download/deb"
-        atom_dest = pathlib.Path("/tmp/atom.deb")
+        atom_dest = "/tmp/atom.deb"
         atom_plugins = ['dbg-gdb', 
                         'dbg', 
                         'output-panel']
@@ -446,8 +447,8 @@ class BaseKeyword(AbstractKeyword):
         atom_conf_dir = pathlib.Path(f'/home/{normal_user}/.atom')
 
         print("[INFO] Downloading Atom Debian installer....")
-        with open(atom_dest, 'wb') as fp:
-            fp.write(requests.get(atom_url).content)
+        # with open(atom_dest, 'wb') as fp:
+            # fp.write(requests.get(atom_url).content)
         print("[INFO] Finished downloading...")
         print("[INFO] Installing atom....")
         apt.debfile.DebPackage(filename=atom_dest).install()
@@ -514,10 +515,10 @@ class ChromeKeyword(AbstractKeyword):
     Needs to be checked
     """
 
-    packages = ['google-chrome-stable']
+    packages = ['google-chrome']
 
     def __init__(self, build_config):
-        super().__init__(build_config, 'Chrome', 'Google Chrome')
+        super().__init__(build_config, 'chrome', 'Google Chrome')
  
     def add(self):
         # google_chrome = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
@@ -555,11 +556,11 @@ class C223JKeyword(AbstractKeyword):
     packages = ['geany',
                 'gthumb',
                 'netbeans',
-                'openjdk-8-jdk'
+                'openjdk-8-jdk',
                 'openjdk-8-jre']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223J', 'CPSC 223J')
+        super().__init__(build_config, '223J', 'CPSC 223J (Java Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -577,7 +578,7 @@ class C223NKeyword(AbstractKeyword):
                 'netbeans']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223N', 'CPSC 223N')
+        super().__init__(build_config, '223N', 'CPSC 223N (C# Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -600,7 +601,7 @@ class C223PKeyword(AbstractKeyword):
                 'virtualenvwrapper']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223P', 'CPSC 223P')
+        super().__init__(build_config, '223P', 'CPSC 223P (Python Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -631,7 +632,7 @@ class C223WKeyword(AbstractKeyword):
                 'zlib1g-dev']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223W', 'CPSC 223W')
+        super().__init__(build_config, '223W', 'CPSC 223W (Swift Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -646,7 +647,7 @@ class C240Keyword(AbstractKeyword):
                 'nasm']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '240', 'CPSC 240')
+        super().__init__(build_config, '240', 'CPSC 240 (Assembler)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -659,7 +660,7 @@ class C439Keyword(AbstractKeyword):
     packages = ['minisat2']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '439', 'CPSC 439')
+        super().__init__(build_config, '439', 'CPSC 439 (Theory of Computation)')
 
     def add(self):
         add_deb_packages(self.packages)
@@ -676,7 +677,7 @@ class C474Keyword(AbstractKeyword):
                 'openmpi-common']
     
     def __init__(self, build_config):
-        super().__init__(build_config, '474', 'CPSC 474')
+        super().__init__(build_config, '474', 'CPSC 474 (Parallel and Distributed Computing)')
          
     def add(self):
         add_deb_packages(self.packages)
@@ -698,7 +699,7 @@ class C481Keyword(AbstractKeyword):
                 'swi-prolog-x']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '481', 'CPSC 481')
+        super().__init__(build_config, '481', 'CPSC 481 (Artificial Intelligence)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -747,7 +748,7 @@ class C484Keyword(AbstractKeyword):
                 'python-openctm']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '484', 'CPSC 484')
+        super().__init__(build_config, '484', 'CPSC 484 (Principles of Computer Graphics)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -765,7 +766,7 @@ class MediaKeyword(AbstractKeyword):
                 'vlc']
 
     def __init__(self, build_config):
-        super().__init__(build_config, 'Media', 'Media Computation Tools')
+        super().__init__(build_config, 'media', 'Media Computation Tools')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -792,10 +793,13 @@ class VirtualBoxKeyword(AbstractKeyword):
 
     def __init__(self, build_config):
         super().__init__(build_config,
-                         'virtualbox',
-                         'VirtualBox pacakge')
+                         'vbox',
+                         'A powerful x86 and AMD64/Intel64 virtualization product')
          
     def add(self):
+        if(subprocess.run("grep hypervisor /proc/cpuinfo".split(), stdout=subprocess.DEVNULL).returncode == 0):
+            raise EnvironmentError("This is a virtual enviornment, not proceeding")
+
         sources_path = pathlib.Path("/etc/apt/sources.list")
         source_link = f'deb https://download.virtualbox.org/virtualbox/debian {distrib_codename()} contrib'
         with open(sources_path, "w+") as fp:
@@ -911,9 +915,12 @@ def add_deb_packages(package_names):
     if not (isinstance(package_names, list) and
             all(isinstance(name, str) for name in package_names)):
         raise ValueError
+    print(f'[INFO] Adding all packages to the APT queue ({len(package_names)})')
     cache = apt.cache.Cache()
     cache.update()
     cache.open()
+    pkg_list =  ' '.join(package_names)
+    print(f'installing: {pkg_list}')
     for name in package_names:
         try:
             cache[name].mark_install()
