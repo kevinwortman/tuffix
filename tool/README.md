@@ -22,19 +22,19 @@ These seem to be good defaults but a reinstall might need to take place
 - [ ] adding more keywords from older ansible scripts
 
 # Testing
-- Base [X]
-- Chrome [X]
-- 223J [X]
-- 223N [X]
-- 223P [  ]
-- 223W [  ]
-- 240 [X]
-- 439 [  ]
-- 474 [  ]
-- 481 [  ]
-- 484 [  ]
-- Media [X]
-- Latex [X]
-- VirtualBox [X]
+- [X] Base
+- [X] Chrome
+- [X] 223J
+- [X] 223N
+- [ ] 223P
+- [ ] 223W
+- [X] 240
+- [ ] 439
+- [ ] 474
+- [ ] 481
+- [ ] 484
+- [X] Media
+- [X] LaTeX
+- [X] VirtualBox
 
 These should be double checked however
