@@ -508,6 +508,138 @@ class BaseKeyword(AbstractKeyword):
         self.google_test_build()
         self.google_test_attempt()
 
+class ChromeKeyword(AbstractKeyword):
+
+    """
+    Needs to be checked
+    """
+
+    packages = ['google-chrome-stable']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'Chrome', 'Google Chrome')
+ 
+    def add(self):
+        # google_chrome = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+        # dest = pathlib.Path("/tmp/chrome.deb")
+
+        # print("[INFO] Downloading Chrome Debian installer....")
+        # with open(dest, 'wb') as fp:
+            # fp.write(requests.get(google_chrome).content)
+        # print("[INFO] Finished downloading...")
+        # print("[INFO] Installing Chrome....")
+        # apt.debfile.DebPackage(filename=dest).install()
+
+        google_sources = "https://dl.google.com/linux/linux_signing_key.pub"
+        google_sources_path = pathlib.Path("/tmp/linux_signing_key.pub")
+
+        with open(google_sources_path, 'wb') as fp:
+            fp.write(requests.get(google_sources).content)
+        subprocess.check_output(f'sudo apt-key add {google_sources_path}'.split())
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+
+
+
+class C223JKeyword(AbstractKeyword):
+
+    """
+    NOTE: do you want to use a newer version of Java?
+    Or are the IDE's dependent on a certain version?
+    Needs to be tested!
+    """
+
+    packages = ['geany',
+                'gthumb',
+                'netbeans',
+                'openjdk-8-jdk'
+                'openjdk-8-jre']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, '223J', 'CPSC 223J')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C223NKeyword(AbstractKeyword):
+
+    """
+    NOTE: NEEDS TO BE TESTED
+    """
+
+    packages = ['mono-complete'
+                'netbeans']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, '223N', 'CPSC 223N')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C223PKeyword(AbstractKeyword):
+    """
+    NEEDS TO BE TESTED
+    """
+
+    packages = ['python',
+                'python-dev',
+                'python-pip',
+                'python-virtualenv',
+                'python3',
+                'python3-dev',
+                'python3-pip',
+                'virtualenvwrapper']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, '223P', 'CPSC 223P')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C223WKeyword(AbstractKeyword):
+
+    """
+    NEEDS TO BE TESTED
+    """
+
+    packages = ['binutils',
+                'curl',
+                'gnupg2',
+                'libc6-dev',
+                'libcurl4',
+                'libedit2',
+                'libgcc-9-dev',
+                'libpython2.7',
+                'libsqlite3-0',
+                'libstdc++-9-dev',
+                'libxml2',
+                'libz3-dev',
+                'pkg-config',
+                'tzdata',
+                'zlib1g-dev']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, '223W', 'CPSC 223W')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+
 class C240Keyword(AbstractKeyword):
 
     packages = ['intel2gas',
@@ -537,11 +669,11 @@ class C439Keyword(AbstractKeyword):
 
 class C474Keyword(AbstractKeyword):
 
-    packages = ['mpi-default-dev',
+    packages = ['libopenmpi-dev',
+                'mpi-default-dev',
                 'mpich',
                 'openmpi-bin',
-                'openmpi-common',
-                'libopenmpi-dev']
+                'openmpi-common']
     
     def __init__(self, build_config):
         super().__init__(build_config, '474', 'CPSC 474')
@@ -549,6 +681,95 @@ class C474Keyword(AbstractKeyword):
     def add(self):
         add_deb_packages(self.packages)
         
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C481Keyword(AbstractKeyword):
+
+    """
+    Java dependency is not installed by default
+    Adding it so testing will work but needs to be addressed
+    """
+
+    packages = ['openjdk-8-jdk',
+                'openjdk-8-jre',
+                'sbcl',
+                'swi-prolog-nox',
+                'swi-prolog-x']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, '481', 'CPSC 481')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+        """
+        You are going to need to get the most up to date
+        link because the original one broke and this one currently works.
+        """
+        eclipse_download = pathlib.Path("/tmp/eclipse.tar.gz")
+
+        """
+        might need to change because development was done in Idaho
+        """
+
+        eclipse_link = "http://mirror.umd.edu/eclipse/oomph/epp/2020-06/R/eclipse-inst-linux64.tar.gz"
+        with open(eclipse_download, 'wb') as fp:
+            r = requests.get(eclipse_link)
+            if(r.status_code == 404):
+                raise EnvironmentError("cannot access link to get Eclipse, please tell your instructor immediately")
+            fp.write(r.content)
+        os.mkdir("/tmp/eclipse")
+        subprocess.check_output(f'tar -xzvf {eclipse_download} -C /tmp/eclipse'.split())
+        """
+        Here is where I need help
+        https://linoxide.com/linux-how-to/learn-how-install-latest-eclipse-ubuntu/
+        We might need to provide documentation
+        """
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C484Keyword(AbstractKeyword):
+
+    packages = ['freeglut3-dev',
+                'libfreeimage-dev',
+                'libgl1-mesa-dev',
+                'libglew-dev',
+                'libglu1-mesa-dev',
+                'libopenctm-dev',
+                'libx11-dev',
+                'libxi-dev',
+                'libxrandr-dev',
+                'mesa-utils',
+                'mesa-utils-extra',
+                'openctm-doc',
+                'openctm-tools',
+                'python-openctm']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, '484', 'CPSC 484')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class MediaKeyword(AbstractKeyword):
+
+    packages = ['audacity',
+                'blender',
+                'gimp',
+                'imagemagick',
+                'sox',
+                'vlc']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'Media', 'Media Computation Tools')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
     def remove(self):
         remove_deb_packages(self.packages)
 
@@ -566,6 +787,29 @@ class LatexKeyword(AbstractKeyword):
     def remove(self):
         remove_deb_packages(self.packages)
 
+class VirtualBoxKeyword(AbstractKeyword):
+    packages = ['virtualbox-6.0']
+
+    def __init__(self, build_config):
+        super().__init__(build_config,
+                         'virtualbox',
+                         'VirtualBox pacakge')
+         
+    def add(self):
+        sources_path = pathlib.Path("/etc/apt/sources.list")
+        source_link = f'deb https://download.virtualbox.org/virtualbox/debian {distrib_codename()} contrib'
+        with open(sources_path, "w+") as fp:
+            fp.write(source_link)
+        
+        wget_request = subprocess.Popen(("wget", "-q", "https://www.virtualbox.org/download/oracle_vbox_2016.asc", "-O-"),
+                                        stdout=subprocess.PIPE)
+        apt_key = subprocess.check_output(('sudo', 'apt-key', 'add', '-'), stdin=wget_request.stdout)
+
+        add_deb_packages(self.packages)
+        
+    def remove(self):
+        remove_deb_packages(self.packages)
+
 # TODO: more keywords...
 
 def all_keywords(build_config):
@@ -573,10 +817,20 @@ def all_keywords(build_config):
         raise ValueError
     # alphabetical order, but put digits after letters
     return [ BaseKeyword(build_config),
+             ChromeKeyword(build_config),
              LatexKeyword(build_config),
+             MediaKeyword(build_config),
+             VirtualBoxKeyword(build_config),
+             C223JKeyword(build_config),
+             C223NKeyword(build_config),
+             C223PKeyword(build_config),
+             C223WKeyword(build_config),
              C240Keyword(build_config),
              C439Keyword(build_config),
-             C474Keyword(build_config) ]
+             C474Keyword(build_config),
+             C481Keyword(build_config), 
+             C484Keyword(build_config)
+             ]
 
 def find_keyword(build_config, name):
     if not (isinstance(build_config, BuildConfig) and
