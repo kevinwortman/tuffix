@@ -515,21 +515,21 @@ class ChromeKeyword(AbstractKeyword):
     Needs to be checked
     """
 
-    packages = ['google-chrome']
+    packages = ['google-chrome-stable']
 
     def __init__(self, build_config):
         super().__init__(build_config, 'chrome', 'Google Chrome')
  
     def add(self):
-        # google_chrome = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-        # dest = pathlib.Path("/tmp/chrome.deb")
+        google_chrome = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+        dest = "/tmp/chrome.deb"
 
-        # print("[INFO] Downloading Chrome Debian installer....")
-        # with open(dest, 'wb') as fp:
-            # fp.write(requests.get(google_chrome).content)
-        # print("[INFO] Finished downloading...")
-        # print("[INFO] Installing Chrome....")
-        # apt.debfile.DebPackage(filename=dest).install()
+        print("[INFO] Downloading Chrome Debian installer....")
+        with open(dest, 'wb') as fp:
+            fp.write(requests.get(google_chrome).content)
+        print("[INFO] Finished downloading...")
+        print("[INFO] Installing Chrome....")
+        apt.debfile.DebPackage(filename=dest).install()
 
         google_sources = "https://dl.google.com/linux/linux_signing_key.pub"
         google_sources_path = pathlib.Path("/tmp/linux_signing_key.pub")
@@ -537,7 +537,6 @@ class ChromeKeyword(AbstractKeyword):
         with open(google_sources_path, 'wb') as fp:
             fp.write(requests.get(google_sources).content)
         subprocess.check_output(f'sudo apt-key add {google_sources_path}'.split())
-        add_deb_packages(self.packages)
 
     def remove(self):
         remove_deb_packages(self.packages)
@@ -574,7 +573,7 @@ class C223NKeyword(AbstractKeyword):
     NOTE: NEEDS TO BE TESTED
     """
 
-    packages = ['mono-complete'
+    packages = ['mono-complete',
                 'netbeans']
 
     def __init__(self, build_config):
@@ -1288,7 +1287,7 @@ def status() -> str:
     GOAL: Driver code for all the components defined above
     """
     try:
-        git_email, git_username = list_git_configuration()
+        git_username, git_email = list_git_configuration()
     except Exception as e:
         git_email, git_username = "None", "None"
 

@@ -20,3 +20,21 @@ These seem to be good defaults but a reinstall might need to take place
 - [X] git, atom
 - [X] googletest
 - [ ] adding more keywords from older ansible scripts
+
+# Testing
+- Base [X]
+- Chrome [X]
+- 223J [X]
+- 223N [X]
+- 223P [  ]
+- 223W [  ]
+- 240 [X]
+- 439 [  ]
+- 474 [  ]
+- 481 [  ]
+- 484 [  ]
+- Media [X]
+- Latex [X]
+- VirtualBox [X]
+
+These should be double checked however
