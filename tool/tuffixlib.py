@@ -195,31 +195,72 @@ class AddCommand(AbstractCommand):
         if not (isinstance(arguments, list) and
                 all([isinstance(argument, str) for argument in arguments])):
                 raise ValueError
+        
+        if len(arguments) == 0:
+            raise UsageError("you must supply at least one keyword to install")
 
-        if len(arguments) != 1:
-            raise UsageError("you must specify exactly one keyword to add")
-
-        keyword = find_keyword(self.build_config, arguments[0])
+        collection = [find_keyword(self.build_config, arguments[x]) for x, _ in enumerate(arguments)]
 
         state = read_state(self.build_config)
-        
-        if keyword.name in state.installed:
-            raise UsageError('cannot add ' + keyword.name + ', it is already installed')
+        first_arg = arguments[0]
 
+        if(first_arg == "all"):
+            collection = [word for word in all_keywords(self.build_config) if word.name != first_arg]
+        
         ensure_root_access()
 
-        print(f'tuffix: adding {keyword.name}')
-        
-        keyword.add()
+        for element in collection:
+            if((element.name in state.installed)):
+                if(len(collection) == 1):
+                    raise UsageError(f'cannot add {element.name}, it is already installed')
+                else:
+                    print(f'tuffix: ignoring candidate {element.name}; already installed')
+                    continue
+            
+            print(f'tuffix: adding {element.name}')
+            element.add()            
 
-        new_installed = sorted(state.installed + [keyword.name])
-        new_state = State(self.build_config,
-                          self.build_config.version,
-                          new_installed)
-        new_state.write()
+            new_installed = sorted(state.installed + [element.name])
+            new_state = State(self.build_config,
+                              self.build_config.version,
+                              new_installed)
+            new_state.write()
+            print(f'tuffix: successfully installed {element.name}')
 
-        print('tuffix: successfully installed ' + keyword.name)
     
+class DescribeCommand(AbstractCommand):
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'describe', 'describe a given keyword')
+
+    def execute(self, arguments):
+        if not (isinstance(arguments, list) and
+                all([isinstance(argument, str) for argument in arguments])):
+                raise ValueError
+        if(len(arguments) != 1):
+            raise UsageError("Please supply at only one keyword to describe")
+        
+        keyword = find_keyword(self.build_config, arguments[0])
+        print(f'{keyword.name}: {keyword.description}')
+
+class RekeyCommand(AbstractCommand):
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'rekey', 'regenerate ssh and/or gpg key')
+
+    def execute(self, arguments):
+        if not (isinstance(arguments, list) and
+                all([isinstance(argument, str) for argument in arguments])):
+                raise ValueError
+        if(len(arguments) != 1):
+            raise UsageError("Please supply at only one keyword to regen")
+
+        regen_entity = arguments[0]
+        if(regen_entity == "ssh" or regen_entity == "gpg"):
+            print(f'{regen_entity}') 
+        else:
+            raise UsageError(f'[ERR] Invalid selection {regen_entity}. "ssh" and "gpg" are only valid selectors')
+
 class InitCommand(AbstractCommand):
     def __init__(self, build_config):
         super().__init__(build_config, 'init', 'initialize tuffix')
@@ -333,11 +374,13 @@ def all_commands(build_config):
         raise ValueError
     # alphabetical order
     return [ AddCommand(build_config),
+             DescribeCommand(build_config),
              InitCommand(build_config),
              InstalledCommand(build_config),
              ListCommand(build_config),
              StatusCommand(build_config),
-             RemoveCommand(build_config) ]
+             RemoveCommand(build_config),
+             RekeyCommand(build_config) ]
 
 ################################################################################
 # keywords
@@ -362,6 +405,18 @@ class AbstractKeyword:
 # Keyword names may begin with a course code (digits), but Python
 # identifiers may not. If a keyword name starts with a digit, prepend
 # the class name with C (for Course).
+
+class AllKeyword(AbstractKeyword):
+    packages = []
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'all', 'all keywords available (glob pattern)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
 
 class GeneralKeyword(AbstractKeyword):
 
@@ -592,6 +647,7 @@ class ChromeKeyword(AbstractKeyword):
 
     def remove(self):
         remove_deb_packages(self.packages)
+
 
 
 class C223JKeyword(AbstractKeyword):
@@ -890,7 +946,8 @@ def all_keywords(build_config):
     if not isinstance(build_config, BuildConfig):
         raise ValueError
     # alphabetical order, but put digits after letters
-    return [ BaseKeyword(build_config),
+    return [ AllKeyword(build_config),
+             BaseKeyword(build_config),
              ChromeKeyword(build_config),
              GeneralKeyword(build_config),
              LatexKeyword(build_config),
@@ -1346,13 +1403,8 @@ def currently_installed_targets() -> list:
     GOAL: list all installed codewords in a formatted list
     """
 
-    try:
-        with open(STATE_PATH, "r") as fp:
-            content = json.load(fp)["installed"]
-            return [f'{"- ": >4}{element}' for element in sorted(content)]
-    except FileNotFoundError:
-        raise EnvironmentError("Tuffix is not initalized, stop")
-  
+    return [f'{"- ": >4} {element}' for element in read_state(DEFAULT_BUILD_CONFIG).installed]
+
 
 def status() -> str:
     """
