@@ -1,7 +1,15 @@
 # TODO List
 
 - Split `tuffixlib.py` into multiple components
-  * Exceptions, State, etc
+  * Constants
+  * Exceptions
+  * Configuration 
+  * User facing commands
+  * Keywords 
+  * System probing functions (status API and others)
+  * Changing the system during keyword add/remove
+  * Miscellaneous utility functions
+  * Main (tuffix command that is installed)
 - Clean up repository for old/outdated scripts
 
 # Given TODO
