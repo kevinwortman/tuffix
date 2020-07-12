@@ -363,7 +363,38 @@ class AbstractKeyword:
 # identifiers may not. If a keyword name starts with a digit, prepend
 # the class name with C (for Course).
 
+class GeneralKeyword(AbstractKeyword):
+
+    """
+    Point person: undergraduate committee
+    SRC: sub-tuffix/min-tuffix.yml (Kitchen sink)
+    """
+
+    packages = ['a2ps',
+                'curl',
+                'dkms',
+                'emacs',
+                'gpg',
+                'graphviz',
+                'gthumb',
+                'openssh-client',
+                'openssh-server',
+                'vim']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'general', 'General configuration, not tied to any specific course')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
 class BaseKeyword(AbstractKeyword):
+
+    """
+    Point person: undergraduate committee
+    """
 
     packages = ['build-essential',
               'clang',
@@ -378,11 +409,14 @@ class BaseKeyword(AbstractKeyword):
               'libgconf-2-4',
               'libgtest-dev',
               'python2']
+
   
     def __init__(self, build_config):
         super().__init__(build_config,
                        'base',
                        'CPSC 120-121-131-301 C++ development environment')
+        gpackages = GeneralKeyword(build_config).packages
+        self.packages = list(set(gpackages + self.packages))
       
     def add(self):
         print("[INFO] Adding Microsoft repository...")
@@ -447,8 +481,8 @@ class BaseKeyword(AbstractKeyword):
         atom_conf_dir = pathlib.Path(f'/home/{normal_user}/.atom')
 
         print("[INFO] Downloading Atom Debian installer....")
-        # with open(atom_dest, 'wb') as fp:
-            # fp.write(requests.get(atom_url).content)
+        with open(atom_dest, 'wb') as fp:
+            fp.write(requests.get(atom_url).content)
         print("[INFO] Finished downloading...")
         print("[INFO] Installing atom....")
         apt.debfile.DebPackage(filename=atom_dest).install()
@@ -509,10 +543,12 @@ class BaseKeyword(AbstractKeyword):
         self.google_test_build()
         self.google_test_attempt()
 
+
 class ChromeKeyword(AbstractKeyword):
 
     """
-    Needs to be checked
+    Point person: anyone
+    SRC: sub-tuffix/chrome.yml
     """
 
     packages = ['google-chrome-stable']
@@ -542,14 +578,13 @@ class ChromeKeyword(AbstractKeyword):
         remove_deb_packages(self.packages)
 
 
-
-
 class C223JKeyword(AbstractKeyword):
 
     """
     NOTE: do you want to use a newer version of Java?
     Or are the IDE's dependent on a certain version?
-    Needs to be tested!
+    Point Person: Floyd Holliday
+    SRC: sub-tuffix/cpsc223j.yml
     """
 
     packages = ['geany',
@@ -559,7 +594,7 @@ class C223JKeyword(AbstractKeyword):
                 'openjdk-8-jre']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223J', 'CPSC 223J (Java Programming)')
+        super().__init__(build_config, 'C223J', 'CPSC 223J (Java Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -568,16 +603,15 @@ class C223JKeyword(AbstractKeyword):
         remove_deb_packages(self.packages)
 
 class C223NKeyword(AbstractKeyword):
-
     """
-    NOTE: NEEDS TO BE TESTED
+    Point person: Floyd Holliday
+    SRC: sub-tuffix/cpsc223n.yml
     """
-
     packages = ['mono-complete',
                 'netbeans']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223N', 'CPSC 223N (C# Programming)')
+        super().__init__(build_config, 'C223N', 'CPSC 223N (C# Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -587,20 +621,24 @@ class C223NKeyword(AbstractKeyword):
 
 class C223PKeyword(AbstractKeyword):
     """
-    NEEDS TO BE TESTED
+    python 2.7 and lower pip no longer exists
+    has been superseeded by python3-pip
+    also python-virtualenv no longer exists
+    Point person: Michael Shafae
+    SRC: sub-tuffix/cpsc223p.yml
     """
 
-    packages = ['python',
-                'python-dev',
-                'python-pip',
-                'python-virtualenv',
+    packages = ['python2',
+                'python2-dev',
+                # 'python-pip',
+                # 'python-virtualenv',
                 'python3',
                 'python3-dev',
                 'python3-pip',
                 'virtualenvwrapper']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223P', 'CPSC 223P (Python Programming)')
+        super().__init__(build_config, 'C223P', 'CPSC 223P (Python Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -609,9 +647,9 @@ class C223PKeyword(AbstractKeyword):
         remove_deb_packages(self.packages)
 
 class C223WKeyword(AbstractKeyword):
-
+    
     """
-    NEEDS TO BE TESTED
+    Point person: Paul Inventado
     """
 
     packages = ['binutils',
@@ -631,7 +669,7 @@ class C223WKeyword(AbstractKeyword):
                 'zlib1g-dev']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '223W', 'CPSC 223W (Swift Programming)')
+        super().__init__(build_config, 'C223W', 'CPSC 223W (Swift Programming)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -642,11 +680,15 @@ class C223WKeyword(AbstractKeyword):
 
 class C240Keyword(AbstractKeyword):
 
+    """
+    Point person: Floyd Holliday
+    """
+
     packages = ['intel2gas',
                 'nasm']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '240', 'CPSC 240 (Assembler)')
+        super().__init__(build_config, 'C240', 'CPSC 240 (Assembler)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -656,10 +698,14 @@ class C240Keyword(AbstractKeyword):
 
 class C439Keyword(AbstractKeyword):
 
+    """
+    Point person: <++>
+    """
+
     packages = ['minisat2']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '439', 'CPSC 439 (Theory of Computation)')
+        super().__init__(build_config, 'C439', 'CPSC 439 (Theory of Computation)')
 
     def add(self):
         add_deb_packages(self.packages)
@@ -669,6 +715,10 @@ class C439Keyword(AbstractKeyword):
 
 class C474Keyword(AbstractKeyword):
 
+    """
+    Point person: <++>
+    """
+
     packages = ['libopenmpi-dev',
                 'mpi-default-dev',
                 'mpich',
@@ -676,7 +726,7 @@ class C474Keyword(AbstractKeyword):
                 'openmpi-common']
     
     def __init__(self, build_config):
-        super().__init__(build_config, '474', 'CPSC 474 (Parallel and Distributed Computing)')
+        super().__init__(build_config, 'C474', 'CPSC 474 (Parallel and Distributed Computing)')
          
     def add(self):
         add_deb_packages(self.packages)
@@ -689,6 +739,7 @@ class C481Keyword(AbstractKeyword):
     """
     Java dependency is not installed by default
     Adding it so testing will work but needs to be addressed
+    Point person: Paul Inventado
     """
 
     packages = ['openjdk-8-jdk',
@@ -698,7 +749,7 @@ class C481Keyword(AbstractKeyword):
                 'swi-prolog-x']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '481', 'CPSC 481 (Artificial Intelligence)')
+        super().__init__(build_config, 'C481', 'CPSC 481 (Artificial Intelligence)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -731,6 +782,10 @@ class C481Keyword(AbstractKeyword):
 
 class C484Keyword(AbstractKeyword):
 
+    """
+    Point persons: Michael Shafae, Kevin Wortman
+    """
+
     packages = ['freeglut3-dev',
                 'libfreeimage-dev',
                 'libgl1-mesa-dev',
@@ -743,11 +798,11 @@ class C484Keyword(AbstractKeyword):
                 'mesa-utils',
                 'mesa-utils-extra',
                 'openctm-doc',
-                'openctm-tools',
-                'python-openctm']
+                'openctm-tools']
+                # 'python-openctm']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '484', 'CPSC 484 (Principles of Computer Graphics)')
+        super().__init__(build_config, 'C484', 'CPSC 484 (Principles of Computer Graphics)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -796,8 +851,8 @@ class VirtualBoxKeyword(AbstractKeyword):
                          'A powerful x86 and AMD64/Intel64 virtualization product')
          
     def add(self):
-        # if(subprocess.run("grep hypervisor /proc/cpuinfo".split(), stdout=subprocess.DEVNULL).returncode == 0):
-            # raise EnvironmentError("This is a virtual enviornment, not proceeding")
+        if(subprocess.run("grep hypervisor /proc/cpuinfo".split(), stdout=subprocess.DEVNULL).returncode == 0):
+            raise EnvironmentError("This is a virtual enviornment, not proceeding")
 
         sources_path = pathlib.Path("/etc/apt/sources.list")
         source_link = f'deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian {distrib_codename()} contrib'
@@ -821,6 +876,7 @@ def all_keywords(build_config):
     # alphabetical order, but put digits after letters
     return [ BaseKeyword(build_config),
              ChromeKeyword(build_config),
+             GeneralKeyword(build_config),
              LatexKeyword(build_config),
              MediaKeyword(build_config),
              VirtualBoxKeyword(build_config),
