@@ -11,7 +11,6 @@
 - [X] googletest
 - [X] adding more keywords from older ansible scripts
 - [ ] Full documentation, and possible migration from 1.0 docs as well
-- [ ] 
 
 # Testing
 

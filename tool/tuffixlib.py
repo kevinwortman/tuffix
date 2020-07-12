@@ -370,16 +370,29 @@ class GeneralKeyword(AbstractKeyword):
     SRC: sub-tuffix/min-tuffix.yml (Kitchen sink)
     """
 
-    packages = ['a2ps',
+    packages = ['autoconf',
+                'automake',
+                'a2ps',
+                'cscope',
                 'curl',
                 'dkms',
                 'emacs',
+                'enscript',
+                'glibc-doc',
                 'gpg',
                 'graphviz',
                 'gthumb',
+                'libreadline-dev',
+                'manpages-posix',
+                'manpages-posix-dev',
+                'meld',
+                'nfs-common',
                 'openssh-client',
                 'openssh-server',
-                'vim']
+                'seahorse',
+                'synaptic',
+                'vim',
+                'vim-gtk3']
 
     def __init__(self, build_config):
         super().__init__(build_config, 'general', 'General configuration, not tied to any specific course')
@@ -402,12 +415,15 @@ class BaseKeyword(AbstractKeyword):
               'clang-tidy',
               'cmake',
               'code',
+              'gdb',
+              'gcc',
               'git',
               'g++',
               'libc++-dev',
               'libc++abi-dev',
               'libgconf-2-4',
               'libgtest-dev',
+              'lldb',
               'python2']
 
   
