@@ -2,4 +2,4 @@
 
 | Column 1  | Column 2  | Column 3  |
 | --------- | --------- | --------- | 
-| Hello World | Hi      | What's up? |
+| <p style="color:red">Hello | Hi      | What's up? |
