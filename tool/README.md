@@ -39,5 +39,17 @@
 
 **These should be double checked however**
 
+# Changelog
+
 - Packages in parentheses did not get installed because APT could not find them
 - All elements in this list should be all supported keywords
+    * Unsure if I got all dependencies, there are three tuffixize - like ansible scripts in the repo, not sure which are needed and which are not
+- I have massively overhauled the add and remove keyword
+    * I added a MarkCommand to facilitate the actions of both adding and removing packages
+    * AddCommand and RemoveCommand are *significantly* more simple now
+    * There is now an `all` keyword and is just a simple glob expression. It simply signals to install all packages available and remove all packages installed (still testing removing)
+- The describe keyword has also been added and basically does the same as list but gives information about a single class
+- The rekey command now generates ssh and gpg keys. It does not know where to send them just yet but can with a couple of lines of code
+- BuildConfig now has a server_path so it can be used across all commands and keywords
+- I moved some documentation into their own directory called `docs`
+- `init` now only runs once, it has a check to see if the state file is present.
