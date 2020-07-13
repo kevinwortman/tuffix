@@ -174,6 +174,13 @@ class AbstractCommand:
         self.build_config = build_config
         self.name = name
         self.description = description
+    
+    def __repr__(self):
+        return f"""
+        Class: {self.__name__}
+        Name: {self.name}
+        Description: {self.description}
+        """
 
     # Execute the command.
     # arguments: list of commandline arguments after the command name.
@@ -187,46 +194,79 @@ class AbstractCommand:
     def execute(self, arguments):
         raise NotImplementedError
 
-class AddCommand(AbstractCommand):
-    def __init__(self, build_config):
-        super().__init__(build_config, 'add', 'add (install) one or more keywords')
+# not meant to be added to list of commands
+
+class MarkCommand(AbstractCommand):
+    def __init__(self, build_config, command):
+        super().__init__(build_config, 'mark', 'mark (install/remove) one or more keywords')
+        if not(isinstance(command, str)):
+            raise ValueError
+        # either select the add or remove from the Keywords
+        self.command = command
 
     def execute(self, arguments):
         if not (isinstance(arguments, list) and
                 all([isinstance(argument, str) for argument in arguments])):
                 raise ValueError
         
-        if len(arguments) == 0:
-            raise UsageError("you must supply at least one keyword to install")
+        if (len(arguments) == 0):
+            raise UsageError("you must supply at least one keyword to mark")
 
         collection = [find_keyword(self.build_config, arguments[x]) for x, _ in enumerate(arguments)]
 
         state = read_state(self.build_config)
         first_arg = arguments[0]
+        install = True if self.command == "add" else False
+
+        verb, past = ("installing", "installed") if install else ("removing", "removed")
 
         if(first_arg == "all"):
+            try:
+                input("are you sure you want to remove all packages? Press enter to continue or CTRL-D to exit: ")
+            except EOFError:
+                quit()
             collection = [word for word in all_keywords(self.build_config) if word.name != first_arg]
         
         ensure_root_access()
 
         for element in collection:
             if((element.name in state.installed)):
-                if(len(collection) == 1):
-                    raise UsageError(f'cannot add {element.name}, it is already installed')
-                else:
-                    print(f'tuffix: ignoring candidate {element.name}; already installed')
-                    continue
-            
-            print(f'tuffix: adding {element.name}')
-            element.add()            
+                if((len(collection) == 1) and (install)):
+                    raise UsageError(f'tuffix: cannot add {element.name}, it is already installed')
+            elif((element.name not in state.installed) and (not install)):
+                raise UsageError(f'cannot remove candidate {element.name}; not installed')
 
-            new_installed = sorted(state.installed + [element.name])
+            
+
+            try:
+                 # getattr(element, self.command)()
+                 getattr(element, "heelo")()
+            except AttributeError:
+                raise UsageError(f'{element} does not have the function {self.command}')
+
+            print(f'tuffix: {verb} {element.name}')
+
+            new_action = state.installed
+
+            if(not install):
+                new_action.remove(element.name)
+            else:
+                new_action.append(element.name)
+
             new_state = State(self.build_config,
                               self.build_config.version,
-                              new_installed)
+                              new_action)
             new_state.write()
-            print(f'tuffix: successfully installed {element.name}')
 
+            print(f'tuffix: successfully {past} {element.name}')
+
+class AddCommand(AbstractCommand):
+    def __init__(self, build_config):
+        super().__init__(build_config, 'add', 'add (install) one or more keywords')
+        self.mark = MarkCommand(build_config, self.name)
+
+    def execute(self, arguments):
+        self.mark.execute(arguments)
     
 class DescribeCommand(AbstractCommand):
 
@@ -272,6 +312,8 @@ class InitCommand(AbstractCommand):
 
         if len(arguments) != 0:
             raise UsageError("init command does not accept arguments")
+        if(STATE_PATH.exists()):
+            raise UsageError("init has already been done")
 
         create_state_directory(self.build_config)
 
@@ -335,35 +377,12 @@ class StatusCommand(AbstractCommand):
 
 class RemoveCommand(AbstractCommand):
     def __init__(self, build_config):
-        super().__init__(build_config, 'remove', 'remove (uninstall) keywords')
+        super().__init__(build_config, 'remove', 'remove (uninstall) one or more keywords')
+        self.mark = MarkCommand(build_config, self.name)
 
     def execute(self, arguments):
-        if not (isinstance(arguments, list) and
-                all([isinstance(argument, str) for argument in arguments])):
-                raise ValueError
+        self.mark.execute(arguments)
 
-        if len(arguments) != 1:
-            raise UsageError("you must supply exactly one keyword to remove")
-
-        keyword = find_keyword(self.build_config, arguments[0])
-
-        state = read_state(self.build_config)
-        
-        if keyword.name not in state.installed:
-            raise UsageError('cannot remove keyword "' + keyword.name + '", it is not installed')
-
-        ensure_root_access()
-        print(f'tuffix: removing {keyword.name}')
-        keyword.remove()
-
-        new_installed = list(state.installed)
-        new_installed.remove(keyword.name)
-        new_state = State(self.build_config,
-                          self.build_config.version,
-                          new_installed)
-        new_state.write()
-
-        print('tuffix: successfully removed ' + keyword.name)
 
 # TODO: all the other commands...
 
