@@ -99,6 +99,7 @@ class BuildConfig:
             raise ValueError
         self.version = version
         self.state_path = state_path
+        self.server_path = "https://127.0.0.1:5000"
 
 # Singleton BuildConfig object using the constants declared at the top of
 # this file.
@@ -301,7 +302,8 @@ class RekeyCommand(AbstractCommand):
         public_path = pathlib.Path(os.path.join(ssh_dir, 'public.pem'))
         with open(public_path, "wb") as fp:
             fp.write(public_key.exportKey('OpenSSH'))
-        subprocess.call()
+        print(f'sending keys to {self.build_config.server_path}')
+        # subprocess.call("ssh-key")
 
         """
         Give to the server from here
@@ -1266,7 +1268,7 @@ class sudo_execute():
             if(e.returncode != 129):
                 out = ""
             else:
-                raise Exception("Segmentation fault")
+                raise EnvironmentError("Segmentation fault")
         return out
 
 def cpu_information() -> str:
