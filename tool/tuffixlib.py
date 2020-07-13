@@ -292,7 +292,7 @@ class RekeyCommand(AbstractCommand):
 
     def ssh_gen(self):
 
-        ssh_dir = pathlib.Path(f'/home/{whoami}/.ssh')
+        ssh_dir = pathlib.Path(f'/home/{self.whoami}/.ssh')
         key = RSA.generate(4096)
         private_path = pathlib.Path(os.path.join(ssh_dir, 'private.pem'))
         with open(private_path, "wb") as fp:
@@ -312,11 +312,12 @@ class RekeyCommand(AbstractCommand):
 
     def gpg_gen(self):
 
-        gpg = gnupg.GPG(gnupghome=f'/home/{whoami}/.gnupg')
+        gpg = gnupg.GPG(gnupghome=f'/home/{self.whoami}/.gnupg')
         gpg.encoding = 'utf-8'
         gpg_file = pathlib.Path(os.path.join(gpg.gnupghome, 'tuffix_key.asc'))
 
         name, email, passphrase = input("Name: "), input("Email: "), getpass.getpass("Passphrase: ")
+        print("[INFO] Please wait a moment, this may take some time")
         input_data = gpg.gen_key_input(
             key_type = "RSA",
             key_length = 4096,
@@ -336,7 +337,7 @@ class RekeyCommand(AbstractCommand):
         with open(gpg_file, 'w') as fp:
             fp.write(public)
             fp.write(private)
-
+        print(f'sending the keys to {self.build_config.server_path}')
         # gpg.send_keys('someserver.internet.of.things.com', key.fingerprint)
 
     def execute(self, arguments):
