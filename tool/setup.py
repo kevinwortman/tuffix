@@ -10,6 +10,8 @@ setuptools.setup(
                       'python-apt', 
                       'requests', 
                       'termcolor', 
+                      'Crypto',
+                      'python-gnupg']
                       # 'sudo_execute @ git+https://github.com/JaredDyreson/sudo_execute']
 )
 
