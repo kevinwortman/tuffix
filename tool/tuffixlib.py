@@ -376,7 +376,7 @@ class DescribeCommand(AbstractCommand):
 class RekeyCommand(AbstractCommand):
 
     whoami = os.getlogin()
-    # name, email, passphrase = input("Name: "), input("Email: "), getpass.getpass("Passphrase: ")
+    name, email, passphrase = input("Name: "), input("Email: "), getpass.getpass("Passphrase: ")
 
     def __init__(self, build_config):
         super().__init__(build_config, 'rekey', 'regenerate ssh and/or gpg key')
