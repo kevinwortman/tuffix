@@ -4,3 +4,8 @@
 #echo "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian bionic contrib" | sudo tee -a /etc/apt/sources.list
 
 # add Tuffix PPA gpg key
+
+# update the system
+
+sudo apt-get update
+sudo apt-get upgrade -y
