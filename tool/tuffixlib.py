@@ -99,7 +99,7 @@ class BuildConfig:
             raise ValueError
         self.version = version
         self.state_path = state_path
-        self.server_path = "https://127.0.0.1:5000"
+        self.server_path = "root@144.202.127.25"
 
 # Singleton BuildConfig object using the constants declared at the top of
 # this file.
@@ -152,6 +152,88 @@ def read_state(build_config):
     except ValueError:
         raise EnvironmentError('state file JSON has malformed values')
 
+##################################
+# shell command wrapper in Python
+##################################
+
+class sudo_execute():
+    def __init__(self):
+        self.whoami = os.getlogin()
+
+    def chuser(self, user_id: int, user_gid: int):
+        """
+        GOAL: permanently change the user in the context of the running program
+        """
+
+        if not(isinstance(user_id, int) and
+                isinstance(user_gid)):
+                raise ValueError
+
+
+        os.setgid(user_gid)
+        os.setuid(user_id)
+
+    def check_user(self, user: str):
+        if not(isinstance(user, str)):
+            raise ValueError
+
+        try:
+            pwd.getpwnam(user)
+        except KeyError:
+            return False
+        return True
+
+    def run_permanent(self, command: str, current_user: str, desired_user: str):
+        """
+        GOAL: run command as another user but permanently changing to that user
+        Cannot be run twice in a row if script is originated with sudo
+        Only root can set UID and GID back to itself, ultimately making it redundant
+        Used primarliy for descalation of privilages, handing back to userspace
+        """
+
+        if not(isinstance(command, str) and
+               isinstance(current_user, str) and
+               isinstance(desired_user, str)):
+               raise ValueError
+
+        if(self.check_user(desired_user)):
+            du_records, cu_records = pwd.getpwnam(desired_user), pwd.getpwnam(current_user)
+        else:
+            raise UnknownUserException("Unknown user: {}".format(desired_user))
+
+        du_id, du_gid = du_records.pw_uid, du_records.pw_gid
+        cu_id, cu_gid = cu_records.pw_uid, cu_records.pw_gid
+        try:
+            stdout, stderr = subprocess.Popen(command.split(), 
+                                close_fds=True,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.STDOUT,
+                                preexec_fn=chuser(du_id, du_gid),
+                                encoding="utf-8").communicate()
+        except PermissionError:
+            raise PrivilageExecutionException("{} does not have permission to run the command {} as the user {}".format(
+                            current_user,
+                            command,
+                            desired_user
+            ))
+        return stdout
+
+    def run_soft(self, command: str, desired_user: str):
+        command = "sudo -H -u {} bash -c '{}'".format(desired_user, command)
+        try:
+            subprocess.call(command.split())
+            out = "None"
+            # out =  subprocess.check_output(command, 
+                                            # shell=True, 
+                                            # executable='/bin/bash',
+                                            # encoding="utf-8").split("\n")
+        except subprocess.CalledProcessError as e:
+            if(e.returncode != 129):
+                out = ""
+            else:
+                raise EnvironmentError("Segmentation fault")
+        return out
+
 ################################################################################
 # user-facing commands (init, add, etc.)
 ################################################################################
@@ -198,6 +280,12 @@ class AbstractCommand:
 # not meant to be added to list of commands
 
 class MarkCommand(AbstractCommand):
+    """
+    GOAL: combine both the add and remove keywords
+    This prevents us for not writing the same code twice.
+    They are essentially the same function but they just call a different method
+    """
+
     def __init__(self, build_config, command):
         super().__init__(build_config, 'mark', 'mark (install/remove) one or more keywords')
         if not(isinstance(command, str)):
@@ -223,10 +311,13 @@ class MarkCommand(AbstractCommand):
 
         if(first_arg == "all"):
             try:
-                input("are you sure you want to remove all packages? Press enter to continue or CTRL-D to exit: ")
+                input("are you sure you want to install/remove all packages? Press enter to continue or CTRL-D to exit: ")
             except EOFError:
                 quit()
-            collection = [word for word in all_keywords(self.build_config) if word.name != first_arg]
+            if(install):
+                collection = [word for word in all_keywords(self.build_config) if word.name != first_arg]
+            else:
+                collection = [find_keyword(self.build_config, element) for element in state.installed]
         
         ensure_root_access()
 
@@ -237,14 +328,13 @@ class MarkCommand(AbstractCommand):
             elif((element.name not in state.installed) and (not install)):
                 raise UsageError(f'cannot remove candidate {element.name}; not installed')
 
+            print(f'tuffix: {verb} {element.name}')
             
-
             try:
                  getattr(element, self.command)()
             except AttributeError:
                 raise UsageError(f'{element} does not have the function {self.command}')
 
-            print(f'tuffix: {verb} {element.name}')
 
             new_action = state.installed
 
@@ -286,29 +376,26 @@ class DescribeCommand(AbstractCommand):
 class RekeyCommand(AbstractCommand):
 
     whoami = os.getlogin()
+    # name, email, passphrase = input("Name: "), input("Email: "), getpass.getpass("Passphrase: ")
 
     def __init__(self, build_config):
         super().__init__(build_config, 'rekey', 'regenerate ssh and/or gpg key')
 
     def ssh_gen(self):
-
         ssh_dir = pathlib.Path(f'/home/{self.whoami}/.ssh')
         key = RSA.generate(4096)
-        private_path = pathlib.Path(os.path.join(ssh_dir, 'private.pem'))
+        private_path = pathlib.Path(os.path.join(ssh_dir, 'id_rsa'))
         with open(private_path, "wb") as fp:
             fp.write(key.exportKey('PEM'))
 
         public_key = key.publickey()
-        public_path = pathlib.Path(os.path.join(ssh_dir, 'public.pem'))
+        public_path = pathlib.Path(os.path.join(ssh_dir, 'id_rsa.pub'))
         with open(public_path, "wb") as fp:
             fp.write(public_key.exportKey('OpenSSH'))
+        os.chmod(public_path, 0o600)
+        os.chmod(private_path, 0o600)
         print(f'sending keys to {self.build_config.server_path}')
-        # subprocess.call("ssh-key")
-
-        """
-        Give to the server from here
-        SRC: https://stackoverflow.com/questions/49759326/how-to-send-public-key-from-server-to-client-via-socket-using-pickle
-        """
+        subprocess.call(f'ssh-copy-id -i {public_path} {self.build_config.server_path}'.split())
 
     def gpg_gen(self):
 
@@ -316,29 +403,30 @@ class RekeyCommand(AbstractCommand):
         gpg.encoding = 'utf-8'
         gpg_file = pathlib.Path(os.path.join(gpg.gnupghome, 'tuffix_key.asc'))
 
-        name, email, passphrase = input("Name: "), input("Email: "), getpass.getpass("Passphrase: ")
         print("[INFO] Please wait a moment, this may take some time")
         input_data = gpg.gen_key_input(
             key_type = "RSA",
             key_length = 4096,
-            name_real = name,
-            name_comment = f'Autogenerated by tuffix for {name}',
-            name_email = email,
-            passphrase = passphrase
+            name_real = self.name,
+            name_comment = f'Autogenerated by tuffix for {self.name}',
+            name_email = self.email,
+            passphrase = self.passphrase
         )
         key = gpg.gen_key(input_data)
         public = gpg.export_keys(key.fingerprint, False)
         private = gpg.export_keys(
             key.fingerprint,
             False,
-            passphrase = passphrase
+            passphrase = self.passphrase
         )
 
         with open(gpg_file, 'w') as fp:
             fp.write(public)
             fp.write(private)
         print(f'sending the keys to {self.build_config.server_path}')
-        # gpg.send_keys('someserver.internet.of.things.com', key.fingerprint)
+
+        # not sure how this entirely works.....
+        # gpg.send_keys(f'{self.build_config.server_path}', key.fingerprint)
 
     def execute(self, arguments):
         if not (isinstance(arguments, list) and
@@ -1209,68 +1297,6 @@ We probably should instantiate a global sudo_execute instead of re running it ev
 NOTE: update this section with https://github.com/JaredDyreson/sudo_execute/
 """
 
-class sudo_execute():
-    def __init__(self):
-        self.whoami = os.getlogin()
-
-    def chuser(self, user_id: int, user_gid: int):
-        """
-        GOAL: permanently change the user in the context of the running program
-        """
-
-        os.setgid(user_gid)
-        os.setuid(user_id)
-
-    def check_user(self, user: str):
-        try:
-            pwd.getpwnam(user)
-            return True
-        except KeyError:
-            return False
-
-    def run_permanent(self, command: str, current_user: str, desired_user: str):
-        """
-        GOAL: run command as another user but permanently changing to that user
-        Cannot be run twice in a row if script is originated with sudo
-        Only root can set UID and GID back to itself, ultimately making it redundant
-        Used primarliy for descalation of privilages, handing back to userspace
-        """
-
-        if(self.check_user(desired_user)):
-            du_records, cu_records = pwd.getpwnam(desired_user), pwd.getpwnam(current_user)
-        else:
-            raise UnknownUserException("Unknown user: {}".format(desired_user))
-
-        du_id, du_gid = du_records.pw_uid, du_records.pw_gid
-        cu_id, cu_gid = cu_records.pw_uid, cu_records.pw_gid
-        try:
-            stdout, stderr = subprocess.Popen(command.split(), 
-                                close_fds=True,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
-                                preexec_fn=chuser(du_id, du_gid),
-                                encoding="utf-8").communicate()
-        except PermissionError:
-            raise PrivilageExecutionException("{} does not have permission to run the command {} as the user {}".format(
-                            current_user,
-                            command,
-                            desired_user
-            ))
-        return stdout
-
-    def run_soft(self, command: str, desired_user: str):
-        command = "sudo -H -u {} bash -c '{}'".format(desired_user, command)
-        try:
-            out =  subprocess.check_output(command, 
-                                            shell=True, 
-                                            executable='/bin/bash',
-                                            encoding="utf-8").split("\n")
-        except subprocess.CalledProcessError as e:
-            if(e.returncode != 129):
-                out = ""
-            else:
-                raise EnvironmentError("Segmentation fault")
-        return out
 
 def cpu_information() -> str:
     """
