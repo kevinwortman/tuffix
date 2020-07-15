@@ -413,7 +413,7 @@ class RekeyCommand(AbstractCommand):
             self.gpg_gen()
 
         else:
-            raise UsageError(f'[ERR] Invalid selection {regen_entity}. "ssh" and "gpg" are the only valid selectors')
+            raise UsageError(f'[ERROR] Invalid selection {regen_entity}. "ssh" and "gpg" are the only valid selectors')
 
 class InitCommand(AbstractCommand):
     def __init__(self, build_config):
@@ -733,7 +733,7 @@ class BaseKeyword(AbstractKeyword):
         subprocess.check_output(['clang++', '-v', 'main.cpp', '-o', 'main'])
         ret_code = subprocess.run(['make', 'all']).returncode
         if(ret_code != 0):
-          print(colored("[ERR] Google Unit test failed!", "red"))
+          print(colored("[ERROR] Google Unit test failed!", "red"))
         else:
           print(colored("[SUCCESS] Google unit test succeeded!", "green"))
 
