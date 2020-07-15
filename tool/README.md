@@ -53,3 +53,6 @@
 - BuildConfig now has a server_path so it can be used across all commands and keywords
 - I moved some documentation into their own directory called `docs`
 - `init` now only runs once, it has a check to see if the state file is present.
+- `sudo_execute` has been renamed to `sudo_run`
+- Google Test unit test has been migrated [to another repository](https://github.com/JaredDyreson/tuffix-google-test) to remove the pedantic errors.
+- `ssh-add` was put into RekeyCommand's `ssh_gen` function 
