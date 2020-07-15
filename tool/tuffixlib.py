@@ -174,16 +174,23 @@ class sudo_run():
 
 
     def check_user(self, user: str):
+        """
+        Check the passwd file to see if a given user a valid user
+        """
+
         if not(isinstance(user, str)):
             raise ValueError
 
         passwd_path = pathlib.Path("/etc/passwd")
         contents = [line for line in passwd_path.open()]
-        users = [re.search('^(?P<name>.+?)\:', line).group("name") for line in contents]
+        return user in [re.search('^(?P<name>.+?)\:', line).group("name") for line in contents]
 
-        return user in users
-
-    def run(self, command: str, desired_user: str) -> tuple:
+    def run(self, command: str, desired_user: str) -> list:
+        """
+        Run a shell command as another user using sudo
+        Check if the desired user is a valid user.
+        If permission is denied, throw a descriptive error why
+        """
 
         if not(isinstance(command, str) and
                isinstance(desired_user, str)):
@@ -269,13 +276,18 @@ class MarkCommand(AbstractCommand):
         if (len(arguments) == 0):
             raise UsageError("you must supply at least one keyword to mark")
 
+        # ./tuffix add base media latex
         collection = [find_keyword(self.build_config, arguments[x]) for x, _ in enumerate(arguments)]
 
         state = read_state(self.build_config)
         first_arg = arguments[0]
         install = True if self.command == "add" else False
 
+        # for console messages
         verb, past = ("installing", "installed") if install else ("removing", "removed")
+        
+        # ./tuffix add all
+        # ./tuffix remove all
 
         if(first_arg == "all"):
             try:
@@ -301,7 +313,7 @@ class MarkCommand(AbstractCommand):
             try:
                  getattr(element, self.command)()
             except AttributeError:
-                raise UsageError(f'{element} does not have the function {self.command}')
+                raise UsageError(f'{element.__name__} does not have the function {self.command}')
 
 
             new_action = state.installed
