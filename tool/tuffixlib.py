@@ -69,7 +69,7 @@ class StatusWarning(MessageException):
     def __init__(self, message):
         super().__init__(message)
 
-# issue reported when sudo_execute class cannot find a given user
+# issue reported when sudo_run class cannot find a given user
 # use for internal API
 class UnknownUserException(MessageException):
     def __init__(self, message):
@@ -156,7 +156,7 @@ def read_state(build_config):
 # shell command wrapper in Python
 ##################################
 
-class sudo_execute():
+class sudo_run():
     def __init__(self):
         self.whoami = os.getlogin()
 
@@ -655,7 +655,7 @@ class BaseKeyword(AbstractKeyword):
         GOAL: Configure git
         """ 
 
-        keeper = sudo_execute()
+        keeper = sudo_run()
         whoami = keeper.whoami
 
         username = input("Git username: ")
@@ -680,7 +680,7 @@ class BaseKeyword(AbstractKeyword):
                         'dbg', 
                         'output-panel']
 
-        executor = sudo_execute()
+        executor = sudo_run()
         normal_user = executor.whoami
         atom_conf_dir = pathlib.Path(f'/home/{normal_user}/.atom')
 
@@ -1260,10 +1260,10 @@ def parse_distrib_codename(stream):
 """
 Used for managing code execution by one user on the behalf of another
 For example: root creating a file in Jared's home directory but Jared is still the sole owner of the file
-We probably should instantiate a global sudo_execute instead of re running it everytime in each function it's used in
+We probably should instantiate a global sudo_run instead of re running it everytime in each function it's used in
 ^ This is going to be put inside the SiteConfig and BuildConfig later so it can be referenced for unit testing
 
-NOTE: update this section with https://github.com/JaredDyreson/sudo_execute/
+NOTE: update this section with https://github.com/JaredDyreson/sudo_run/
 """
 
 
@@ -1400,7 +1400,7 @@ def list_git_configuration() -> tuple:
     """
     Retrieve Git configuration information about the current user
     """
-    keeper = sudo_execute()
+    keeper = sudo_run()
 
     username_regex = re.compile("user.name\=(?P<user>.*$)")
     email_regex = re.compile("user.email\=(?P<email>.*$)")
