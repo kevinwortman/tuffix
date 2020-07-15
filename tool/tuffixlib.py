@@ -166,93 +166,41 @@ class sudo_execute():
         """
 
         if not(isinstance(user_id, int) and
-                isinstance(user_gid)):
+                isinstance(user_gid, int)):
                 raise ValueError
 
-        def non_perm(perm: bool):
-            os.setgid(user_gid)
-            os.setuid(user_id)
-            if(perm):
-                return
-
-        return non_perm
+        os.setgid(user_gid)
+        os.setuid(user_id)
 
 
     def check_user(self, user: str):
         if not(isinstance(user, str)):
             raise ValueError
 
-        try:
-            pwd.getpwnam(user)
-        except KeyError:
-            return False
-        return True
+        passwd_path = pathlib.Path("/etc/passwd")
+        contents = [line for line in passwd_path.open()]
+        users = [re.search('^(?P<name>.+?)\:', line).group("name") for line in contents]
 
-    def run_permanent(self, command: str, current_user: str, 
-                            desired_user: str, capture_stdout: bool) -> tuple:
-        """
-        GOAL: run command as another user but permanently changing to that user
-        Cannot be run twice in a row if script is originated with sudo
-        Only root can set UID and GID back to itself, ultimately making it redundant
-        Used primarliy for descalation of privilages, handing back to userspace
-        """
+        return user in users
+
+    def run(self, command: str, desired_user: str) -> tuple:
 
         if not(isinstance(command, str) and
-               isinstance(current_user, str) and
-               isinstance(desired_user, str) and
-               isinstance(capture_stdout, bool)):
+               isinstance(desired_user, str)):
                raise ValueError
         
         if not(self.check_user(desired_user)):
             raise UnknownUserException(f'Unknown user: {desired_user}')
 
-        du_records = pwd.getpwnam(desired_user)
-        du_id, du_gid = du_records.pw_uid, du_records.pw_gid
-
-        self.chuser(du_id, du_gid)
-
-        if not(capture_stdout):
-            subprocess.call(command.split())
-            return (None, None)
+        command = f'sudo -H -u {desired_user} bash -c \'{command}\''
 
         try:
-            stdout, stderr = subprocess.Popen(command.split(), 
-                                close_fds=True,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
-                                # preexec_fn=chuser(du_id, du_gid),
-                                encoding="utf-8").communicate()
-            return (stdout.split(), stderr.split())
+            return [line for line in subprocess.check_output(command, 
+                                   shell=True,
+                                   encoding="utf-8").split('\n') if line]
 
         except PermissionError:
-            raise PrivilageExecutionException(f'{current_user} does not have permission to run the command {command} as the user {desired_user}')
-
-        return stdout
-
-    def run_soft(self, command: str, desired_user: str, capture_stdout: bool):
-        if not(isinstance(command, str) and
-               isinstance(desired_user, str) and
-               isinstance(capture_stdout, bool)):
-               raise ValueError
-
-        command = f'sudo -H -u {desired_user} bash -c \'{command}\''
-        print(command)
-        command = command.split()
-        if not(capture_stdout):
-           subprocess.call(command)
-           return None
-    
-        stdout, stderr = subprocess.Popen(command.split(), 
-                            close_fds=True,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            # preexec_fn=chuser(du_id, du_gid),
-                            encoding="utf-8").communicate()
-        return (stdout.split(), stderr.split())
-        # return subprocess.check_output(command, 
-                                        # shell=True, 
-                                        # executable='/bin/bash',
-                                        # encoding="utf-8").split("\n")
+            raise PrivilageExecutionException(f'{os.getlogin()} does not have permission to run the command {command} as the user {desired_user}')
 
 ################################################################################
 # user-facing commands (init, add, etc.)
@@ -444,6 +392,7 @@ class RekeyCommand(AbstractCommand):
             fp.write(public)
             fp.write(private)
         print(f'sending the keys to {self.build_config.server_path}')
+        os.system("ssh-add")
 
         # not sure how this entirely works.....
         # gpg.send_keys(f'{self.build_config.server_path}', key.fingerprint)
@@ -717,7 +666,7 @@ class BaseKeyword(AbstractKeyword):
             f'git config --file {git_conf_file} user.email {mail}'
         ]
         for command in commands:
-            keeper.run_soft(command, whoami, False)
+            keeper.run(command, whoami)
         print(colored("Successfully configured git", 'green'))
 
     def atom(self):
@@ -743,8 +692,8 @@ class BaseKeyword(AbstractKeyword):
         apt.debfile.DebPackage(filename=atom_dest).install()
         for plugin in atom_plugins:
             print(f'[INFO] Installing {plugin}...')
-            executor.run_soft(f'/usr/bin/apm install {plugin}', normal_user, False)
-            executor.run_soft(f'chown {normal_user} -R {atom_conf_dir}', normal_user, False)
+            executor.run(f'/usr/bin/apm install {plugin}', normal_user)
+            executor.run(f'chown {normal_user} -R {atom_conf_dir}', normal_user)
         print("[INFO] Finished installing Atom")
 
     def google_test_build(self):
@@ -1455,8 +1404,7 @@ def list_git_configuration() -> tuple:
 
     username_regex = re.compile("user.name\=(?P<user>.*$)")
     email_regex = re.compile("user.email\=(?P<email>.*$)")
-
-    out, _ = keeper.run_soft(command="git --no-pager config --list", desired_user=keeper.whoami, capture_stdout=False)
+    out = keeper.run(command="git --no-pager config --list", desired_user=keeper.whoami)
     u, e = None, None
     for line in out:
         u_match = username_regex.match(line)
@@ -1508,8 +1456,9 @@ def status() -> str:
     try:
         git_username, git_email = list_git_configuration()
     except Exception as e:
+        print(e)
         git_email, git_username = "None", "None"
-
+    list_git_configuration()
     primary, secondary = graphics_information()
     installed_targets = currently_installed_targets()
 
