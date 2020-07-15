@@ -722,7 +722,7 @@ class BaseKeyword(AbstractKeyword):
         Goal: small test to check if Google Test works after install
         """ 
 
-        TEST_URL = "https://github.com/ilxl-ppr/restaurant-bill.git"
+        TEST_URL = "https://github.com/JaredDyreson/tuffix-google-test.git"
         TEST_DEST = "test"
 
         os.chdir("/tmp")
@@ -730,8 +730,6 @@ class BaseKeyword(AbstractKeyword):
             shutil.rmtree(TEST_DEST)
         subprocess.run(['git', 'clone', TEST_URL, TEST_DEST])
         os.chdir(TEST_DEST)
-        shutil.copyfile("solution/main.cpp", "problem/main.cpp")
-        os.chdir("problem")
         subprocess.check_output(['clang++', '-v', 'main.cpp', '-o', 'main'])
         ret_code = subprocess.run(['make', 'all']).returncode
         if(ret_code != 0):
