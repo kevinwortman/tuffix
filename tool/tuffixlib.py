@@ -303,7 +303,7 @@ class MarkCommand(AbstractCommand):
 
         for element in collection:
             if((element.name in state.installed)):
-                if((len(collection) == 1) and (install)):
+                if(install):
                     raise UsageError(f'tuffix: cannot add {element.name}, it is already installed')
             elif((element.name not in state.installed) and (not install)):
                 raise UsageError(f'cannot remove candidate {element.name}; not installed')
@@ -327,6 +327,8 @@ class MarkCommand(AbstractCommand):
                               self.build_config.version,
                               new_action)
             new_state.write()
+
+            os.system("apt autoremove")
 
             print(f'tuffix: successfully {past} {element.name}')
 
