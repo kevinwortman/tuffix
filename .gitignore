@@ -1,3 +1,4 @@
 .vagrant/
 *.box
 __pycache__
+evnironment
