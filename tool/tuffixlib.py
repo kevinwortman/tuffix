@@ -642,6 +642,7 @@ class BaseKeyword(AbstractKeyword):
         self.add_vscode_repository()
         add_deb_packages(self.packages)
         self.atom()
+        self.google_test_attempt()
         self.configure_git()
       
     def remove(self):
