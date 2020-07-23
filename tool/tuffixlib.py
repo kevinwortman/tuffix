@@ -638,7 +638,6 @@ class BaseKeyword(AbstractKeyword):
         self.packages = list(set(gpackages + self.packages))
       
     def add(self):
-        print("[INFO] Adding Microsoft repository...")
         self.add_vscode_repository()
         add_deb_packages(self.packages)
         self.atom()
@@ -649,14 +648,18 @@ class BaseKeyword(AbstractKeyword):
         remove_deb_packages(self.packages)
 
     def add_vscode_repository(self):
+        print("[INFO] Adding Microsoft repository...")
         sudo_install_command = "sudo install -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/trusted.gpg.d/"
+        
+        url = "https://packages.microsoft.com/keys/microsoft.asc"
 
-        curl_request = subprocess.Popen(("curl", "https://packages.microsoft.com/keys/microsoft.asc"),
-                                        stdout=subprocess.PIPE)
-        gpg_command = subprocess.check_output(('gpg', '--dearmor'), stdin=curl_request.stdout)
-        microsoft_gpg = pathlib.Path("/tmp/packages.microsoft.gpg")
-        with open(microsoft_gpg, "wb") as fp:
-            fp.write(gpg_command)
+        asc_path = pathlib.Path("/tmp/m.asc")
+        gpg_path = pathlib.Path("/tmp/packages.microsoft.gpg")
+
+        with open(asc_path, "w") as f:
+            f.write(requests.get(url).content.decode("utf-8"))
+
+        subprocess.check_output(('gpg', '--output', f'{gpg_path}', '--dearmor', f'{asc_path}'))
         subprocess.run(sudo_install_command.split())
 
         vscode_source = pathlib.Path("/etc/apt/sources.list.d/vscode.list")
