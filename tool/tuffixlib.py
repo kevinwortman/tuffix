@@ -625,6 +625,7 @@ class BaseKeyword(AbstractKeyword):
               'libc++abi-dev',
               'libgconf-2-4',
               'libgtest-dev',
+              'libgmock-dev',
               'lldb',
               'python2']
 
@@ -641,7 +642,6 @@ class BaseKeyword(AbstractKeyword):
         self.add_vscode_repository()
         add_deb_packages(self.packages)
         self.atom()
-        self.google_test_all()
         self.configure_git()
       
     def remove(self):
