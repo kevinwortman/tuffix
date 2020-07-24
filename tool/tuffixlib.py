@@ -634,8 +634,6 @@ class BaseKeyword(AbstractKeyword):
         super().__init__(build_config,
                        'base',
                        'CPSC 120-121-131-301 C++ development environment')
-        gpackages = GeneralKeyword(build_config).packages
-        self.packages = list(set(gpackages + self.packages))
       
     def add(self):
         self.add_vscode_repository()
@@ -1097,19 +1095,19 @@ def all_keywords(build_config):
     # alphabetical order, but put digits after letters
     return [ AllKeyword(build_config),
              BaseKeyword(build_config),
-             ChromeKeyword(build_config),
+             # ChromeKeyword(build_config),
              GeneralKeyword(build_config),
              LatexKeyword(build_config),
-             MediaKeyword(build_config),
-             VirtualBoxKeyword(build_config),
-             C223JKeyword(build_config),
-             C223NKeyword(build_config),
-             C223PKeyword(build_config),
-             C223WKeyword(build_config),
-             C240Keyword(build_config),
+             # MediaKeyword(build_config),
+             # VirtualBoxKeyword(build_config),
+             # C223JKeyword(build_config),
+             # C223NKeyword(build_config),
+             # C223PKeyword(build_config),
+             # C223WKeyword(build_config),
+             # C240Keyword(build_config),
              C439Keyword(build_config),
              C474Keyword(build_config),
-             C481Keyword(build_config), 
+             # C481Keyword(build_config), 
              C484Keyword(build_config)
              ]
 
