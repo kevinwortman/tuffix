@@ -1196,9 +1196,8 @@ def add_deb_packages(package_names):
     cache = apt.cache.Cache()
     cache.update()
     cache.open()
-    pkg_list =  ' '.join(package_names)
-    print(f'installing: {pkg_list}')
     for name in package_names:
+        print(f'adding {name}')
         try:
             cache[name].mark_install()
         except KeyError:
