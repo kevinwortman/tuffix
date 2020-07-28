@@ -9,7 +9,6 @@ from datetime import datetime
 import io
 import json
 import os
-import os
 import pathlib
 import re
 import shutil
@@ -24,6 +23,9 @@ import apt.debfile
 import packaging.version
 from termcolor import colored
 import requests
+from Crypto.PublicKey import RSA
+import gnupg
+import getpass
 
 ################################################################################
 # constants
@@ -67,7 +69,7 @@ class StatusWarning(MessageException):
     def __init__(self, message):
         super().__init__(message)
 
-# issue reported when sudo_execute class cannot find a given user
+# issue reported when sudo_run class cannot find a given user
 # use for internal API
 class UnknownUserException(MessageException):
     def __init__(self, message):
@@ -97,6 +99,7 @@ class BuildConfig:
             raise ValueError
         self.version = version
         self.state_path = state_path
+        self.server_path = "root@144.202.127.25"
 
 # Singleton BuildConfig object using the constants declared at the top of
 # this file.
@@ -149,6 +152,63 @@ def read_state(build_config):
     except ValueError:
         raise EnvironmentError('state file JSON has malformed values')
 
+##################################
+# shell command wrapper in Python
+##################################
+
+class sudo_run():
+    def __init__(self):
+        self.whoami = os.getlogin()
+
+    def chuser(self, user_id: int, user_gid: int, permanent: bool):
+        """
+        GOAL: permanently change the user in the context of the running program
+        """
+
+        if not(isinstance(user_id, int) and
+                isinstance(user_gid, int)):
+                raise ValueError
+
+        os.setgid(user_gid)
+        os.setuid(user_id)
+
+
+    def check_user(self, user: str):
+        """
+        Check the passwd file to see if a given user a valid user
+        """
+
+        if not(isinstance(user, str)):
+            raise ValueError
+
+        passwd_path = pathlib.Path("/etc/passwd")
+        contents = [line for line in passwd_path.open()]
+        return user in [re.search('^(?P<name>.+?)\:', line).group("name") for line in contents]
+
+    def run(self, command: str, desired_user: str) -> list:
+        """
+        Run a shell command as another user using sudo
+        Check if the desired user is a valid user.
+        If permission is denied, throw a descriptive error why
+        """
+
+        if not(isinstance(command, str) and
+               isinstance(desired_user, str)):
+               raise ValueError
+        
+        if not(self.check_user(desired_user)):
+            raise UnknownUserException(f'Unknown user: {desired_user}')
+
+        command = f'sudo -H -u {desired_user} bash -c \'{command}\''
+
+        try:
+            return [line for line in subprocess.check_output(command, 
+                                   shell=True,
+                                   encoding="utf-8").split('\n') if line]
+
+        except PermissionError:
+            raise PrivilageExecutionException(f'{os.getlogin()} does not have permission to run the command {command} as the user {desired_user}')
+
 ################################################################################
 # user-facing commands (init, add, etc.)
 ################################################################################
@@ -172,6 +232,13 @@ class AbstractCommand:
         self.build_config = build_config
         self.name = name
         self.description = description
+    
+    def __repr__(self):
+        return f"""
+        Class: {self.__name__}
+        Name: {self.name}
+        Description: {self.description}
+        """
 
     # Execute the command.
     # arguments: list of commandline arguments after the command name.
@@ -185,37 +252,183 @@ class AbstractCommand:
     def execute(self, arguments):
         raise NotImplementedError
 
-class AddCommand(AbstractCommand):
-    def __init__(self, build_config):
-        super().__init__(build_config, 'add', 'add (install) one or more keywords')
+# not meant to be added to list of commands
+
+class MarkCommand(AbstractCommand):
+    """
+    GOAL: combine both the add and remove keywords
+    This prevents us for not writing the same code twice.
+    They are essentially the same function but they just call a different method
+    """
+
+    def __init__(self, build_config, command):
+        super().__init__(build_config, 'mark', 'mark (install/remove) one or more keywords')
+        if not(isinstance(command, str)):
+            raise ValueError
+        # either select the add or remove from the Keywords
+        self.command = command
 
     def execute(self, arguments):
         if not (isinstance(arguments, list) and
                 all([isinstance(argument, str) for argument in arguments])):
                 raise ValueError
+        
+        if (len(arguments) == 0):
+            raise UsageError("you must supply at least one keyword to mark")
 
-        if len(arguments) != 1:
-            raise UsageError("you must specify exactly one keyword to add")
-
-        keyword = find_keyword(self.build_config, arguments[0])
+        # ./tuffix add base media latex
+        collection = [find_keyword(self.build_config, arguments[x]) for x, _ in enumerate(arguments)]
 
         state = read_state(self.build_config)
-        
-        if keyword.name in state.installed:
-            raise UsageError('cannot add ' + keyword.name + ', it is already installed')
+        first_arg = arguments[0]
+        install = True if self.command == "add" else False
 
+        # for console messages
+        verb, past = ("installing", "installed") if install else ("removing", "removed")
+        
+        # ./tuffix add all
+        # ./tuffix remove all
+
+        if(first_arg == "all"):
+            try:
+                input("are you sure you want to install/remove all packages? Press enter to continue or CTRL-D to exit: ")
+            except EOFError:
+                quit()
+            if(install):
+                collection = [word for word in all_keywords(self.build_config) if word.name != first_arg]
+            else:
+                collection = [find_keyword(self.build_config, element) for element in state.installed]
+        
         ensure_root_access()
-        
-        keyword.add()
 
-        new_installed = sorted(state.installed + [keyword.name])
-        new_state = State(self.build_config,
-                          self.build_config.version,
-                          new_installed)
-        new_state.write()
+        for element in collection:
+            if((element.name in state.installed)):
+                if(install):
+                    raise UsageError(f'tuffix: cannot add {element.name}, it is already installed')
+            elif((element.name not in state.installed) and (not install)):
+                raise UsageError(f'cannot remove candidate {element.name}; not installed')
 
-        print('tuffix: successfully installed ' + keyword.name)
+            print(f'tuffix: {verb} {element.name}')
+            
+            try:
+                 getattr(element, self.command)()
+            except AttributeError:
+                raise UsageError(f'{element.__name__} does not have the function {self.command}')
+
+
+            new_action = state.installed
+
+            if(not install):
+                new_action.remove(element.name)
+            else:
+                new_action.append(element.name)
+
+            new_state = State(self.build_config,
+                              self.build_config.version,
+                              new_action)
+            new_state.write()
+
+            os.system("apt autoremove")
+
+            print(f'tuffix: successfully {past} {element.name}')
+
+class AddCommand(AbstractCommand):
+    def __init__(self, build_config):
+        super().__init__(build_config, 'add', 'add (install) one or more keywords')
+        self.mark = MarkCommand(build_config, self.name)
+
+    def execute(self, arguments):
+        self.mark.execute(arguments)
     
+class DescribeCommand(AbstractCommand):
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'describe', 'describe a given keyword')
+
+    def execute(self, arguments):
+        if not (isinstance(arguments, list) and
+                all([isinstance(argument, str) for argument in arguments])):
+                raise ValueError
+        if(len(arguments) != 1):
+            raise UsageError("Please supply at only one keyword to describe")
+        
+        keyword = find_keyword(self.build_config, arguments[0])
+        print(f'{keyword.name}: {keyword.description}')
+
+class RekeyCommand(AbstractCommand):
+
+    whoami = os.getlogin()
+    # name, email, passphrase = input("Name: "), input("Email: "), getpass.getpass("Passphrase: ")
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'rekey', 'regenerate ssh and/or gpg key')
+
+    def ssh_gen(self):
+        ssh_dir = pathlib.Path(f'/home/{self.whoami}/.ssh')
+        key = RSA.generate(4096)
+        private_path = pathlib.Path(os.path.join(ssh_dir, 'id_rsa'))
+        with open(private_path, "wb") as fp:
+            fp.write(key.exportKey('PEM'))
+
+        public_key = key.publickey()
+        public_path = pathlib.Path(os.path.join(ssh_dir, 'id_rsa.pub'))
+        with open(public_path, "wb") as fp:
+            fp.write(public_key.exportKey('OpenSSH'))
+        os.chmod(public_path, 0o600)
+        os.chmod(private_path, 0o600)
+        print(f'sending keys to {self.build_config.server_path}')
+        subprocess.call(f'ssh-copy-id -i {public_path} {self.build_config.server_path}'.split())
+
+    def gpg_gen(self):
+
+        gpg = gnupg.GPG(gnupghome=f'/home/{self.whoami}/.gnupg')
+        gpg.encoding = 'utf-8'
+        gpg_file = pathlib.Path(os.path.join(gpg.gnupghome, 'tuffix_key.asc'))
+
+        print("[INFO] Please wait a moment, this may take some time")
+        input_data = gpg.gen_key_input(
+            key_type = "RSA",
+            key_length = 4096,
+            name_real = self.name,
+            name_comment = f'Autogenerated by tuffix for {self.name}',
+            name_email = self.email,
+            passphrase = self.passphrase
+        )
+        key = gpg.gen_key(input_data)
+        public = gpg.export_keys(key.fingerprint, False)
+        private = gpg.export_keys(
+            key.fingerprint,
+            False,
+            passphrase = self.passphrase
+        )
+
+        with open(gpg_file, 'w') as fp:
+            fp.write(public)
+            fp.write(private)
+        print(f'sending the keys to {self.build_config.server_path}')
+        os.system("ssh-add")
+
+        # not sure how this entirely works.....
+        # gpg.send_keys(f'{self.build_config.server_path}', key.fingerprint)
+
+    def execute(self, arguments):
+        if not (isinstance(arguments, list) and
+                all([isinstance(argument, str) for argument in arguments])):
+                raise ValueError
+        if(len(arguments) != 1):
+            raise UsageError("Please supply at only one keyword to regen")
+
+        regen_entity = arguments[0]
+
+        if((regen_entity == "ssh")):
+            self.ssh_gen()
+
+        elif((regen_entity == "gpg")):
+            self.gpg_gen()
+
+        else:
+            raise UsageError(f'[ERROR] Invalid selection {regen_entity}. "ssh" and "gpg" are the only valid selectors')
+
 class InitCommand(AbstractCommand):
     def __init__(self, build_config):
         super().__init__(build_config, 'init', 'initialize tuffix')
@@ -227,6 +440,8 @@ class InitCommand(AbstractCommand):
 
         if len(arguments) != 0:
             raise UsageError("init command does not accept arguments")
+        if(STATE_PATH.exists()):
+            raise UsageError("init has already been done")
 
         create_state_directory(self.build_config)
 
@@ -290,35 +505,12 @@ class StatusCommand(AbstractCommand):
 
 class RemoveCommand(AbstractCommand):
     def __init__(self, build_config):
-        super().__init__(build_config, 'remove', 'remove (uninstall) keywords')
+        super().__init__(build_config, 'remove', 'remove (uninstall) one or more keywords')
+        self.mark = MarkCommand(build_config, self.name)
 
     def execute(self, arguments):
-        if not (isinstance(arguments, list) and
-                all([isinstance(argument, str) for argument in arguments])):
-                raise ValueError
+        self.mark.execute(arguments)
 
-        if len(arguments) != 1:
-            raise UsageError("you must supply exactly one keyword to remove")
-
-        keyword = find_keyword(self.build_config, arguments[0])
-
-        state = read_state(self.build_config)
-        
-        if keyword.name not in state.installed:
-            raise UsageError('cannot remove keyword "' + keyword.name + '", it is not installed')
-
-        ensure_root_access()
-        print("tuffix: removing " + keyword.name) 
-        keyword.remove()
-
-        new_installed = list(state.installed)
-        new_installed.remove(keyword.name)
-        new_state = State(self.build_config,
-                          self.build_config.version,
-                          new_installed)
-        new_state.write()
-
-        print('tuffix: successfully removed ' + keyword.name)
 
 # TODO: all the other commands...
 
@@ -329,11 +521,13 @@ def all_commands(build_config):
         raise ValueError
     # alphabetical order
     return [ AddCommand(build_config),
+             DescribeCommand(build_config),
              InitCommand(build_config),
              InstalledCommand(build_config),
              ListCommand(build_config),
              StatusCommand(build_config),
-             RemoveCommand(build_config) ]
+             RemoveCommand(build_config),
+             RekeyCommand(build_config) ]
 
 ################################################################################
 # keywords
@@ -359,20 +553,82 @@ class AbstractKeyword:
 # identifiers may not. If a keyword name starts with a digit, prepend
 # the class name with C (for Course).
 
+class AllKeyword(AbstractKeyword):
+    packages = []
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'all', 'all keywords available (glob pattern)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class GeneralKeyword(AbstractKeyword):
+
+    """
+    Point person: undergraduate committee
+    SRC: sub-tuffix/min-tuffix.yml (Kitchen sink)
+    """
+
+    packages = ['autoconf',
+                'automake',
+                'a2ps',
+                'cscope',
+                'curl',
+                'dkms',
+                'emacs',
+                'enscript',
+                'glibc-doc',
+                'gpg',
+                'graphviz',
+                'gthumb',
+                'libreadline-dev',
+                'manpages-posix',
+                'manpages-posix-dev',
+                'meld',
+                'nfs-common',
+                'openssh-client',
+                'openssh-server',
+                'seahorse',
+                'synaptic',
+                'vim',
+                'vim-gtk3']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'general', 'General configuration, not tied to any specific course')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
 class BaseKeyword(AbstractKeyword):
+
+    """
+    Point person: undergraduate committee
+    """
 
     packages = ['build-essential',
               'clang',
               'clang-format',
               'clang-tidy',
               'cmake',
+              'code',
+              'gdb',
+              'gcc',
               'git',
               'g++',
               'libc++-dev',
               'libc++abi-dev',
               'libgconf-2-4',
               'libgtest-dev',
+              'libgmock-dev',
+              'lldb',
               'python2']
+
   
     def __init__(self, build_config):
         super().__init__(build_config,
@@ -380,30 +636,53 @@ class BaseKeyword(AbstractKeyword):
                        'CPSC 120-121-131-301 C++ development environment')
       
     def add(self):
-        print("[INFO] Adding all packages to APT queue...")
+        self.add_vscode_repository()
         add_deb_packages(self.packages)
         self.atom()
-        self.google_test_all()
+        self.google_test_attempt()
         self.configure_git()
       
     def remove(self):
         remove_deb_packages(self.packages)
+
+    def add_vscode_repository(self):
+        print("[INFO] Adding Microsoft repository...")
+        sudo_install_command = "sudo install -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/trusted.gpg.d/"
+        
+        url = "https://packages.microsoft.com/keys/microsoft.asc"
+
+        asc_path = pathlib.Path("/tmp/m.asc")
+        gpg_path = pathlib.Path("/tmp/packages.microsoft.gpg")
+
+        with open(asc_path, "w") as f:
+            f.write(requests.get(url).content.decode("utf-8"))
+
+        subprocess.check_output(('gpg', '--output', f'{gpg_path}', '--dearmor', f'{asc_path}'))
+        subprocess.run(sudo_install_command.split())
+
+        vscode_source = pathlib.Path("/etc/apt/sources.list.d/vscode.list")
+        vscode_ppa = "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main"
+        with open(vscode_source, "a") as fp:
+            fp.write(vscode_ppa)
+
 
     def configure_git(self):
         """
         GOAL: Configure git
         """ 
 
-        keeper = sudo_execute()
-        whoami = keeper.set_user()
+        keeper = sudo_run()
+        whoami = keeper.whoami
 
         username = input("Git username: ")
         mail = input("Git email: ")
-        git_conf_file = "/home/{}/.gitconfig".format(whoami)
-        commands = ["git config --file {} user.name {}".format(git_conf_file, username), 
-                    "git config --file {} user.email {}".format(git_conf_file, mail)]
+        git_conf_file = pathlib.Path(f'/home/{whoami}/.gitconfig')
+        commands = [
+            f'git config --file {git_conf_file} user.name {username}',
+            f'git config --file {git_conf_file} user.email {mail}'
+        ]
         for command in commands:
-            keeper.run_soft(command, whoami)
+            keeper.run(command, whoami)
         print(colored("Successfully configured git", 'green'))
 
     def atom(self):
@@ -417,9 +696,9 @@ class BaseKeyword(AbstractKeyword):
                         'dbg', 
                         'output-panel']
 
-        executor = sudo_execute()
-        normal_user = executor.set_user()
-        atom_conf_dir = os.path.join("/home", normal_user, ".atom")
+        executor = sudo_run()
+        normal_user = executor.whoami
+        atom_conf_dir = pathlib.Path(f'/home/{normal_user}/.atom')
 
         print("[INFO] Downloading Atom Debian installer....")
         with open(atom_dest, 'wb') as fp:
@@ -428,8 +707,9 @@ class BaseKeyword(AbstractKeyword):
         print("[INFO] Installing atom....")
         apt.debfile.DebPackage(filename=atom_dest).install()
         for plugin in atom_plugins:
-            executor.run_soft(f'/usr/bin/apm install {plugin}', normal_user)
-            executor.run_soft(f'chown {normal_user} -R {atom_conf_dir}', normal_user)
+            print(f'[INFO] Installing {plugin}...')
+            executor.run(f'/usr/bin/apm install {plugin}', normal_user)
+            executor.run(f'chown {normal_user} -R {atom_conf_dir}', normal_user)
         print("[INFO] Finished installing Atom")
 
     def google_test_build(self):
@@ -458,7 +738,7 @@ class BaseKeyword(AbstractKeyword):
         Goal: small test to check if Google Test works after install
         """ 
 
-        TEST_URL = "https://github.com/ilxl-ppr/restaurant-bill.git"
+        TEST_URL = "https://github.com/JaredDyreson/tuffix-google-test.git"
         TEST_DEST = "test"
 
         os.chdir("/tmp")
@@ -466,12 +746,10 @@ class BaseKeyword(AbstractKeyword):
             shutil.rmtree(TEST_DEST)
         subprocess.run(['git', 'clone', TEST_URL, TEST_DEST])
         os.chdir(TEST_DEST)
-        shutil.copyfile("solution/main.cpp", "problem/main.cpp")
-        os.chdir("problem")
-        subprocess.run(['clang++', 'main.cpp', '-o', 'main'])
+        subprocess.check_output(['clang++', '-v', 'main.cpp', '-o', 'main'])
         ret_code = subprocess.run(['make', 'all']).returncode
         if(ret_code != 0):
-          print(colored("[ERR] Google Unit test failed!", "red"))
+          print(colored("[ERROR] Google Unit test failed!", "red"))
         else:
           print(colored("[SUCCESS] Google unit test succeeded!", "green"))
 
@@ -483,13 +761,153 @@ class BaseKeyword(AbstractKeyword):
         self.google_test_build()
         self.google_test_attempt()
 
+
+class ChromeKeyword(AbstractKeyword):
+
+    """
+    Point person: anyone
+    SRC: sub-tuffix/chrome.yml
+    """
+
+    packages = ['google-chrome-stable']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'chrome', 'Google Chrome')
+ 
+    def add(self):
+        google_chrome = "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+        dest = "/tmp/chrome.deb"
+
+        print("[INFO] Downloading Chrome Debian installer....")
+        with open(dest, 'wb') as fp:
+            fp.write(requests.get(google_chrome).content)
+        print("[INFO] Finished downloading...")
+        print("[INFO] Installing Chrome....")
+        apt.debfile.DebPackage(filename=dest).install()
+
+        google_sources = "https://dl.google.com/linux/linux_signing_key.pub"
+        google_sources_path = pathlib.Path("/tmp/linux_signing_key.pub")
+
+        with open(google_sources_path, 'wb') as fp:
+            fp.write(requests.get(google_sources).content)
+        subprocess.check_output(f'sudo apt-key add {google_sources_path}'.split())
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+
+
+class C223JKeyword(AbstractKeyword):
+
+    """
+    NOTE: do you want to use a newer version of Java?
+    Or are the IDE's dependent on a certain version?
+    Point Person: Floyd Holliday
+    SRC: sub-tuffix/cpsc223j.yml
+    """
+
+    packages = ['geany',
+                'gthumb',
+                'netbeans',
+                'openjdk-8-jdk',
+                'openjdk-8-jre']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'C223J', 'CPSC 223J (Java Programming)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C223NKeyword(AbstractKeyword):
+    """
+    Point person: Floyd Holliday
+    SRC: sub-tuffix/cpsc223n.yml
+    """
+    packages = ['mono-complete',
+                'netbeans']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'C223N', 'CPSC 223N (C# Programming)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C223PKeyword(AbstractKeyword):
+    """
+    python 2.7 and lower pip no longer exists
+    has been superseeded by python3-pip
+    also python-virtualenv no longer exists
+    Point person: Michael Shafae
+    SRC: sub-tuffix/cpsc223p.yml
+    """
+
+    packages = ['python2',
+                'python2-dev',
+                # 'python-pip',
+                # 'python-virtualenv',
+                'python3',
+                'python3-dev',
+                'python3-pip',
+                'virtualenvwrapper']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'C223P', 'CPSC 223P (Python Programming)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C223WKeyword(AbstractKeyword):
+    
+    """
+    Point person: Paul Inventado
+    """
+
+    packages = ['binutils',
+                'curl',
+                'gnupg2',
+                'libc6-dev',
+                'libcurl4',
+                'libedit2',
+                'libgcc-9-dev',
+                'libpython2.7',
+                'libsqlite3-0',
+                'libstdc++-9-dev',
+                'libxml2',
+                'libz3-dev',
+                'pkg-config',
+                'tzdata',
+                'zlib1g-dev']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'C223W', 'CPSC 223W (Swift Programming)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+
 class C240Keyword(AbstractKeyword):
+
+    """
+    Point person: Floyd Holliday
+    """
 
     packages = ['intel2gas',
                 'nasm']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '240', 'CPSC 240')
+        super().__init__(build_config, 'C240', 'CPSC 240 (Assembler)')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -499,10 +917,14 @@ class C240Keyword(AbstractKeyword):
 
 class C439Keyword(AbstractKeyword):
 
+    """
+    Point person: <++>
+    """
+
     packages = ['minisat2']
 
     def __init__(self, build_config):
-        super().__init__(build_config, '439', 'CPSC 439')
+        super().__init__(build_config, 'C439', 'CPSC 439 (Theory of Computation)')
 
     def add(self):
         add_deb_packages(self.packages)
@@ -512,18 +934,116 @@ class C439Keyword(AbstractKeyword):
 
 class C474Keyword(AbstractKeyword):
 
-    packages = ['mpi-default-dev',
+    """
+    Point person: <++>
+    """
+
+    packages = ['libopenmpi-dev',
+                'mpi-default-dev',
                 'mpich',
                 'openmpi-bin',
-                'openmpi-common',
-                'libopenmpi-dev']
+                'openmpi-common']
     
     def __init__(self, build_config):
-        super().__init__(build_config, '474', 'CPSC 474')
+        super().__init__(build_config, 'C474', 'CPSC 474 (Parallel and Distributed Computing)')
          
     def add(self):
         add_deb_packages(self.packages)
         
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C481Keyword(AbstractKeyword):
+
+    """
+    Java dependency is not installed by default
+    Adding it so testing will work but needs to be addressed
+    Point person: Paul Inventado
+    """
+
+    packages = ['openjdk-8-jdk',
+                'openjdk-8-jre',
+                'sbcl',
+                'swi-prolog-nox',
+                'swi-prolog-x']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'C481', 'CPSC 481 (Artificial Intelligence)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+        """
+        You are going to need to get the most up to date
+        link because the original one broke and this one currently works.
+        """
+        eclipse_download = pathlib.Path("/tmp/eclipse.tar.gz")
+
+        """
+        might need to change because development was done in Idaho
+        """
+
+        eclipse_link = "http://mirror.umd.edu/eclipse/oomph/epp/2020-06/R/eclipse-inst-linux64.tar.gz"
+        with open(eclipse_download, 'wb') as fp:
+            r = requests.get(eclipse_link)
+            if(r.status_code == 404):
+                raise EnvironmentError("cannot access link to get Eclipse, please tell your instructor immediately")
+            fp.write(r.content)
+        os.mkdir("/tmp/eclipse")
+        subprocess.check_output(f'tar -xzvf {eclipse_download} -C /tmp/eclipse'.split())
+        """
+        Here is where I need help
+        https://linoxide.com/linux-how-to/learn-how-install-latest-eclipse-ubuntu/
+        We might need to provide documentation
+        """
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class C484Keyword(AbstractKeyword):
+
+    """
+    Point persons: Michael Shafae, Kevin Wortman
+    """
+
+    packages = ['freeglut3-dev',
+                'libfreeimage-dev',
+                'libgl1-mesa-dev',
+                'libglew-dev',
+                'libglu1-mesa-dev',
+                'libopenctm-dev',
+                'libx11-dev',
+                'libxi-dev',
+                'libxrandr-dev',
+                'mesa-utils',
+                'mesa-utils-extra',
+                'openctm-doc',
+                'openctm-tools']
+                # 'python-openctm']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'C484', 'CPSC 484 (Principles of Computer Graphics)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
+
+class MediaKeyword(AbstractKeyword):
+
+    packages = ['audacity',
+                'blender',
+                'gimp',
+                'imagemagick',
+                'sox',
+                'vlc']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'media', 'Media Computation Tools')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
     def remove(self):
         remove_deb_packages(self.packages)
 
@@ -541,17 +1061,55 @@ class LatexKeyword(AbstractKeyword):
     def remove(self):
         remove_deb_packages(self.packages)
 
+class VirtualBoxKeyword(AbstractKeyword):
+    packages = ['virtualbox-6.1']
+
+    def __init__(self, build_config):
+        super().__init__(build_config,
+                         'vbox',
+                         'A powerful x86 and AMD64/Intel64 virtualization product')
+         
+    def add(self):
+        if(subprocess.run("grep hypervisor /proc/cpuinfo".split(), stdout=subprocess.DEVNULL).returncode == 0):
+            raise EnvironmentError("This is a virtual enviornment, not proceeding")
+
+        sources_path = pathlib.Path("/etc/apt/sources.list")
+        source_link = f'deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian {distrib_codename()} contrib'
+        with open(sources_path, "a") as fp:
+            fp.write(source_link)
+        
+        wget_request = subprocess.Popen(("wget", "-q", "https://www.virtualbox.org/download/oracle_vbox_2016.asc", "-O-"),
+                                        stdout=subprocess.PIPE)
+        apt_key = subprocess.check_output(('sudo', 'apt-key', 'add', '-'), stdin=wget_request.stdout)
+
+        add_deb_packages(self.packages)
+        
+    def remove(self):
+        remove_deb_packages(self.packages)
+
 # TODO: more keywords...
 
 def all_keywords(build_config):
     if not isinstance(build_config, BuildConfig):
         raise ValueError
     # alphabetical order, but put digits after letters
-    return [ BaseKeyword(build_config),
+    return [ AllKeyword(build_config),
+             BaseKeyword(build_config),
+             # ChromeKeyword(build_config),
+             GeneralKeyword(build_config),
              LatexKeyword(build_config),
-             C240Keyword(build_config),
+             # MediaKeyword(build_config),
+             # VirtualBoxKeyword(build_config),
+             # C223JKeyword(build_config),
+             # C223NKeyword(build_config),
+             # C223PKeyword(build_config),
+             # C223WKeyword(build_config),
+             # C240Keyword(build_config),
              C439Keyword(build_config),
-             C474Keyword(build_config) ]
+             C474Keyword(build_config),
+             # C481Keyword(build_config), 
+             C484Keyword(build_config)
+             ]
 
 def find_keyword(build_config, name):
     if not (isinstance(build_config, BuildConfig) and
@@ -632,10 +1190,12 @@ def add_deb_packages(package_names):
     if not (isinstance(package_names, list) and
             all(isinstance(name, str) for name in package_names)):
         raise ValueError
+    print(f'[INFO] Adding all packages to the APT queue ({len(package_names)})')
     cache = apt.cache.Cache()
     cache.update()
     cache.open()
     for name in package_names:
+        print(f'adding {name}')
         try:
             cache[name].mark_install()
         except KeyError:
@@ -692,7 +1252,7 @@ def is_deb_package_installed(package_name):
 def parse_distrib_codename(stream):
     # find a line with DISTRIB_CODENAME=...
     line = None
-    for l in stream.lines():
+    for l in stream.readlines():
         if l.startswith('DISTRIB_CODENAME'):
             line = l
             break
@@ -713,99 +1273,12 @@ def parse_distrib_codename(stream):
 """
 Used for managing code execution by one user on the behalf of another
 For example: root creating a file in Jared's home directory but Jared is still the sole owner of the file
-We probably should instantiate a global sudo_execute instead of re running it everytime in each function it's used in
+We probably should instantiate a global sudo_run instead of re running it everytime in each function it's used in
 ^ This is going to be put inside the SiteConfig and BuildConfig later so it can be referenced for unit testing
+
+NOTE: update this section with https://github.com/JaredDyreson/sudo_run/
 """
 
-class sudo_execute():
-    def __init__(self):
-        self.main_user = ""
-        pass
-
-    def current_user(self) -> str:
-        return subprocess.check_output(["whoami"], encoding="utf-8").strip()
-
-    def currently_logged_in(self) -> list:
-        return [user for user in subprocess.check_output(["users"], encoding="utf-8").split('\n') if user]
-
-    def set_user(self) -> str:
-        logged_in = self.currently_logged_in()
-        if(len(logged_in) > 1):
-            whoami = None
-            while(whoami is None):
-                selection = {}
-                for index, user in enumerate(logged_in):
-                    selection[index] =  user
-                    print("[{}] {}".format(index, user))
-                whoami = input("Select who you are: ")
-                try:
-                    whoami = self.main_user = selection[int(whoami)]
-                    return whoami
-                except KeyError:
-                    whoami = None
-                    os.system("clear")
-                    print(colored("[INFO] Invalid selection, please try again", 'red'))
-        self.main_user = logged_in[0]
-        return logged_in[0]
-
-    def chuser(self, user_id: int, user_gid: int):
-        """
-        GOAL: permanently change the user in the context of the running program
-        """
-
-        os.setgid(user_gid)
-        os.setuid(user_id)
-
-    def check_user(self, user: str):
-        try:
-            pwd.getpwnam(user)
-            return True
-        except KeyError:
-            return False
-
-    def run_permanent(self, command: str, current_user: str, desired_user: str):
-        """
-        GOAL: run command as another user but permanently changing to that user
-        Cannot be run twice in a row if script is originated with sudo
-        Only root can set UID and GID back to itself, ultimately making it redundant
-        Used primarliy for descalation of privilages, handing back to userspace
-        """
-
-        if(self.check_user(desired_user)):
-            du_records, cu_records = pwd.getpwnam(desired_user), pwd.getpwnam(current_user)
-        else:
-            raise UnknownUserException("Unknown user: {}".format(desired_user))
-
-        du_id, du_gid = du_records.pw_uid, du_records.pw_gid
-        cu_id, cu_gid = cu_records.pw_uid, cu_records.pw_gid
-        try:
-            stdout, stderr = subprocess.Popen(command.split(), 
-                                close_fds=True,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT,
-                                preexec_fn=chuser(du_id, du_gid),
-                                encoding="utf-8").communicate()
-        except PermissionError:
-            raise PrivilageExecutionException("{} does not have permission to run the command {} as the user {}".format(
-                            current_user,
-                            command,
-                            desired_user
-            ))
-        return stdout
-
-    def run_soft(self, command: str, desired_user: str):
-        command = "sudo -H -u {} bash -c '{}'".format(desired_user, command)
-        try:
-            out =  subprocess.check_output(command, 
-                                            shell=True, 
-                                            executable='/bin/bash',
-                                            encoding="utf-8").split("\n")
-        except subprocess.CalledProcessError as e:
-            if(e.returncode != 129):
-                out = ""
-            else:
-                raise Exception("Segmentation fault")
-        return out
 
 def cpu_information() -> str:
     """
@@ -836,7 +1309,7 @@ def host() -> str:
     Goal: get the current user logged in and the computer they are logged into
     """
 
-    return "{}@{}".format(sudo_execute().set_user(), socket.gethostname())
+    return "{}@{}".format(os.getlogin(), socket.gethostname())
 
 def current_operating_system() -> str:
     """
@@ -940,12 +1413,11 @@ def list_git_configuration() -> tuple:
     """
     Retrieve Git configuration information about the current user
     """
-    keeper = sudo_execute()
+    keeper = sudo_run()
 
     username_regex = re.compile("user.name\=(?P<user>.*$)")
     email_regex = re.compile("user.email\=(?P<email>.*$)")
-
-    out = keeper.run_soft(command="git --no-pager config --list", desired_user=keeper.set_user())
+    out = keeper.run(command="git --no-pager config --list", desired_user=keeper.whoami)
     u, e = None, None
     for line in out:
         u_match = username_regex.match(line)
@@ -987,23 +1459,19 @@ def currently_installed_targets() -> list:
     GOAL: list all installed codewords in a formatted list
     """
 
-    try:
-        with open(STATE_PATH, "r") as fp:
-            content = json.load(fp)["installed"]
-            return [f'{"- ": >4}{element}' for element in sorted(content)]
-    except FileNotFoundError:
-        raise EnvironmentError("Tuffix is not initalized, stop")
-  
+    return [f'{"- ": >4} {element}' for element in read_state(DEFAULT_BUILD_CONFIG).installed]
+
 
 def status() -> str:
     """
     GOAL: Driver code for all the components defined above
     """
     try:
-        git_email, git_username = list_git_configuration()
+        git_username, git_email = list_git_configuration()
     except Exception as e:
+        print(e)
         git_email, git_username = "None", "None"
-
+    list_git_configuration()
     primary, secondary = graphics_information()
     installed_targets = currently_installed_targets()
 
@@ -1054,7 +1522,7 @@ def system_shell():
     """
 
     path = "/etc/passwd"
-    cu = sudo_execute().set_user()
+    cu = os.getlogin()
     _r_shell = re.compile("^{}.*\:\/home\/{}\:(?P<path>.*)".format(cu, cu))
     shell_name = None
     with open(path, "r") as fp:

@@ -1,13 +1,14 @@
+#!/usr/bin/env python3.8
+
+import requests
 import subprocess
+import io
+import pathlib
 
-command = """
-cmake CMakeLists.txt
-make -j8
-sudo cp -r googletest/include/. /usr/include
-sudo cp -r googlemock/include/. /usr/include
-sudo cp -r lib/. /usr/lib
-sudo chown root:root /usr/lib
-"""
+url = "https://packages.microsoft.com/keys/microsoft.asc"
 
-for subcommand in command.splitlines():
-  print(subcommand)
+path = pathlib.Path("/tmp/m.asc")
+with open(path, "w") as f:
+    f.write(requests.get(url).content.decode("utf-8"))
+
+subprocess.check_output(('gpg', '--output', 'leeroy.gpg', '--dearmor', f'{path}'))

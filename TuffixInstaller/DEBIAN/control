@@ -5,4 +5,4 @@ Priority: optional
 Architecture: amd64
 Maintainer: Jared Dyreson <jareddyreson@csu.fullerton.edu>
 Description: Program to aide in the management of software dependencies for California State University Fullerton Computer Science courses.
-Depends: vim, git, python3-pip, ansible, wget, python3
+Depends: ansible, autoconf, automake, a2ps, cscope, curl, dkms, emacs, enscript, git, glibc-doc, gpg, graphviz, gthumb, libreadline-dev, manpages-posix, manpages-posix-dev, meld, nfs-common, openssh-client, openssh-server, python3, python3-pip, seahorse, synaptic, wget, vim, vim-gtk3

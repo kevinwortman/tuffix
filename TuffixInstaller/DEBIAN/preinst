@@ -4,4 +4,6 @@
 # AUTHOR: Jared Dyreson
 # INSTITUTION: California State University Fullerton
 
+#sudo pip3 install "git+https://github.com/mshafae/tuffix#egg=httpie"
 sudo pip3 install "git+https://github.com/JaredDyreson/TuffixLang#egg=httpie"
+
