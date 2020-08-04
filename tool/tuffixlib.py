@@ -557,7 +557,7 @@ class AllKeyword(AbstractKeyword):
     packages = []
 
     def __init__(self, build_config):
-        super().__init__(build_config, 'all', 'all keywords available (glob pattern)')
+        super().__init__(build_config, 'all', 'all keywords available (glob pattern); to be used in conjunction with remove or add respectively')
  
     def add(self):
         add_deb_packages(self.packages)
@@ -1093,7 +1093,7 @@ def all_keywords(build_config):
     if not isinstance(build_config, BuildConfig):
         raise ValueError
     # alphabetical order, but put digits after letters
-    return [ #AllKeyword(build_config),
+    return [ AllKeyword(build_config),
              BaseKeyword(build_config),
              # ChromeKeyword(build_config),
              # GeneralKeyword(build_config),
