@@ -795,7 +795,18 @@ class ChromeKeyword(AbstractKeyword):
     def remove(self):
         remove_deb_packages(self.packages)
 
+class C121Keyword(AbstractKeyword):
 
+    packages = ['cimg-dev']
+
+    def __init__(self, build_config):
+        super().__init__(build_config, 'C121', 'CPSC 121 (Object-Oriented Programming)')
+ 
+    def add(self):
+        add_deb_packages(self.packages)
+
+    def remove(self):
+        remove_deb_packages(self.packages)
 
 class C223JKeyword(AbstractKeyword):
 
@@ -1105,6 +1116,7 @@ def all_keywords(build_config):
              # C223PKeyword(build_config),
              # C223WKeyword(build_config),
              # C240Keyword(build_config),
+             C121Keyword(build_config),
              C439Keyword(build_config),
              C474Keyword(build_config),
              # C481Keyword(build_config), 
