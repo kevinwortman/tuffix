@@ -1093,10 +1093,10 @@ def all_keywords(build_config):
     if not isinstance(build_config, BuildConfig):
         raise ValueError
     # alphabetical order, but put digits after letters
-    return [ AllKeyword(build_config),
+    return [ #AllKeyword(build_config),
              BaseKeyword(build_config),
              # ChromeKeyword(build_config),
-             GeneralKeyword(build_config),
+             # GeneralKeyword(build_config),
              LatexKeyword(build_config),
              # MediaKeyword(build_config),
              # VirtualBoxKeyword(build_config),
@@ -1494,7 +1494,7 @@ Current Time: {}
 Git Configuration:
   - Email: {}
   - Username: {}
-Installed codewords:
+Installed keywords:
   {}
 Connected to Internet: {}
 """.format(
