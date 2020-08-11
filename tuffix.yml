@@ -109,21 +109,21 @@
       apt:
         pkg:
           - libgtest-dev
-	  - libgmock-dev
+          - libgmock-dev
 
     - name: additional C++ libraries and tools
       apt:
         pkg:
           - autoconf
           - automake
-	  - cimg-dev
+          - cimg-dev
           - cscope
           #- libboost-all-dev
           #- libfccp-dev
           #- libsqlite3-dev
           #- libssl-dev
-	  - libc++-dev
-	  - libc++abi-dev
+          - libc++-dev
+          - libc++abi-dev
           - meld
           #- nlohmann-json-dev
           #- sqlite3
