@@ -105,26 +105,11 @@
           - git
           - subversion
 
-    - name: Google Test Package Install
+    - name: Google Test
       apt:
         pkg:
           - libgtest-dev
-          - build-essential
-          - cmake
-          - clang
-          - gcc-9
-          - g++-9
-
-    - name: Google Test Library Build
-      shell: |
-        BUILDDIR="/tmp/gtestbuild.$$"
-        DESTROOT="/usr/local/"
-        mkdir -p ${BUILDDIR}
-        cd ${BUILDDIR}
-        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
-        make
-        install -o root -g root -m 644 libgtest.a ${DESTROOT}/lib
-        install -o root -g root -m 644 libgtest_main.a ${DESTROOT}/lib
+	  - libgmock-dev
 
     - name: additional C++ libraries and tools
       apt:
