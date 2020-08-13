@@ -76,7 +76,7 @@ only need to be followed by the instructors who create the release VM.
   $ sudo zerofree -v /dev/sda1
   ```
   (this takes several minutes)
-  - Shut down, including ejecting the Xubuntu CD
+  - Shut down, including ejecting the Ubuntu CD
 8. Final check
   - Create snapshot
   - Start VM
