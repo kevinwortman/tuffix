@@ -22,16 +22,29 @@ The major components of Tuffix are
 Additional tools and libraries are also included to support rich
 programming assignments, and courses aside from 120-121-131.
 
-## Community and Documentation
+## Community Slack Workspace
 
-CSUF students: join the
-[Tuffix Students](https://communities.fullerton.edu/course/view.php?id=1547)
-community in Titanium (Moodle). There are detailed instructions for joining the
-community in the installation instructions Doc linked above.
+Anyone using Tuffix (students, instructors, developers) should visit the
+[CSUF TUFFIX](https://csuf-tuffix.slack.com)
+slack workspace at
+[https://csuf-tuffix.slack.com](https://csuf-tuffix.slack.com).
 
-CSUF instructors: email Kevin Wortman and ask him to add you to the
-[Tuffix Instructors](https://communities.fullerton.edu/course/view.php?id=1544)
-community in Titanium.
+Please use the appropriate channel within the workspace:
+
+* `#general`: Troubleshooting installing and using Tuffix. This is
+  usually the right place for students to ask questions. Open to
+  anyone with a CSUF account.
+  
+* `#instructors`: Troubleshooting instructor's issues, such as setting
+  up classes or assignments with Tuffix. This is only open to CSUF
+  instructors. If you are a CSUF instructor, please ask a Slack
+  workspace admin to invite you to the `#instructors` channel.
+
+* `#developers`: Creating and maintaining the Tuffix system. This is
+  only open to people who are actively contributing to the Tuffix
+  project (mostly instructors). If you are interested in being a
+  developer, please ask a Slack workspace admin, or current developer,
+  to invite you to the `#developers` channel.
 
 ## Installation & Hardware Requirements
 
