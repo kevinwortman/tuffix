@@ -63,10 +63,9 @@ installing and using Tuffix.
 1. Reboot the computer and login. Setup WiFi - if you're using Eduroam, use the [Tuffix Eduroam Authentication Instructions](eduroam.md).
 
 1. Open a terminal window, and run the tuffixize.sh script (without using sudo):
-```
-$ wget https://csufcs.com/tuffixize -O - | bash
-```
-
+   ```
+   $ wget https://csufcs.com/tuffixize -O - | bash
+   ```
 1. The script will ask for your password, and will install very many packages. The process may take up to an hour. It may ask for your password again depending how long this takes.
 
 1. Reboot your computer, and you’re done!
