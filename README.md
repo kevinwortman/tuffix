@@ -24,7 +24,7 @@ programming assignments, and courses aside from 120-121-131.
 
 ## Community Slack Workspace
 
-Anyone using Tuffix (students, instructors, developers) should visit the
+Anyone using Tuffix (students, instructors, developers) should join the
 [CSUF TUFFIX](https://csuf-tuffix.slack.com)
 slack workspace at
 [https://csuf-tuffix.slack.com](https://csuf-tuffix.slack.com).

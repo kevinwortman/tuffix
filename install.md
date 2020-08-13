@@ -17,7 +17,7 @@ Option 1 (native) is *strongly recommended* for students because running nativel
 If you do not have a computer that you can install Tuffix natively, then work with your instructor to borrow a laptop from the university. CSUF has a [long term laptop loan program](https://www.fullerton.edu/it/students/equipment/longtermlaptop.php) where a student can borrow a laptop for the duration of the semester. You will need to work with your instructor to request such a laptop. The sooner you make the request, the sooner you will have a laptop in your hands to run Tuffix natively! 
 
 The hardware requirements to run Tuffix natively are:
-* A recent 64bit Intel or AMD processor (Intel Core and Xeon series, AMD Athlon, Phenom, Opteron, Sempron, etc.)
+* A recent 64-bit Intel or AMD processor (Intel Core and Xeon series, AMD Athlon, Phenom, Opteron, Sempron, etc.)
 * At least 4 GB of RAM
 * At least 30 GB of hard disk or flash memory storage
 * WiFi or Ethernet
@@ -36,11 +36,15 @@ The hardware requirements to run a Tuffix VM are:
 
 Your processor must support the VT-x/AMD-V extension. If your processor supports these instructions yet does not allow you to boot the VM, then the instructions may be disabled from your computer's BIOS. Check the settings of your BIOS and, if needed, update your system's BIOS to enable the instructions.
 
-## Tuffix Students Community
+## CSUF TUFFIX Slack Workspace
 
-Everyone using Tuffix should join the Tuffix Students community in Titanium. This is where you can find these sorts of instructions, a support discussion forum, and other resources.
+Students using Tuffix should join the
+[CSUF TUFFIX](https://csuf-tuffix.slack.com)
+slack workspace at
+[https://csuf-tuffix.slack.com](https://csuf-tuffix.slack.com).
 
-You may self-enroll in the community; first login to your portal, then navigate to ‘Titanium communities’, next under the dashboard to the left – click ‘Site home’, then click ‘Search Courses’ on the right, search for ‘Tuffix’, in the results click ‘Tuffix Students’, under the gear in the upper right select ‘Enrol me in this course’, finally click on the button ‘Enrol me’. You may unenroll at any time.
+Please use the `#general` channel to ask about troubleshooting
+installing and using Tuffix.
 
 ## Native Install
 
@@ -50,7 +54,7 @@ You may self-enroll in the community; first login to your portal, then navigate 
 
     1. Go to http://mirror.us.leaseweb.net/ubuntu-cdimage/ubuntu/releases/ and look for `20.04`. Click the link and then click `release`.
 
-    1. Download the file `ubuntu-20.04-desktop-amd64.iso`.
+    1. Download the file `ubuntu-20.04.1-desktop-amd64.iso`.
 
     1. Burn the ISO image to a USB memory stick that is at least 4 GB. **All data on the USB memory stick will be deleted forever.** Instructions on how to do this are online for [Ubuntu](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0), [macOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0), and [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0).
 
@@ -69,14 +73,27 @@ $ wget https://csufcs.com/tuffixize -O - | bash
 
 ## Virtual Machine
 
-1. Install VirtualBox on your host computer https://www.virtualbox.org/wiki/Downloads
+1. Install VirtualBox 6.1.12 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
 
-    - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. You must read every window that pops up very carefully. During the installation process you must go to the Security & Privacy control panel to allow VirtualBox to install. If you do not pay close attention you have a broken VirtualBox installation that will not work. Please read https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5 to get an idea of what the process is like before you attempt installing VirtualBox. *VirtualBox must be installed successfully first before moving on to the next step.*
+    - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
 
-    - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization". Your computer model is typically written on the sticker that is on the bottom of your laptop.
+    - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
 
-1. Download the .ova file for Ubuntu 20.04 from https://www.osboxes.org/ubuntu/.
+1. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
 
-1. In the VirtualBox user interface, [import the .ova file](https://docs.oracle.com/cd/E26217_01/E26796/html/qs-import-vm.html). This may take several minutes.
+1. Download the .ova file from https://drive.google.com/file/d/1OOyFnpd4Y4BB5Kd3HxcLfYaYgd_ROlHU/view .
 
-1. Start the virtual machine, and login. (The login and password are under the info tab on https://www.osboxes.org/ubuntu/; it's typically osboxes as the login and osboxes.org as the password.)
+    1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches:
+    `fddc18782756dff5b163cc96e120f71252f0c84e777c4d52ff5becc1c7830e2c`.
+    On a Linux or Mac host, open a terminal window and use the shasum command:
+    ```
+    $ cd ~/Downloads
+    $ shasum --algorithm 256 "Tuffix 2020 Edition.ova"
+    fddc18782756dff5b163cc96e120f71252f0c84e777c4d52ff5becc1c7830e2c  Tuffix Spring 2019 r2.ova
+    ```
+    If the sum that is printed out does not match, that is an indication that either you did not actually download the entire file (most likely) or [hackers tampered with your download](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (only a remote possibility).
+
+1. In the VirtualBox user interface, Import the .ova file. This may take several minutes.
+
+1. Start the virtual machine, and login using username “student” and password “student”.
+
