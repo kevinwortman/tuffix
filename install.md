@@ -80,7 +80,7 @@ installing and using Tuffix.
 
 1. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
 
-1. Download the .ova file from https://drive.google.com/file/d/1OOyFnpd4Y4BB5Kd3HxcLfYaYgd_ROlHU/view .
+1. Download the .ova file from https://drive.google.com/file/d/1mbF4Y2sfWe7m409p0ejrof3kOmNJflVI/view.
 
     1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches:
     `bffcc7a05cc794287a60118cf2e12891d2b618a7a9e5641bdd7a28a0f1aa7935`.
