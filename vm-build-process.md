@@ -1,16 +1,20 @@
 
 # Tuffix VM Build Process
 
-These are instructions that were used up to Spring 2019. We are no longer building Xubuntu appliances. Instead use https://www.osboxes.org/ubuntu/ for Ubuntu desktop VMs.
-
-These are the instructions to create a Tuffix VM. Ordinarily, they only need to be followed by the instructors who create the release VM.
+These are the instructions to create a Tuffix VM. Ordinarily, they
+only need to be followed by the instructors who create the release VM.
 
 1. On host OS
-  - Install/upgrade VirtualBox, using the specific version stated in the installation instructions. As of this writing, that is **6.0.10**, at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_0.
-  - Download the latest Xubuntu 64-bit release .iso file, as of this writing **xubuntu-19.04-desktop-amd64.iso** (https://xubuntu.org/download/).
+  - Install/upgrade VirtualBox, using the specific version stated in
+    the installation instructions. As of this writing, that is
+    **6.1.12**, at either https://www.virtualbox.org/wiki/Downloads or
+    https://www.virtualbox.org/wiki/Download_Old_Builds_6_1.
+  - Download the latest vanilla Ubuntu 64-bit LTS release .iso file, as of
+    this writing **ubuntu-20.04.1-desktop-amd64.iso**
+    (https://ubuntu.com/download/desktop).
 2. In VirtualBox on the host computer
   - New VM
-    - Name: **Tuffix 2019 Edition**
+    - Name: **Tuffix 2020 Edition**
     - Type: Linux
     - Version: Ubuntu (64-bit)
     - Memory: 2048 MB
@@ -21,9 +25,9 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
     - Video Memory > 128 MB
     - Enable 3D acceleration: Yes
   - Storage > optical drive > select the .iso image you downloaded above
-3. Start VM --- Xubuntu installer
+3. Start VM --- Ubuntu installer
   - Language: English
-  - Click “Install Xubuntu”
+  - Click “Install Ubuntu”
   - Keyboard: English (US)
   - Download updates: yes
   - Install third-party software: yes
@@ -36,13 +40,14 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
     - Password: student
     - Require login: yes
   - *(let it finish, remove optical disk, restart)*
-4. Xubuntu/Tuffix guest
+4. Inside Ubuntu/Tuffix guest
   - Login as student
   - Use Firefox to download a background image, move it to to `~/Pictures`, set it as the desktop wallpaper, delete `~/.mozilla`
     - (we delete `~/.mozilla` so that students won't see this step in their browsing history)
     - Fall 2018: [Tuffix-Background-v2-1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=1QFt8kOPKjpd18fjnDWEVCxVmi4512xNy)
     - Spring 2019: [Tuffix Background v3.3 1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=16aBkkGTcgG40m4ayiuGNYbLM5BmDVjEC)
     - 2019 Edition: [Wallpaper Tux meets Tuffy - Brenda Valls - Edited.jpg](https://drive.google.com/open?id=1xKmzS8ilw-c1jdHSIQhd4j1mi36blIBC)
+    - 2020 Edition: https://photos.app.goo.gl/ERwsA2urLqh1JYFX8
     - **pick a new image for each release**
   - Update all packages
   ```
@@ -64,8 +69,8 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
 7. Zerofree
   - (this step makes the .ova file substantially smaller, thereby faster to download)
   - Shut down VM
-  - Insert Xubuntu CD image again
-  - Start VM > boot from CD > Try Xubuntu > terminal
+  - Insert Ubuntu CD image again
+  - Start VM > boot from CD > Try Ubuntu > terminal
   ```
   $ sudo apt install zerofree
   $ sudo zerofree -v /dev/sda1
@@ -81,12 +86,12 @@ These are the instructions to create a Tuffix VM. Ordinarily, they only need to 
 9. Create .ova and checksum
   - VirtualBox > File > Export Appliance
     (this takes a few minutes)
-  - `$ shasum -a 256 "Tuffix 2019 Edition.ova"`
+  - `$ shasum -a 256 "Tuffix 2020 Edition.ova"`
   - Upload the .ova to Google Drive
 10. Publish
   - Upload the .ova to Google Drive, and set the file's sharing settings to
     "On - Anyone with the link".
   - Update the following documents:
     - these VM build instructions (the bold text, and filename in the shasum command above)
-    - installation instructions (the Xubuntu version, VirtualBox version, URL to .ova, and shasum)
+    - installation instructions (the Ubuntu version, VirtualBox version, URL to .ova, and shasum)
     - Tuffix Students community (add a link)
