@@ -29,16 +29,16 @@ override_apt_sources() {
 	cp "$OG" "$BAK"
 
 	cat > "$OG" << EOF
-deb ${HOSTURL} ${CODENAME} main restricted
-deb ${HOSTURL} ${CODENAME}-updates main restricted
-deb ${HOSTURL} ${CODENAME} universe
-deb ${HOSTURL} ${CODENAME}-updates universe
-deb ${HOSTURL} ${CODENAME} multiverse
-deb ${HOSTURL} ${CODENAME}-updates multiverse
-deb ${HOSTURL} ${CODENAME}-backports main restricted universe multiverse
-deb ${HOSTURL} ${CODENAME}-security main restricted
-deb ${HOSTURL} ${CODENAME}-security universe
-deb ${HOSTURL} ${CODENAME}-security multiverse
+deb $HOSTURL $CODENAME main restricted
+deb $HOSTURL $CODENAME-updates main restricted
+deb $HOSTURL $CODENAME universe
+deb $HOSTURL $CODENAME-updates universe
+deb $HOSTURL $CODENAME multiverse
+deb $HOSTURL $CODENAME-updates multiverse
+deb $HOSTURL $CODENAME-backports main restricted universe multiverse
+deb $HOSTURL $CODENAME-security main restricted
+deb $HOSTURL $CODENAME-security universe
+deb $HOSTURL $CODENAME-security multiverse
 EOF
 
 	echo -n "$BAK"
@@ -69,7 +69,7 @@ else
 	stderr "Failed to parse lsb_release."
 fi
 
-VMUSER="${USER}"
+VMUSER="$USER"
 
 if [[ ! "$VMUSER" ]]; then
 	stderr 'Environment missing USER variable; using "student".'
@@ -112,13 +112,13 @@ else
 	cp "$TUFFIXYML_SRC" "$TUFFIXYML"
 fi
 
-sudo ansible-playbook --extra-vars "login=${VMUSER}" --inventory localhost, --connection local "$TUFFIXYML"
+sudo ansible-playbook --extra-vars "login=$VMUSER" --inventory localhost, --connection local "$TUFFIXYML"
 
 # If we're not applying apt sources permanently and we have succesfully parsed
 # apt host URLs before, then we should restore them.
 if [[ "$TUFFIX_APT_SOURCES_HOST_PERMANENT" != "YES" && "$TUFFIX_APT_SOURCES_HOSTURL" ]]; then
 	stderr "Returning /etc/apt/sources.list to original state."
-	mv "${ORIGINAL_APT_SOURCES}" /etc/apt/sources.list
+	mv "$ORIGINAL_APT_SOURCES" /etc/apt/sources.list
 fi
 
 rm -f "$TUFFIXYML"
