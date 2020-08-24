@@ -10,7 +10,7 @@ test_dns_web ( ){
   TARGET="http://www.fullerton.edu"
   RV=`wget -q --timeout=2 --dns-timeout=2 --connect-timeout=2 --read-timeout=2 -S -O /dev/null ${TARGET} 2>&1 | grep "^\( *\)HTTP" | tail -1 | awk '{print $2}'`
   if [ "${RV}x" != "200x" ]; then
-    echo "The nettwork is down or slow; check to make sure are connected to your network. If connecting to Eduroam, seek assistance."
+    echo "The network is down or slow; check to make sure are connected to your network. If connecting to Eduroam, seek assistance."
       exit 1
   fi
 }
