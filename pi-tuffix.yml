@@ -1,0 +1,160 @@
+
+---
+
+#####################################################################
+# general configuration, not tied to any specific course
+# point person: undergraduate committee
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: Update repositories cache and update all packages to the latest version
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Remove dependencies that are no longer required
+      apt:
+        autoremove: yes
+
+    #- name: Ensure that the vboxsf group exists to premptively add the user to it.
+    #  group:
+    #    name: vboxsf
+    #    state: present
+
+    - name: kitchen sink packages
+      apt:
+        pkg:
+          #- a2ps
+          #- chromium-browser
+          - curl
+          #- dkms
+          #- emacs
+          - enscript
+          - gpg
+          #- gthumb
+          #- openssh-client
+          #- openssh-server
+          #- seahorse
+          - synaptic
+          - vim
+          #- vim-gtk3
+          - libreadline-dev
+          - manpages-posix
+          - manpages-posix-dev
+          - glibc-doc
+          - nfs-common
+
+#####################################################################
+# CPSC 120-121-131 official environment
+# point person: undergraduate committee
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  vars:
+    login: student
+  tasks:
+
+    - name: clang toolchain (default version for target Ubuntu release)
+      apt:
+        pkg:
+          - build-essential
+          - clang
+          - clang-tidy
+          - clang-format
+          - lldb
+
+    - name: g++ compiler (default version for target Ubuntu release)
+      apt:
+        pkg:
+          - build-essential
+          - gcc
+          - g++
+          - gdb
+
+    # https://code.visualstudio.com/docs/setup/linux
+    #- name: VSCode Editor
+    #  apt: deb=https://go.microsoft.com/fwlink/?LinkID=760868
+
+    #- name: Atom editor
+    #  apt: deb=https://atom.io/download/deb
+
+    #- name: Atom gdb support
+    #  command: /usr/bin/apm install dbg-gdb dbg output-panel
+
+    # this playbook is run as root, so the apm command above
+    # creates a ~/.atom owned by root, so the student user does
+    # not have permissions into it, and Atom fails to load
+    # properly and shows a debug interface. This makes the
+    # directory owned by {{ login }}, by default `student`, thus
+    # solving the problem.
+    #- name: atom owned by user instead of root
+    #  file:
+    #    path: ~/.atom
+    #    owner: "{{ login }}"
+    #    group: "{{ login }}"
+
+    #- name: Adding current user {{ login }} to group vboxsf preemptively
+    #  user:
+    #    name: "{{ login }}"
+    #    groups: vboxsf
+    #    append: yes
+
+    - name: source code control
+      apt:
+        pkg:
+          - git
+          - subversion
+
+    - name: Google Test Package Install
+      apt:
+        pkg:
+          - libgtest-dev
+          - libgmock-dev
+          - cmake
+
+    - name: Google Test Library Build
+      shell: |
+        BUILDDIR="/tmp/gtestbuild.$$"
+        DESTROOT="/usr/local/"
+        mkdir -p ${BUILDDIR}
+        cd ${BUILDDIR}
+        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
+        make
+        install -o root -g root -m 644 libgtest.a ${DESTROOT}/lib
+        install -o root -g root -m 644 libgtest_main.a ${DESTROOT}/lib
+
+    - name: additional C++ libraries and tools
+      apt:
+        pkg:
+          - autoconf
+          - automake
+          - libc++-dev
+          - libc++abi-dev
+          #- cscope
+          #- libboost-all-dev
+          #- libfccp-dev
+          #- libsqlite3-dev
+          #- libssl-dev
+          #- meld
+          #- nlohmann-json-dev
+          #- sqlite3
+          #- valgrind
+
+
+#####################################################################
+# cleanup
+# point person: undergraduate committee
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: apt clean
+      command: apt clean
+
+...
