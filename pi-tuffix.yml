@@ -58,7 +58,7 @@
     login: student
   tasks:
 
-    - name: clang toolchain (default version for target Ubuntu release)
+    - name: clang toolchain (default version for target)
       apt:
         pkg:
           - build-essential
@@ -67,7 +67,7 @@
           - clang-format
           - lldb
 
-    - name: g++ compiler (default version for target Ubuntu release)
+    - name: g++ compiler (default version for target)
       apt:
         pkg:
           - build-essential
