@@ -82,14 +82,24 @@ installing and using Tuffix.
 
 1. Download the .ova file from https://drive.google.com/file/d/1mbF4Y2sfWe7m409p0ejrof3kOmNJflVI/view.
 
-    1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches:
-    `ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02`.
-    On a Linux or Mac host, open a terminal window and use the shasum command:
-    ```
-    $ cd ~/Downloads
-    $ shasum --algorithm 256 "Tuffix 2020 Edition.ova"
-    ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02  Tuffix 2020 Edition.ova
-    ```
+1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02`.
+
+    1. On a Linux or Mac host, open a terminal window and use the shasum command:
+        ```
+        $ cd ~/Downloads
+        $ shasum --algorithm 256 "Tuffix 2020 Edition.ova"
+        ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02  Tuffix 2020 Edition.ova
+        ```
+
+    1. On Windows, open a Command Prompt window and use the CertUtil command:
+        ```
+        C:\>cd "%USERPROFILE%\Downloads" 
+        C:\Users\CSUFTitan\Downloads>CertUtil -hashfile "Tuffix 2020 Edition.ova" SHA256
+        SHA256 hash of Tuffix 2020 Edition.ova:
+        ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02
+        CertUtil: -hashfile command completed successfully.
+        ```
+
     If the sum that is printed out does not match, that is an indication that either you did not actually download the entire file (most likely) or [hackers tampered with your download](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) (only a remote possibility).
 
 1. In the VirtualBox user interface, Import the .ova file. This may take several minutes.
