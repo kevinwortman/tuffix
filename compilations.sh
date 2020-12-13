@@ -10,7 +10,7 @@
 BUILDDIR=${BUILDDIR:-"/tmp/gtestbuild.$$"}
 DESTROOT=${DESTROOT:-"/usr"}
 # Be aware that /usr/src/gtest is a symlink to /usr/src/googletest.
-SRC=${SRC:-"/usr/src/gtest"}
+SRC=${SRC:-"/usr/src/googletest"}
 PKGNAME="libgtest-dev"
 PKGEXISTS=`dpkg-query -W -f '${binary:Package}\n' --no-pager ${PKGNAME}`
 
