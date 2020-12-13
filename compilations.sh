@@ -28,6 +28,8 @@ mkdir -p ${BUILDDIR}
 cd ${BUILDDIR}
 cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
 make
-sudo install -o root -g root -m 644 libgtest.a ${DESTROOT}/lib
-sudo install -o root -g root -m 644 libgtest_main.a ${DESTROOT}/lib
+sudo install -o root -g root -m 644 lib/libgtest.a ${DESTROOT}/lib
+sudo install -o root -g root -m 644 lib/libgtest_main.a ${DESTROOT}/lib
+sudo install -o root -g root -m 644 lib/libgmock.a ${DESTROOT}/lib
+sudo install -o root -g root -m 644 lib/libgmock_main.a ${DESTROOT}/lib
 
