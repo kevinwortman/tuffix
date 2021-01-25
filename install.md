@@ -52,7 +52,7 @@ installing and using Tuffix.
 
 1. Burn an ISO image to a USB memory stick to install Ubuntu. Download an Ubuntu 20.04 64-bit ISO image from an Ubuntu mirror site. (You may skip this step if you ask your instructor for a pre-made USB memory stick or attend an ACM Linux Installfest.)
 
-    1. Go to http://mirror.us.leaseweb.net/ubuntu-cdimage/ubuntu/releases/ and look for `20.04`. Click the link and then click `release`.
+    1. Go to https://mirror.math.princeton.edu/pub/ubuntu-iso/20.04.1/
 
     1. Download the file `ubuntu-20.04.1-desktop-amd64.iso`.
 
