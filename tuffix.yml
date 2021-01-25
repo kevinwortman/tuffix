@@ -123,8 +123,9 @@
         cd ${BUILDDIR}
         cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
         make
-        install -o root -g root -m 644 libgtest.a ${DESTROOT}/lib
-        install -o root -g root -m 644 libgtest_main.a ${DESTROOT}/lib
+        mkdir -p ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgtest.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgtest_main.a ${DESTROOT}/lib
 
     - name: additional C++ libraries and tools
       apt:
@@ -158,7 +159,7 @@
           - nasm
 
 #####################################################################
-# Michael Shafae's Junk
+# Bazel & Microsoft VS Code
 # point person: Michael Shafae
 #####################################################################
 
