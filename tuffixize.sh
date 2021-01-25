@@ -82,7 +82,7 @@ else
   cp ${TUFFIXYML_SRC} ${TUFFIXYML}
 fi
 
-sudo ansible-playbook --extra-vars="login=${VMUSER}" --inventory localhost, --connection local ${TUFFIXYML}
+sudo ansible-playbook -e 'ansible_python_interpreter=/usr/bin/python3' --extra-vars="login=${VMUSER}" --inventory localhost, --connection local ${TUFFIXYML}
 
 if [ ${TUFFIX_APT_SOURCES_HOST_PERMANENT}"x" != "YESx" -a ${TUFFIX_APT_SOURCES_HOSTURL}"x" != "x" ]; then
   echo "Returning /etc/apt/sources.list to original state"

@@ -2,7 +2,9 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
+  # https://app.vagrantup.com/boxes/search
   config.vm.box = "ubuntu/focal64"
+  config.vm.box = "ubuntu/groovy64"
 
   config.vm.synced_folder "..", "/tuffix"
   config.vm.synced_folder Dir.home, "/hosthome"
