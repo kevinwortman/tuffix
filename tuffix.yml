@@ -36,7 +36,7 @@
           - gpg
           #- gthumb
           - openssh-client
-          #- openssh-server
+          - openssh-server
           #- seahorse
           - synaptic
           - vim
@@ -75,15 +75,11 @@
           - g++
           - gdb
 
-    # https://code.visualstudio.com/docs/setup/linux
-    - name: VSCode Editor
-      apt: deb=https://go.microsoft.com/fwlink/?LinkID=760868
+    - name: Atom editor
+      apt: deb=https://atom.io/download/deb
 
-    #- name: Atom editor
-    #  apt: deb=https://atom.io/download/deb
-
-    #- name: Atom gdb support
-    #  command: /usr/bin/apm install dbg-gdb dbg output-panel
+    - name: Atom gdb support
+      command: /usr/bin/apm install dbg-gdb dbg output-panel
 
     # this playbook is run as root, so the apm command above
     # creates a ~/.atom owned by root, so the student user does
@@ -91,17 +87,17 @@
     # properly and shows a debug interface. This makes the
     # directory owned by {{ login }}, by default `student`, thus
     # solving the problem.
-    #- name: atom owned by user instead of root
-    #  file:
-    #    path: ~/.atom
-    #    owner: "{{ login }}"
-    #    group: "{{ login }}"
+    - name: atom owned by user instead of root
+      file:
+        path: ~/.atom
+        owner: "{{ login }}"
+        group: "{{ login }}"
 
-    #- name: Adding current user {{ login }} to group vboxsf preemptively
-    #  user:
-    #    name: "{{ login }}"
-    #    groups: vboxsf
-    #    append: yes
+    - name: Adding current user {{ login }} to group vboxsf preemptively
+      user:
+        name: "{{ login }}"
+        groups: vboxsf
+        append: yes
 
     - name: source code control
       apt:
@@ -160,6 +156,39 @@
         pkg:
           - intel2gas
           - nasm
+
+#####################################################################
+# Michael Shafae's Junk
+# point person: Michael Shafae
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: Prerequisites for Bazel
+      apt:
+        pkg:
+          - curl
+          - gnupg
+
+    - name: Bazel distribution URI as package source (This is amd64 only!)
+      shell: |
+        curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > /etc/apt/trusted.gpg.d/bazel.gpg
+        echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
+
+    - name: Update repositories cache
+      apt:
+        update_cache: yes
+    
+    - name: Bazel
+      apt:
+        pkg:
+          - bazel
+
+    # https://code.visualstudio.com/docs/setup/linux
+    - name: VSCode Editor (This is amd64 only!)
+      apt: deb=https://go.microsoft.com/fwlink/?LinkID=760868
 
 #####################################################################
 # cleanup
