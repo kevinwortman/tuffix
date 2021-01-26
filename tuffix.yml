@@ -27,20 +27,20 @@
     - name: kitchen sink packages
       apt:
         pkg:
-          - a2ps
-          - chromium-browser
+          #- a2ps
+          #- chromium-browser
           - curl
-          - dkms
-          - emacs
+          #- dkms
+          #- emacs
           - enscript
           - gpg
-          - gthumb
+          #- gthumb
           - openssh-client
           - openssh-server
-          - seahorse
+          #- seahorse
           - synaptic
           - vim
-          - vim-gtk3
+          #- vim-gtk3
           - libreadline-dev
           - manpages-posix
           - manpages-posix-dev
@@ -67,12 +67,12 @@
           - clang-format
           - lldb
 
-    - name: g++ 9 compiler
+    - name: g++ compiler (default version for target Ubuntu release)
       apt:
         pkg:
           - build-essential
-          - gcc-9
-          - g++-9
+          - gcc
+          - g++
           - gdb
 
     - name: Atom editor
@@ -110,6 +110,19 @@
         pkg:
           - libgtest-dev
           - libgmock-dev
+          - cmake
+
+    - name: Google Test Library Build
+      shell: |
+        BUILDDIR="/tmp/gtestbuild.$$"
+        DESTROOT="/usr/local/"
+        mkdir -p ${BUILDDIR}
+        cd ${BUILDDIR}
+        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
+        make
+        mkdir -p ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgtest.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgtest_main.a ${DESTROOT}/lib
 
     - name: additional C++ libraries and tools
       apt:
@@ -124,7 +137,7 @@
           #- libssl-dev
           - libc++-dev
           - libc++abi-dev
-          - meld
+          #- meld
           #- nlohmann-json-dev
           #- sqlite3
           #- valgrind
@@ -144,6 +157,39 @@
         pkg:
           - intel2gas
           - nasm
+
+#####################################################################
+# Bazel & Microsoft VS Code
+# point person: Michael Shafae
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: Prerequisites for Bazel
+      apt:
+        pkg:
+          - curl
+          - gnupg
+
+    - name: Bazel distribution URI as package source (This is amd64 only!)
+      shell: |
+        curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > /etc/apt/trusted.gpg.d/bazel.gpg
+        echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
+
+    - name: Update repositories cache
+      apt:
+        update_cache: yes
+    
+    - name: Bazel
+      apt:
+        pkg:
+          - bazel
+
+    # https://code.visualstudio.com/docs/setup/linux
+    - name: VSCode Editor (This is amd64 only!)
+      apt: deb=https://go.microsoft.com/fwlink/?LinkID=760868
 
 #####################################################################
 # cleanup
