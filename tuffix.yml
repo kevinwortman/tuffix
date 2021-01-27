@@ -112,17 +112,31 @@
           - libgmock-dev
           - cmake
 
-    - name: Google Test Library Build
+    #- name: Google Test Library Build
+    #  shell: |
+    #    BUILDDIR="/tmp/gtestbuild.$$"
+    #    DESTROOT="/usr/local/"
+    #    mkdir -p ${BUILDDIR}
+    #    cd ${BUILDDIR}
+    #    cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/googletest/googletest
+    #    make
+    #    mkdir -p ${DESTROOT}/lib
+    #    install -o root -g root -m 644 ./lib/libgtest.a ${DESTROOT}/lib
+    #    install -o root -g root -m 644 ./lib/libgtest_main.a ${DESTROOT}/lib
+
+    - name: Google Mock Library Build (builds Google Test Library as a dependency)
       shell: |
-        BUILDDIR="/tmp/gtestbuild.$$"
+        BUILDDIR="/tmp/gmockbuild.$$"
         DESTROOT="/usr/local/"
         mkdir -p ${BUILDDIR}
         cd ${BUILDDIR}
-        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
+        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/googletest/googlemock
         make
         mkdir -p ${DESTROOT}/lib
         install -o root -g root -m 644 ./lib/libgtest.a ${DESTROOT}/lib
         install -o root -g root -m 644 ./lib/libgtest_main.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgmock.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgmock_main.a ${DESTROOT}/lib
 
     - name: additional C++ libraries and tools
       apt:
