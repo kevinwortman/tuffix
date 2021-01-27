@@ -10,10 +10,14 @@
   remote_user: root
   tasks:
 
+    - name: Get DEB architecture
+      shell: dpkg --print-architecture
+      register: deb_architecture
+    
     - name: Update repositories cache and update all packages to the latest version
       apt:
         update_cache: yes
-        upgrade: dist
+        #upgrade: dist
 
     - name: Remove dependencies that are no longer required
       apt:
@@ -24,28 +28,28 @@
     #    name: vboxsf
     #    state: present
 
-    - name: kitchen sink packages
+    - name: Kitchen sink packages
       apt:
         pkg:
-          #- a2ps
-          #- chromium-browser
           - curl
-          #- dkms
-          #- emacs
           - enscript
           - gpg
-          #- gthumb
-          #- openssh-client
-          #- openssh-server
-          #- seahorse
           - synaptic
           - vim
-          #- vim-gtk3
           - libreadline-dev
           - manpages-posix
           - manpages-posix-dev
           - glibc-doc
           - nfs-common
+          #- a2ps
+          #- chromium-browser
+          #- dkms
+          #- emacs
+          #- gthumb
+          #- openssh-client
+          #- openssh-server
+          #- seahorse
+          #- vim-gtk3
 
 #####################################################################
 # CPSC 120-121-131 official environment
@@ -58,7 +62,7 @@
     login: student
   tasks:
 
-    - name: clang toolchain (default version for target)
+    - name: Clang toolchain (default version for target)
       apt:
         pkg:
           - build-essential
@@ -67,7 +71,7 @@
           - clang-format
           - lldb
 
-    - name: g++ compiler (default version for target)
+    - name: G++ compiler (default version for target)
       apt:
         pkg:
           - build-essential
@@ -103,46 +107,77 @@
     #    groups: vboxsf
     #    append: yes
 
-    - name: source code control
+    - name: Source code control
       apt:
         pkg:
           - git
           - subversion
 
-    - name: Google Test Package Install
+    - name: Google Test and Google Mock
       apt:
         pkg:
           - libgtest-dev
           - libgmock-dev
           - cmake
 
-    - name: Google Test Library Build
+    - name: Google Mock Library Build (builds Google Test Library as a dependency)
       shell: |
-        BUILDDIR="/tmp/gtestbuild.$$"
+        BUILDDIR="/tmp/gmockbuild.$$"
         DESTROOT="/usr/local/"
         mkdir -p ${BUILDDIR}
         cd ${BUILDDIR}
-        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/gtest/
+        cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/googletest/googlemock
         make
-        install -o root -g root -m 644 libgtest.a ${DESTROOT}/lib
-        install -o root -g root -m 644 libgtest_main.a ${DESTROOT}/lib
+        mkdir -p ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgtest.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgtest_main.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgmock.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./lib/libgmock_main.a ${DESTROOT}/lib
 
     - name: additional C++ libraries and tools
       apt:
         pkg:
           - autoconf
           - automake
+          - cimg-dev
           - libc++-dev
           - libc++abi-dev
+          - nlohmann-json3-dev
           #- cscope
           #- libboost-all-dev
           #- libfccp-dev
           #- libsqlite3-dev
           #- libssl-dev
           #- meld
-          #- nlohmann-json-dev
           #- sqlite3
           #- valgrind
+
+#####################################################################
+# Bazel & Microsoft VS Code
+# point person: Michael Shafae
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: Prerequisites for Bazel
+      apt:
+        pkg:
+          - curl
+          - gnupg
+
+    - name: Bazel binary from koenvervloesem
+      shell: |
+        DESTROOT="/usr/local/"
+        BAZEL="bazel-3.7.2"
+        curl https://github.com/koenvervloesem/bazel-on-arm/releases/download/v3.7.2/bazel-3.7.2 -O /tmp/${BAZEL}
+        mkdir -p ${DESTROOT}/bin
+        install -o root -g root -m 755 /tmp/${BAZEL} ${DESTROOT}/bin
+        ln -s ${DESTROOT}/bin/${BAZEL} ${DESTROOT}/bin/bazel
+
+    - name: VSCode Editor
+      apt: https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-{{ deb_architecture.stdout }}
 
 
 #####################################################################
