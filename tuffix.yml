@@ -193,9 +193,20 @@
         pkg:
           - bazel
 
+    - name: Prerequisites for VS Code
+      apt:
+        pkg:
+          - libnss3
+          - gnupg
+          - libxkbfile1
+          - libsecret-1-0
+          - libgtk-3-0
+          - libxss1
+          - libgbm1
+
     # https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
     # https://go.microsoft.com/fwlink/?LinkID=760868
-    - name: VSCode Editor for AMD64
+    - name: VS Code Editor for AMD64
       apt:
         deb: https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
 
