@@ -9,11 +9,11 @@
 - hosts: all
   remote_user: root
   tasks:
-
+    
     - name: Update repositories cache and update all packages to the latest version
       apt:
         update_cache: yes
-        upgrade: dist
+        #upgrade: dist
 
     - name: Remove dependencies that are no longer required
       apt:
@@ -24,28 +24,28 @@
         name: vboxsf
         state: present
 
-    - name: kitchen sink packages
+    - name: Kitchen sink packages
       apt:
         pkg:
-          #- a2ps
-          #- chromium-browser
           - curl
-          #- dkms
-          #- emacs
           - enscript
           - gpg
-          #- gthumb
           - openssh-client
           - openssh-server
-          #- seahorse
           - synaptic
           - vim
-          #- vim-gtk3
           - libreadline-dev
           - manpages-posix
           - manpages-posix-dev
           - glibc-doc
           - nfs-common
+          #- a2ps
+          #- chromium-browser
+          #- dkms
+          #- emacs
+          #- gthumb
+          #- seahorse
+          #- vim-gtk3
 
 #####################################################################
 # CPSC 120-121-131 official environment
@@ -58,7 +58,7 @@
     login: student
   tasks:
 
-    - name: clang toolchain
+    - name: Clang toolchain
       apt:
         pkg:
           - build-essential
@@ -67,7 +67,7 @@
           - clang-format
           - lldb
 
-    - name: g++ compiler (default version for target Ubuntu release)
+    - name: G++ compiler (default version for target Ubuntu release)
       apt:
         pkg:
           - build-essential
@@ -99,30 +99,18 @@
         groups: vboxsf
         append: yes
 
-    - name: source code control
+    - name: Source code control
       apt:
         pkg:
           - git
           - subversion
 
-    - name: Google Test
+    - name: Google Test and Google Mock
       apt:
         pkg:
           - libgtest-dev
           - libgmock-dev
           - cmake
-
-    #- name: Google Test Library Build
-    #  shell: |
-    #    BUILDDIR="/tmp/gtestbuild.$$"
-    #    DESTROOT="/usr/local/"
-    #    mkdir -p ${BUILDDIR}
-    #    cd ${BUILDDIR}
-    #    cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/googletest/googletest
-    #    make
-    #    mkdir -p ${DESTROOT}/lib
-    #    install -o root -g root -m 644 ./lib/libgtest.a ${DESTROOT}/lib
-    #    install -o root -g root -m 644 ./lib/libgtest_main.a ${DESTROOT}/lib
 
     - name: Google Mock Library Build (builds Google Test Library as a dependency)
       shell: |
@@ -143,16 +131,15 @@
         pkg:
           - autoconf
           - automake
-          - cimg-dev
-          - cscope
+          - libc++-dev
+          - libc++abi-dev
+          - nlohmann-json3-dev
+          #- cscope
           #- libboost-all-dev
           #- libfccp-dev
           #- libsqlite3-dev
           #- libssl-dev
-          - libc++-dev
-          - libc++abi-dev
           #- meld
-          #- nlohmann-json-dev
           #- sqlite3
           #- valgrind
 
@@ -187,9 +174,14 @@
           - curl
           - gnupg
 
-    - name: Bazel distribution URI as package source (This is amd64 only!)
+    - name: Get Bazel Repository GPG Key
+      get_url:
+        url: https://bazel.build/bazel-release.pub.gpg
+        dest: /tmp/bazel-release.pub.gpg
+    
+    - name: Add Bazel GPG key to trusted keys and add the PPM to the APT source list
       shell: |
-        curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > /etc/apt/trusted.gpg.d/bazel.gpg
+        cat /tmp/bazel-release.pub.gpg | gpg --dearmor > /etc/apt/trusted.gpg.d/bazel.gpg
         echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
 
     - name: Update repositories cache
@@ -201,9 +193,11 @@
         pkg:
           - bazel
 
-    # https://code.visualstudio.com/docs/setup/linux
-    - name: VSCode Editor (This is amd64 only!)
-      apt: deb=https://go.microsoft.com/fwlink/?LinkID=760868
+    # https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
+    # https://go.microsoft.com/fwlink/?LinkID=760868
+    - name: VSCode Editor for AMD64
+      apt:
+        deb: https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
 
 #####################################################################
 # cleanup
