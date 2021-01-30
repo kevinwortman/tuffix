@@ -177,7 +177,8 @@
         ln -s ${DESTROOT}/bin/${BAZEL} ${DESTROOT}/bin/bazel
 
     - name: VSCode Editor
-      apt: https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-{{ deb_architecture.stdout }}
+      apt:
+        deb: https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-{{ deb_architecture.stdout }}
 
 
 #####################################################################
