@@ -129,10 +129,10 @@
         cmake -DCMAKE_BUILD_TYPE=RELEASE /usr/src/googletest/googlemock
         make
         mkdir -p ${DESTROOT}/lib
-        install -o root -g root -m 644 ./lib/libgtest.a ${DESTROOT}/lib
-        install -o root -g root -m 644 ./lib/libgtest_main.a ${DESTROOT}/lib
-        install -o root -g root -m 644 ./lib/libgmock.a ${DESTROOT}/lib
-        install -o root -g root -m 644 ./lib/libgmock_main.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./gtest/libgtest.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./gtest/libgtest_main.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./libgmock.a ${DESTROOT}/lib
+        install -o root -g root -m 644 ./libgmock_main.a ${DESTROOT}/lib
 
     - name: additional C++ libraries and tools
       apt:
