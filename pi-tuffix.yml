@@ -167,14 +167,27 @@
           - curl
           - gnupg
 
-    - name: Bazel binary from koenvervloesem
+    - name: Get Bazel binary from koenvervloesem
+      get_url:
+        url: https://github.com/koenvervloesem/bazel-on-arm/releases/download/v3.7.2/bazel-3.7.2
+        dest: /tmp/bazel
+    
+    - name: Install Bazel binary
       shell: |
-        DESTROOT="/usr/local/"
-        BAZEL="bazel-3.7.2"
-        curl https://github.com/koenvervloesem/bazel-on-arm/releases/download/v3.7.2/bazel-3.7.2 -O /tmp/${BAZEL}
+        DESTROOT="/usr/local"
         mkdir -p ${DESTROOT}/bin
-        install -o root -g root -m 755 /tmp/${BAZEL} ${DESTROOT}/bin
-        ln -s ${DESTROOT}/bin/${BAZEL} ${DESTROOT}/bin/bazel
+        install -o root -g root -m 755 /tmp/bazel ${DESTROOT}/bin
+
+    - name: Prerequisite packages for VS Code
+      apt:
+        pkg:
+          - libnss3
+          - gnupg
+          - libxkbfile1
+          - libsecret-1-0
+          - libgtk-3-0
+          - libxss1
+          - libgbm1
 
     - name: VSCode Editor
       apt:
