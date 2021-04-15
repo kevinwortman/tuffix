@@ -195,6 +195,31 @@
        deb: https://zoom.us/client/latest/zoom_amd64.deb
 
 #####################################################################
+# GitHub's gh utility
+# point person: Michael Shafae
+#####################################################################
+
+    - name: Prerequisites for GitHub's gh
+      apt:
+        pkg:
+          - dirmngr
+          - software-properties-common
+
+    - name: gh client distribution URI as package source (i386, amd64, arm64)
+      shell: |
+        apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+        apt-add-repository https://cli.github.com/packages
+
+    - name: Update repositories cache
+      apt:
+        update_cache: yes
+    
+    - name: GitHub gh
+      apt:
+        pkg:
+          - gh
+
+#####################################################################
 # Bazel & Microsoft VS Code
 # point person: Michael Shafae
 #####################################################################
