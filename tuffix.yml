@@ -170,7 +170,7 @@
   remote_user: root
   tasks:
     
-    -name: Zoom Client Prerequisites
+    - name: Zoom Client Prerequisites
      apt:
        pkg:
          - libglib2.0-0
@@ -193,7 +193,7 @@
          - libxcb-xtest0
          - ibus
 
-    -name: Linux Zoom Client (AMD 64)
+    - name: Linux Zoom Client (AMD 64)
      apt:
        deb: https://zoom.us/client/latest/zoom_amd64.deb
 
