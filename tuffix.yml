@@ -171,7 +171,7 @@
   tasks:
     
     - name: Zoom Client Prerequisites
-     apt:
+      apt:
        pkg:
          - libglib2.0-0
          - libgstreamer-plugins-base0.10-0 
@@ -194,7 +194,7 @@
          - ibus
 
     - name: Linux Zoom Client (AMD 64)
-     apt:
+      apt:
        deb: https://zoom.us/client/latest/zoom_amd64.deb
 
 #####################################################################
