@@ -39,6 +39,8 @@
           - manpages-posix-dev
           - glibc-doc
           - nfs-common
+          - graphicsmagick
+          - libgraphicsmagick++1-dev
           #- a2ps
           #- chromium-browser
           #- dkms
@@ -134,6 +136,7 @@
           - libc++-dev
           - libc++abi-dev
           - nlohmann-json3-dev
+          - libyaml-cpp-dev
           #- cscope
           #- libboost-all-dev
           #- libfccp-dev
@@ -160,7 +163,7 @@
           - nasm
 
 #####################################################################
-# Linux Zoom Client
+# Linux Zoom Client (AMD64 only)
 # point person: Michael Shafae
 #####################################################################
 - hosts: all
