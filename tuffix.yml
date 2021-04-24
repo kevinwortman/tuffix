@@ -41,6 +41,7 @@
           - nfs-common
           - graphicsmagick
           - libgraphicsmagick++1-dev
+          - doxygen
           #- a2ps
           #- chromium-browser
           #- dkms
