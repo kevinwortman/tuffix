@@ -42,6 +42,7 @@
           - graphicsmagick
           - libgraphicsmagick++1-dev
           - doxygen
+          - valgrind
           #- a2ps
           #- chromium-browser
           #- dkms
