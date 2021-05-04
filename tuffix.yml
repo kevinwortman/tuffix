@@ -39,6 +39,10 @@
           - manpages-posix-dev
           - glibc-doc
           - nfs-common
+          - graphicsmagick
+          - libgraphicsmagick++1-dev
+          - doxygen
+          - valgrind
           #- a2ps
           #- chromium-browser
           #- dkms
@@ -134,6 +138,7 @@
           - libc++-dev
           - libc++abi-dev
           - nlohmann-json3-dev
+          - libyaml-cpp-dev
           #- cscope
           #- libboost-all-dev
           #- libfccp-dev
@@ -160,18 +165,18 @@
           - nasm
 
 #####################################################################
-# Linux Zoom Client
+# Linux Zoom Client (AMD64 only)
 # point person: Michael Shafae
 #####################################################################
 - hosts: all
   remote_user: root
   tasks:
     
-    -name: Zoom Client Prerequisites
-     apt:
+    - name: Zoom Client Prerequisites
+      apt:
        pkg:
          - libglib2.0-0
-         - libgstreamer-plugins-base0.10-0 
+         - libgstreamer-plugins-base1.0-0
          - libxcb-shape0
          - libxcb-shm0
          - libxcb-xfixes0
@@ -190,8 +195,8 @@
          - libxcb-xtest0
          - ibus
 
-    -name: Linux Zoom Client (AMD 64)
-     apt:
+    - name: Linux Zoom Client (AMD 64)
+      apt:
        deb: https://zoom.us/client/latest/zoom_amd64.deb
 
 #####################################################################
