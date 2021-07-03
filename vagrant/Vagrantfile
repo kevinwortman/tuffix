@@ -2,9 +2,11 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "ubuntu/focal64"
-  #config.vm.box = "ubuntu/groovy64"
-
+  if ENV.has_key?('VAGRANTGUI')
+    config.vm.box = "fasmat/ubuntu2004-desktop"
+  else
+    config.vm.box = "ubuntu/focal64"
+  end
   config.vm.synced_folder "..", "/tuffix"
   config.vm.synced_folder Dir.home, "/hosthome"
 
@@ -13,11 +15,12 @@ Vagrant.configure("2") do |config|
     # You ought to be OK with 512 MB; increase if you need more.
     # Of course the problem is 512 MB is too little for Tuffixizing...Can't built Google Test.
     vb.memory = "2048"
+    vb.gui = true
   end
 
   config.vm.provision "shell", inline: <<-SHELL
     # If you have a local mirror, use the URL here
-    #TUFFIX_APT_SOURCES_HOSTURL="http://192.168.1.64/ubuntu"; export TUFFIX_APT_SOURCES_HOSTURL
+    TUFFIX_APT_SOURCES_HOSTURL="http://192.168.1.64/ubuntu"; export TUFFIX_APT_SOURCES_HOSTURL
     # If you'd like the change to be permanent, say YES
     #TUFFIX_APT_SOURCES_HOST_PERMANENT="YES"; export TUFFIX_APT_SOURCES_HOST_PERMANENT
     # Don't change this; it uses `config.vm.synced_folder "..", "/tuffix"`
