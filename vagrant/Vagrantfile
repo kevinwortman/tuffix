@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     # If you have a local mirror, use the URL here
-    TUFFIX_APT_SOURCES_HOSTURL="http://192.168.1.64/ubuntu"; export TUFFIX_APT_SOURCES_HOSTURL
+    #TUFFIX_APT_SOURCES_HOSTURL="http://192.168.1.64/ubuntu"; export TUFFIX_APT_SOURCES_HOSTURL
     # If you'd like the change to be permanent, say YES
     #TUFFIX_APT_SOURCES_HOST_PERMANENT="YES"; export TUFFIX_APT_SOURCES_HOST_PERMANENT
     # Don't change this; it uses `config.vm.synced_folder "..", "/tuffix"`
