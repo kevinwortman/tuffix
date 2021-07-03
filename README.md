@@ -58,5 +58,5 @@ See the [Tuffix VM Build Process in vm-build-process.md](vm-build-process.md)
 
 This is the product of a working group including Mikhail Gofman, Paul
 Inventado, and Kevin Wortman. It builds upon Michael Shafae's build
-scripts (http://michael.shafae.com/resources.html) and Kenytt Avery's
+scripts and Kenytt Avery's
 node-box (https://github.com/ProfAvery/node-box).
