@@ -48,19 +48,23 @@ installing and using Tuffix.
 
 ## Native Install
 
+There is a series of videos specifically made for installing and getting started with Tuffix, https://www.youtube.com/playlist?list=PL3LtnHvH0mFEUtiLHYAKEowJcqnZ4fZwP. Please watch the videos before you attempt to install Tuffix so you are familiar with the process.
+
+Most of the challenges you will encounter have already been faced by your peers. Visit the [CSUF Tuffix Slack](https://csuf-tuffix.slack.com) channel to find valuable information that will help you complete your installation.
+
 1. Confirm that your computer meets the [Ubuntu system requirements](https://help.ubuntu.com/20.04/installation-guide/amd64/ch02.html), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
 
 1. Burn an ISO image to a USB memory stick to install Ubuntu. Download an Ubuntu 20.04 64-bit ISO image from an Ubuntu mirror site. (You may skip this step if you ask your instructor for a pre-made USB memory stick or attend an ACM Linux Installfest.)
 
-    1. Go to https://mirror.math.princeton.edu/pub/ubuntu-iso/20.04.1/
+    1. Go to https://mirror.math.princeton.edu/pub/ubuntu-iso/20.04.2/
 
-    1. Download the file `ubuntu-20.04.1-desktop-amd64.iso`.
+    1. Download the file `ubuntu-20.04.2.0-desktop-amd64.iso`.
 
     1. Burn the ISO image to a USB memory stick that is at least 4 GB. **All data on the USB memory stick will be deleted forever.** Instructions on how to do this are online for [Ubuntu](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0), [macOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0), and [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0).
 
-1. Install Ubuntu onto your computer. **All data on computer will be deleted forever including all your programs like Microsoft Word and Excel. You cannot reinstall these programs.** The steps are similar to the steps in the online [Install Ubuntu Desktop tutorial](https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#3). You may need expert help on this step so please consult with your instructor.
+1. Install Ubuntu onto your computer. **All data on computer will be deleted forever including all your programs like Microsoft Word and Excel. You cannot reinstall these programs.** The steps are similar to the steps in the online [Install Ubuntu Desktop tutorial](https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#3). Please watch the [Tuffix installation videos](https://www.youtube.com/playlist?list=PL3LtnHvH0mFEUtiLHYAKEowJcqnZ4fZwP) and ask questions on the [CSUF Tuffix channel](https://csuf-tuffix.slack.com).
 
-1. Reboot the computer and login. Setup WiFi - if you're using Eduroam, use the [Tuffix Eduroam Authentication Instructions](eduroam.md).
+1. Reboot the computer and login. Setup WiFi - if you're using Eduroam, use the [Tuffix Eduroam Authentication Instructions](eduroam.md). Please watch the [Tuffix installation videos](https://www.youtube.com/playlist?list=PL3LtnHvH0mFEUtiLHYAKEowJcqnZ4fZwP) and ask questions on the [CSUF Tuffix channel](https://csuf-tuffix.slack.com) if you need tips to get WiFi working on your computer.
 
 1. Open a terminal window, and run the tuffixize.sh script (without using sudo):
    ```
@@ -106,3 +110,4 @@ installing and using Tuffix.
 
 1. Start the virtual machine, and login using username “student” and password “student”.
 
+There is a [Vagrantfile](vagrant/Vagrantfile) for those who know how to use [Vagrant](vagrantup.com).
