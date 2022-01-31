@@ -1,4 +1,7 @@
 
+# Tuffix v. 1 is deprecated.
+Please visit [CSUF-Tuffix/Tuffix-2](https://github.com/CSUF-Tuffix/Tuffix-2) for more information.
+
 # tuffix: Tuffy's Linux
 
 Official Linux environment for CPSC 120, 121, and 131 at California
