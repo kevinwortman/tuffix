@@ -8,9 +8,9 @@ The instructions are valid as of Summer 2022.
 
 ## CSUF IT Wizard (recommended)
 
-CSUF's IT provides an online wizard for configuring Eduroam to download an executable to install the eduroam wireless profile and CA Certificate.
+CSUF's IT provides an online wizard for configuring Eduroam to download an executable to install the Eduroam wireless profile and CA Certificate.
 
-The Online Wizard can be found at http://wireless.fullerton.edu/eduroam.php. Follow the steps provided to download and run the `SecureW2_JoinNow.run` executable to configure the eduroam wireless profile.
+The Online Wizard can be found at https://wireless.fullerton.edu/eduroam.php. Follow the steps provided to download and run the `SecureW2_JoinNow.run` executable to configure the Eduroam wireless profile.
 
 ## Manual Configuration (not recommended)
 
