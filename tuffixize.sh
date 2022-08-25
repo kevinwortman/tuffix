@@ -72,7 +72,7 @@ if [ ${TUFFIX_APT_SOURCES_HOSTURL}"x" != "x" ]; then
 fi
 
 sudo apt update
-sudo apt --yes install ansible wget aptitude python python3-distutils
+sudo apt --yes install ansible wget aptitude python3 python3-distutils
 
 if [[ $TUFFIXYML_SRC =~ $REGEX ]]; then
   wget -O ${TUFFIXYML} ${TUFFIXYML_SRC}
