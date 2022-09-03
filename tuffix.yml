@@ -79,24 +79,6 @@
           - g++
           - gdb
 
-    - name: Atom editor
-      apt: deb=https://atom.io/download/deb
-
-    - name: Atom gdb support
-      command: /usr/bin/apm install dbg-gdb dbg output-panel
-
-    # this playbook is run as root, so the apm command above
-    # creates a ~/.atom owned by root, so the student user does
-    # not have permissions into it, and Atom fails to load
-    # properly and shows a debug interface. This makes the
-    # directory owned by {{ login }}, by default `student`, thus
-    # solving the problem.
-    - name: atom owned by user instead of root
-      file:
-        path: ~/.atom
-        owner: "{{ login }}"
-        group: "{{ login }}"
-
     - name: Adding current user {{ login }} to group vboxsf preemptively
       user:
         name: "{{ login }}"
