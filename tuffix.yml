@@ -79,24 +79,6 @@
           - g++
           - gdb
 
-    - name: Atom editor
-      apt: deb=https://atom.io/download/deb
-
-    - name: Atom gdb support
-      command: /usr/bin/apm install dbg-gdb dbg output-panel
-
-    # this playbook is run as root, so the apm command above
-    # creates a ~/.atom owned by root, so the student user does
-    # not have permissions into it, and Atom fails to load
-    # properly and shows a debug interface. This makes the
-    # directory owned by {{ login }}, by default `student`, thus
-    # solving the problem.
-    - name: atom owned by user instead of root
-      file:
-        path: ~/.atom
-        owner: "{{ login }}"
-        group: "{{ login }}"
-
     - name: Adding current user {{ login }} to group vboxsf preemptively
       user:
         name: "{{ login }}"
@@ -212,8 +194,11 @@
 
     - name: gh client distribution URI as package source (i386, amd64, arm64)
       shell: |
-        apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-        apt-add-repository https://cli.github.com/packages
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+      args:
+        warn: false
 
     - name: Update repositories cache
       apt:
