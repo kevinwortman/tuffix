@@ -2,7 +2,7 @@
 
 ## Version
 
-This is the process for the **Tuffix 2020 release**.
+This is the process for the **Tuffix 2022 release**.
 
 ## Type of Install
 
@@ -52,13 +52,13 @@ There is a series of videos specifically made for installing and getting started
 
 Most of the challenges you will encounter have already been faced by your peers. Visit the [CSUF Tuffix Slack](https://csuf-tuffix.slack.com) channel to find valuable information that will help you complete your installation.
 
-1. Confirm that your computer meets the [Ubuntu system requirements](https://help.ubuntu.com/20.04/installation-guide/amd64/ch02.html), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
+1. Confirm that your computer meets the [Ubuntu system requirements](https://help.ubuntu.com/community/Installation/SystemRequirements), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
 
 1. Burn an ISO image to a USB memory stick to install Ubuntu. Download an Ubuntu 20.04 64-bit ISO image from an Ubuntu mirror site. (You may skip this step if you ask your instructor for a pre-made USB memory stick or attend an ACM Linux Installfest.)
 
-    1. Go to https://old-releases.ubuntu.com/releases/20.04/ubuntu-20.04.4-desktop-amd64.iso
+    1. Go to https://releases.ubuntu.com/22.04/ubuntu-22.04.1-desktop-amd64.iso
 
-    1. Download the file `ubuntu-20.04.4-desktop-amd64.iso`.
+    1. Download the file `ubuntu-22.04.1-desktop-amd64.iso`.
 
     1. Burn the ISO image to a USB memory stick that is at least 4 GB. **All data on the USB memory stick will be deleted forever.** Instructions on how to do this are online for [Ubuntu](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0), [macOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0), and [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0).
 
