@@ -13,11 +13,11 @@ code with one another.
 
 The major components of Tuffix are
 
-* Ubuntu 20.04
+* Ubuntu 22.04
 * clang compiler
 * GNU g++9 C++ compiler
-* Atom text editor
-* gdb debugger and Atom's dgb-gdb frontend
+* VisualStudio Code editor
+* GitHub CLI
 
 Additional tools and libraries are also included to support rich
 programming assignments, and courses aside from 120-121-131.
