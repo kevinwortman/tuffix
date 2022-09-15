@@ -7,14 +7,14 @@ only need to be followed by the instructors who create the release VM.
 1. On host OS
   - Install/upgrade VirtualBox, using the specific version stated in
     the installation instructions. As of this writing, that is
-    **6.1.12**, at either https://www.virtualbox.org/wiki/Downloads or
+    **6.1.34**, at either https://www.virtualbox.org/wiki/Downloads or
     https://www.virtualbox.org/wiki/Download_Old_Builds_6_1.
   - Download the latest vanilla Ubuntu 64-bit LTS release .iso file, as of
-    this writing **ubuntu-20.04.1-desktop-amd64.iso**
+    this writing **ubuntu-22.04.1-desktop-amd64.iso**
     (https://ubuntu.com/download/desktop).
 2. In VirtualBox on the host computer
   - New VM
-    - Name: **Tuffix 2020 Edition**
+    - Name: **Tuffix 2022 Edition**
     - Type: Linux
     - Version: Ubuntu (64-bit)
     - Memory: 2048 MB
@@ -48,6 +48,7 @@ only need to be followed by the instructors who create the release VM.
     - Spring 2019: [Tuffix Background v3.3 1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=16aBkkGTcgG40m4ayiuGNYbLM5BmDVjEC)
     - 2019 Edition: [Wallpaper Tux meets Tuffy - Brenda Valls - Edited.jpg](https://drive.google.com/open?id=1xKmzS8ilw-c1jdHSIQhd4j1mi36blIBC)
     - 2020 Edition: https://photos.app.goo.gl/ERwsA2urLqh1JYFX8
+    - 2022 Edition: [It Takes A Titan 2022](https://photos.google.com/photo/AF1QipPrJVTRXTnD76sZZe9jRR8Bfsut9gboFPyFUTlT)
     - **pick a new image for each release**
   - Update all packages
   ```
@@ -80,13 +81,13 @@ only need to be followed by the instructors who create the release VM.
 8. Final check
   - Create snapshot
   - Start VM
-  - Check that Atom can start, fullscreen window works, Firefox has no history
+  - Check that VisualStudio Code can start, fullscreen window works, Firefox has no history
   - Shut down
   - Restore the snapshot
 9. Create .ova and checksum
   - VirtualBox > File > Export Appliance
     (this takes a few minutes)
-  - `$ shasum -a 256 "Tuffix 2020 Edition.ova"`
+  - `$ shasum -a 256 "Tuffix 2022 Edition.ova"`
   - Upload the .ova to Google Drive
 10. Publish
   - Upload the .ova to Google Drive, and set the file's sharing settings to
