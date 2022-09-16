@@ -48,7 +48,7 @@ only need to be followed by the instructors who create the release VM.
     - Spring 2019: [Tuffix Background v3.3 1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=16aBkkGTcgG40m4ayiuGNYbLM5BmDVjEC)
     - 2019 Edition: [Wallpaper Tux meets Tuffy - Brenda Valls - Edited.jpg](https://drive.google.com/open?id=1xKmzS8ilw-c1jdHSIQhd4j1mi36blIBC)
     - 2020 Edition: https://photos.app.goo.gl/ERwsA2urLqh1JYFX8
-    - 2022 Edition: [It Takes A Titan 2022](https://photos.google.com/photo/AF1QipPrJVTRXTnD76sZZe9jRR8Bfsut9gboFPyFUTlT)
+    - 2022 Edition: [It Takes A Titan 2022](https://photos.app.goo.gl/RMreewgpA7ZQSQv58)
     - **pick a new image for each release**
   - Update all packages
   ```
