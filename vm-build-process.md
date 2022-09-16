@@ -42,14 +42,16 @@ only need to be followed by the instructors who create the release VM.
   - *(let it finish, remove optical disk, restart)*
 4. Inside Ubuntu/Tuffix guest
   - Login as student
-  - Use Firefox to download a background image, move it to to `~/Pictures`, set it as the desktop wallpaper, delete `~/.mozilla`
-    - (we delete `~/.mozilla` so that students won't see this step in their browsing history)
+  - Use Firefox to download a background image and set it as the desktop wallpaper (it will automatically create a ~/Pictures/Wallpapers folder and copy the image there).
     - Fall 2018: [Tuffix-Background-v2-1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=1QFt8kOPKjpd18fjnDWEVCxVmi4512xNy)
     - Spring 2019: [Tuffix Background v3.3 1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=16aBkkGTcgG40m4ayiuGNYbLM5BmDVjEC)
     - 2019 Edition: [Wallpaper Tux meets Tuffy - Brenda Valls - Edited.jpg](https://drive.google.com/open?id=1xKmzS8ilw-c1jdHSIQhd4j1mi36blIBC)
     - 2020 Edition: https://photos.app.goo.gl/ERwsA2urLqh1JYFX8
     - 2022 Edition: [It Takes A Titan 2022](https://photos.app.goo.gl/RMreewgpA7ZQSQv58)
     - **pick a new image for each release**
+  - Delete the image from the Downloads folder
+  - Delete the contents of `~/snap/firefox/common/.mozilla/firefox`
+    - (we delete the contents of `~/snap/firefox/common/.mozilla/firefox` so that students won't see this step in their browsing history)
   - Update all packages
   ```
   $ sudo apt update
