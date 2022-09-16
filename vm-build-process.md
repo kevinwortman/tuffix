@@ -75,9 +75,9 @@ only need to be followed by the instructors who create the release VM.
   - Mount the data partition to a temp location (i.e. `sudo mount /dev/sda3 /mnt/tmp`)
   - Assuming you've mounted /dev/sdaX to /mnt/tmp, the home directory `~` will be located at `/mnt/tmp/home/student`
     - Delete the wallpaper image from the Downloads folder `~/Downloads/itat.jpg`
-    - Delete the contents of `~/snap/firefox/common/.mozilla/firefox`(this provided the Firefox Out-Of-Box experience next launch)
-    - Delete the `~/.bash_history` file on the data partition
-  - Run zerofree against the data partition
+    - Delete the contents of `~/snap/firefox/common/.mozilla/firefox`(this provides the Firefox Out-Of-Box experience next launch)
+    - Delete the `~/.bash_history`
+  - Run zerofree against the data partition (/dev/sda3 is the data partition in the example below)
   ```
   $ sudo apt install zerofree
   $ sudo zerofree -v /dev/sda3
