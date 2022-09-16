@@ -49,9 +49,6 @@ only need to be followed by the instructors who create the release VM.
     - 2020 Edition: https://photos.app.goo.gl/ERwsA2urLqh1JYFX8
     - 2022 Edition: [It Takes A Titan 2022](https://photos.app.goo.gl/RMreewgpA7ZQSQv58)
     - **pick a new image for each release**
-  - Delete the image from the Downloads folder
-  - Delete the contents of `~/snap/firefox/common/.mozilla/firefox`
-    - (we delete the contents of `~/snap/firefox/common/.mozilla/firefox` so that students won't see this step in their browsing history)
   - Update all packages
   ```
   $ sudo apt update
@@ -71,12 +68,20 @@ only need to be followed by the instructors who create the release VM.
     that the desktop resizes accordingly
 7. Zerofree
   - (this step makes the .ova file substantially smaller, thereby faster to download)
-  - Shut down VM
+  - Shut down the VM
   - Insert Ubuntu CD image again
   - Start VM > boot from CD > Try Ubuntu > terminal
+  - Identify the data partition (largest partition, usually /dev/sda3)
+  - Mount the data partition to a temp location (i.e. `sudo mount /dev/sda3 /mnt/tmp`)
+  - Assuming you've mounted /dev/sdaX to /mnt/tmp, the home directory `~` will be located at `/mnt/tmp/home/student`
+    - Delete the wallpaper image from the Downloads folder `~/Downloads/itat.jpg`
+    - Delete the contents of `~/snap/firefox/common/.mozilla/firefox`
+    - (we delete the contents of `~/snap/firefox/common/.mozilla/firefox` so that students won't see this step in their browsing history)
+    - Delete the `~/.bash_history` file on the data partition
+  - Run zerofree against the data partition
   ```
   $ sudo apt install zerofree
-  $ sudo zerofree -v /dev/sda1
+  $ sudo zerofree -v /dev/sda3
   ```
   (this takes several minutes)
   - Shut down, including ejecting the Ubuntu CD
