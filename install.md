@@ -76,31 +76,33 @@ Most of the challenges you will encounter have already been faced by your peers.
 
 ## Virtual Machine
 
-1. Install VirtualBox 6.1.12 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
+1. Install VirtualBox 6.1.34 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
 
     - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
+
+    - Apple M1 Computers are unable to efficiently emulate the x86 instruction set and additional steps will need to be taken to emulate that platform
 
     - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
 
 1. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
 
-1. Download the .ova file from https://drive.google.com/file/d/1mbF4Y2sfWe7m409p0ejrof3kOmNJflVI/view.
+1. Download the .ova file from https://drive.google.com/file/d/1AM8qoVylAhZ_Rt98d_UtdTAPPbuqmHyT/view.
 
-1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02`.
+1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2`.
 
     1. On a Linux or Mac host, open a terminal window and use the shasum command:
         ```
         $ cd ~/Downloads
-        $ shasum --algorithm 256 "Tuffix 2020 Edition.ova"
-        ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02  Tuffix 2020 Edition.ova
+        $ shasum --algorithm 256 "Tuffix 2022 Edition.ova"
+        f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2  Tuffix 2022 Edition.ova
         ```
 
     1. On Windows, open a Command Prompt window and use the CertUtil command:
         ```
         C:\>cd "%USERPROFILE%\Downloads" 
-        C:\Users\CSUFTitan\Downloads>CertUtil -hashfile "Tuffix 2020 Edition.ova" SHA256
-        SHA256 hash of Tuffix 2020 Edition.ova:
-        ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02
+        C:\Users\CSUFTitan\Downloads>CertUtil -hashfile "Tuffix 2022 Edition.ova" SHA256
+        SHA256 hash of Tuffix 2022 Edition.ova:
+        f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2
         CertUtil: -hashfile command completed successfully.
         ```
 
