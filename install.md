@@ -28,6 +28,8 @@ Option 2 (virtual machine) is *strongly discouraged*. The experience will be slo
 
 Be aware that your computer will need a lot of RAM to comfortably run a guest VM (Tuffix) alongside your host operating system (MS Windows or Apple macOS).
 
+Apple M1 Computers are ARM based and do not support native or VM based Tuffix installations. If you have a M1 based Apple computer, consider borrowing a laptop from CSUF's [long term laptop loan program](https://www.fullerton.edu/it/students/equipment/longtermlaptop.php).
+
 The hardware requirements to run a Tuffix VM are:
 * A recent Intel or AMD processor that supports VT-X or AMD-V extensions
 * At least 8 GB of RAM
