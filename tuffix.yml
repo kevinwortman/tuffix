@@ -9,9 +9,10 @@
 - hosts: all
   remote_user: root
   tasks:
-    
+  
     - name: Update repositories cache and update all packages to the latest version
       apt:
+        upgrade: yes
         update_cache: yes
         #upgrade: dist
 
