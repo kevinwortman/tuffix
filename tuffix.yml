@@ -69,6 +69,7 @@
           - clang-13
           - clang-tidy-13
           - clang-format-13
+          - clang
           - lldb
 
     - name: G++ compiler (default version for target Ubuntu release)
