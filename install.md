@@ -2,7 +2,7 @@
 
 ## Version
 
-This is the process for the **Tuffix 2020 release**.
+This is the process for the **Tuffix 2022 release**.
 
 ## Type of Install
 
@@ -28,6 +28,8 @@ Option 2 (virtual machine) is *strongly discouraged*. The experience will be slo
 
 Be aware that your computer will need a lot of RAM to comfortably run a guest VM (Tuffix) alongside your host operating system (MS Windows or Apple macOS).
 
+Apple M1 Computers are ARM based and do not support native or VM based Tuffix installations. If you have a M1 based Apple computer, consider borrowing a laptop from CSUF's [long term laptop loan program](https://www.fullerton.edu/it/students/equipment/longtermlaptop.php).
+
 The hardware requirements to run a Tuffix VM are:
 * A recent Intel or AMD processor that supports VT-X or AMD-V extensions
 * At least 8 GB of RAM
@@ -52,13 +54,13 @@ There is a series of videos specifically made for installing and getting started
 
 Most of the challenges you will encounter have already been faced by your peers. Visit the [CSUF Tuffix Slack](https://csuf-tuffix.slack.com) channel to find valuable information that will help you complete your installation.
 
-1. Confirm that your computer meets the [Ubuntu system requirements](https://help.ubuntu.com/20.04/installation-guide/amd64/ch02.html), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
+1. Confirm that your computer meets the [Ubuntu system requirements](https://help.ubuntu.com/community/Installation/SystemRequirements), and that you are ready to erase everything on the computer and replace it with Tuffix. You may want to check that your entire laptop, or at least its wifi card, are on the list of Ubuntu-certified hardware.
 
-1. Burn an ISO image to a USB memory stick to install Ubuntu. Download an Ubuntu 20.04 64-bit ISO image from an Ubuntu mirror site. (You may skip this step if you ask your instructor for a pre-made USB memory stick or attend an ACM Linux Installfest.)
+1. Burn an ISO image to a USB memory stick to install Ubuntu. Download an Ubuntu 22.04 64-bit ISO image from an Ubuntu mirror site. (You may skip this step if you ask your instructor for a pre-made USB memory stick or attend an ACM Linux Installfest.)
 
-    1. Go to https://old-releases.ubuntu.com/releases/20.04/ubuntu-20.04.4-desktop-amd64.iso
+    1. Go to https://releases.ubuntu.com/22.04/
 
-    1. Download the file `ubuntu-20.04.4-desktop-amd64.iso`.
+    1. Download the file `ubuntu-22.04.1-desktop-amd64.iso`.
 
     1. Burn the ISO image to a USB memory stick that is at least 4 GB. **All data on the USB memory stick will be deleted forever.** Instructions on how to do this are online for [Ubuntu](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0), [macOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0), and [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0).
 
@@ -76,31 +78,33 @@ Most of the challenges you will encounter have already been faced by your peers.
 
 ## Virtual Machine
 
-1. Install VirtualBox 6.1.12 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
+1. Install VirtualBox 6.1.34 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
 
     - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
+
+    - Apple M1 Computers are ARM based and are not supported for native or VM based Tuffix installations
 
     - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
 
 1. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
 
-1. Download the .ova file from https://drive.google.com/file/d/1mbF4Y2sfWe7m409p0ejrof3kOmNJflVI/view.
+1. Download the [Tuffix 2022 Edition](https://drive.google.com/file/d/1AM8qoVylAhZ_Rt98d_UtdTAPPbuqmHyT/view) .ova file Google Drive.
 
-1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02`.
+1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2`.
 
     1. On a Linux or Mac host, open a terminal window and use the shasum command:
         ```
         $ cd ~/Downloads
-        $ shasum --algorithm 256 "Tuffix 2020 Edition.ova"
-        ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02  Tuffix 2020 Edition.ova
+        $ shasum --algorithm 256 "Tuffix 2022 Edition.ova"
+        f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2  Tuffix 2022 Edition.ova
         ```
 
     1. On Windows, open a Command Prompt window and use the CertUtil command:
         ```
         C:\>cd "%USERPROFILE%\Downloads" 
-        C:\Users\CSUFTitan\Downloads>CertUtil -hashfile "Tuffix 2020 Edition.ova" SHA256
-        SHA256 hash of Tuffix 2020 Edition.ova:
-        ee3e88cc01b748e6422037c8a2854f44378403c8608c44c3f8f91be3c4d5db02
+        C:\Users\CSUFTitan\Downloads>CertUtil -hashfile "Tuffix 2022 Edition.ova" SHA256
+        SHA256 hash of Tuffix 2022 Edition.ova:
+        f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2
         CertUtil: -hashfile command completed successfully.
         ```
 
