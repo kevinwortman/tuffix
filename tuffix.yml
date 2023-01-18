@@ -9,9 +9,10 @@
 - hosts: all
   remote_user: root
   tasks:
-    
+  
     - name: Update repositories cache and update all packages to the latest version
       apt:
+        upgrade: yes
         update_cache: yes
         #upgrade: dist
 
@@ -260,6 +261,25 @@
     - name: VS Code Editor for AMD64
       apt:
         deb: https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64
+        
+#####################################################################
+# Discord and Slack
+# point person: Daniel Reisch
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+    - name: Install Discord
+      snap:
+        name: discord
+        classic: yes
+
+    - name: Install Slack
+      snap:
+        name: slack
+        classic: yes
 
 #####################################################################
 # cleanup
