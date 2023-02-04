@@ -67,7 +67,7 @@
       apt:
         pkg:
           - build-essential
-          - clang-13
+          - clang
           - clang-tidy
           - clang-format
           - lldb
