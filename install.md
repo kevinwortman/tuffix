@@ -78,7 +78,9 @@ Most of the challenges you will encounter have already been faced by your peers.
 
 ## Virtual Machine
 
-1. Install VirtualBox 6.1.36 on your host computer (at either https://www.virtualbox.org/wiki/Downloads or https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
+1. Install VirtualBox 6.1 on your host computer. Version 6.1.34 is the tested version, but newer versions of 6.1 should be compatible
+    1. 6.1 builds can be found here: https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
+    1. 6.1.34 can be found here: https://download.virtualbox.org/virtualbox/6.1.34/
 
     - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
 
