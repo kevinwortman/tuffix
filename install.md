@@ -79,8 +79,8 @@ Most of the challenges you will encounter have already been faced by your peers.
 ## Virtual Machine
 
 1. Install VirtualBox 6.1 on your host computer. Version 6.1.34 is the tested version, but newer versions of 6.1 should be compatible
-* 6.1 builds can be found here: https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
-* 6.1.34 can be found here: https://download.virtualbox.org/virtualbox/6.1.34/
+  * 6.1 builds can be found here: https://www.virtualbox.org/wiki/Download_Old_Builds_6_1).
+  * 6.1.34 can be found here: https://download.virtualbox.org/virtualbox/6.1.34/
 
     - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
 
@@ -88,7 +88,7 @@ Most of the challenges you will encounter have already been faced by your peers.
 
     - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
 
-1. The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
+    - The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
 
 1. Download the [Tuffix 2022 Edition](https://drive.google.com/file/d/1AM8qoVylAhZ_Rt98d_UtdTAPPbuqmHyT/view) .ova file from Google Drive.
 
