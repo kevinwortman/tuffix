@@ -7,8 +7,8 @@ only need to be followed by the instructors who create the release VM.
 1. On host OS
   - Install/upgrade VirtualBox, using the specific version stated in
     the installation instructions. As of this writing, that is
-    **6.1.34**, at either https://www.virtualbox.org/wiki/Downloads or
-    https://www.virtualbox.org/wiki/Download_Old_Builds_6_1.
+    **6.1.34**, at either https://www.virtualbox.org/wiki/Download_Old_Builds_6_1 or
+    https://download.virtualbox.org/virtualbox/6.1.34/.
   - Download the latest vanilla Ubuntu 64-bit LTS release .iso file, as of
     this writing **ubuntu-22.04.1-desktop-amd64.iso**
     (https://ubuntu.com/download/desktop).
