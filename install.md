@@ -60,7 +60,7 @@ Most of the challenges you will encounter have already been faced by your peers.
 
     1. Go to https://releases.ubuntu.com/22.04/
 
-    1. Download the file `ubuntu-22.04.1-desktop-amd64.iso`.
+    1. Download the file `ubuntu-22.04.2-desktop-amd64.iso`.
 
     1. Burn the ISO image to a USB memory stick that is at least 4 GB. **All data on the USB memory stick will be deleted forever.** Instructions on how to do this are online for [Ubuntu](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-ubuntu#0), [macOS](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-macos#0), and [Windows](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0).
 
