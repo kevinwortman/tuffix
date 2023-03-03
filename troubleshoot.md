@@ -2,6 +2,14 @@
 
 Common Installing or General Use issues and their fixes can be found below. If you would rather have interactive assistance or the issue isn't listed below, help is always available on the [CSUF Tuffix Slack Workspace](README.md#community-slack-workspace)
 
+## I can't connect to the School Wi-Fi (eduroam) ##
+
+You can reference the [eduroam](eduroam.md) documentation for connecting to the school Wi-Fi
+
+## Download Link is Dead ##
+
+Feel free to join the [CSUF Tuffix Slack Workspace](README.md#community-slack-workspace) and let us know into the `#general` chat.
+
 ## Virtualization Not Enabled ##
 
 When attempting to use VirtualBox for the first time, you may receive an error specifying your virtualization is not enabled. Some laptops and desktops do not have virtualization enabled by default and you need to enable it within the BIOS. The instructions below provide a basic outline of how to do this.
@@ -10,10 +18,6 @@ When attempting to use VirtualBox for the first time, you may receive an error s
   2. **Enable Virtualization**
       - Generally, within the BIOS the option you need to look for is called Virtualization or Virtualization Technology. On Intel based systems it's sometimes referenced to as **VT-x**, and on AMD based systems it can be referred to as **AMD-V**.
       - This setting can generally be found in the Advanced sections of your BIOS. Consult your computer manufacture for specifics.
-
-## Download Link is Dead ##
-
-Feel free to join the [CSUF Tuffix Slack Workspace](README.md#community-slack-workspace) and let us know into the `#general` chat.
 
 ## Update Repositories Cache and Update All Packages to Latest Version Failed ##
 
@@ -26,10 +30,6 @@ Before attempting to run the Tuffixize script, make sure your system is up to da
 ## Virtualizing on a Mac ##
 
 Virtualization is not support on the new generation of M1 based Mac computers.
-
-## I can't connect to the School Wi-Fi (eduroam) ##
-
-You can reference the [eduroam](eduroam.md) documentation for connecting to the school Wi-Fi
 
 ## ACPI Error ##
 
