@@ -115,3 +115,7 @@ Most of the challenges you will encounter have already been faced by your peers.
 1. Start the virtual machine, and login using username “student” and password “student”.
 
 There is a [Vagrantfile](vagrant/Vagrantfile) for those who know how to use [Vagrant](vagrantup.com).
+
+## Troubleshooting ##
+
+If you encounter an issue installing or using Tuffix see the [Troubleshooting Guide](troubleshoot.md) or reach out on slack.
