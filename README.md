@@ -48,7 +48,7 @@ Please use the appropriate channel within the workspace:
 
 ## Installation & Hardware Requirements
 
-See the [Tuffix Installation Instructions](docs/install.md)
+See the [Tuffix Installation Instructions](install.md)
 
 ## Building a Release VM
 
