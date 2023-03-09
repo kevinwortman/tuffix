@@ -47,6 +47,8 @@ only need to be followed by the instructors who create the release VM.
   $ sudo apt clean
   ```
 5. Follow the **native install instructions** to run the `tuffixize` script, etc.
+  - Remove all default favorites
+  - Add Firefox, Files, Terminal, VS Code, Zoom, Discord, and Slack as Favorites
 6. Guest Additions - If you followed the Unattended Install, select Devices > Upgrade Guest Additions (this will reboot the VM), otherwise:
   - if you haven't already, reboot the VM to make sure the upgraded kernel is running
   - with the VM running and student logged in...
@@ -60,8 +62,9 @@ only need to be followed by the instructors who create the release VM.
 7. Zerofree
   - (this step makes the .ova file substantially smaller, thereby faster to download)
   - Shut down the VM
-  - Insert Ubuntu CD image again
-  - Start VM > boot from CD > Try Ubuntu > terminal
+  - Attach the Ubuntu CD image again
+  - Under Settings > Systems change the Boot order to have optical at the top
+  - Start VM
   - Identify the data partition (largest partition, usually /dev/sda3)
   - Mount the data partition to a temp location (i.e. `sudo mount /dev/sda3 /mnt/tmp`)
   - Assuming you've mounted /dev/sdaX to /mnt/tmp, the home directory `~` will be located at `/mnt/tmp/home/student`
@@ -71,6 +74,7 @@ only need to be followed by the instructors who create the release VM.
   - Run zerofree against the data partition (/dev/sda3 is the data partition in the example below)
   ```
   $ sudo apt install zerofree
+  $ sudo umount /mnt/tmp
   $ sudo zerofree -v /dev/sda3
   ```
   (this takes several minutes)
