@@ -281,6 +281,20 @@
         classic: yes
 
 #####################################################################
+# Remove Update Manager
+# point person: Daniel Reisch 
+#####################################################################
+
+- hosts: all
+  remote_user: root
+  tasks:
+
+  - name: Remove update-manager
+    apt:
+      name: update-manager
+      state: absent
+
+#####################################################################
 # cleanup
 # point person: undergraduate committee
 #####################################################################
