@@ -22,7 +22,7 @@ The hardware requirements to run Tuffix natively are:
 * At least 30 GB of hard disk or flash memory storage
 * WiFi or Ethernet
 
-The best laptops to buy are Lenovo Thinkpad T, X, and L series laptops. The best kind of laptop is one that you get for free. Look around and ask around, you may find an old laptop that is perfect for Tuffix. Chromebooks are not an option; most Dell laptops work well.
+The best laptops to buy are Lenovo Thinkpad T, X, and L series laptops. The best kind of laptop is one that you get for free. Look around and ask around, you may find an old laptop that is perfect for Tuffix. Chromebooks (or any ARM based PCs) are not an option; most Dell laptops work well.
 
 Option 2 (virtual machine) is *strongly discouraged*. The experience will be slow and you will spend more time fighting your computer than learning computer science. If you are worried about damaging your computer or your files by installing Tuffix, then consider borrowing a laptop from CSUF's [long term laptop loan program](https://www.fullerton.edu/it/students/equipment/longtermlaptop.php).
 
@@ -36,7 +36,7 @@ The hardware requirements to run a Tuffix VM are:
 * At least 30 GB of free hard disk or flash memory storage
 * WiFi or Ethernet
 
-Your processor must support the VT-x/AMD-V extension. If your processor supports these instructions yet does not allow you to boot the VM, then the instructions may be disabled from your computer's BIOS. Check the settings of your BIOS and, if needed, update your system's BIOS to enable the instructions.
+Your processor must support the VT-x/AMD-V extension. If your processor supports these instructions yet does not allow you to boot the VM, then the instructions may be disabled from your computer's BIOS. Check the settings of your BIOS and, if needed, update your system's BIOS to enable the instructions. Check the [Troubleshooting Docs](troubleshoot.md#virtualization-not-enabled) for more information.
 
 ## CSUF TUFFIX Slack Workspace
 
@@ -50,7 +50,7 @@ installing and using Tuffix.
 
 ## Native Install
 
-There is a series of videos specifically made for installing and getting started with Tuffix, https://www.youtube.com/playlist?list=PL3LtnHvH0mFEUtiLHYAKEowJcqnZ4fZwP. Please watch the videos before you attempt to install Tuffix so you are familiar with the process.
+There is a series of videos specifically made for installing and getting started with Tuffix on [YouTube](https://www.youtube.com/playlist?list=PL3LtnHvH0mFEUtiLHYAKEowJcqnZ4fZwP). Please watch the videos before you attempt to install Tuffix so you are familiar with the process.
 
 Most of the challenges you will encounter have already been faced by your peers. Visit the [CSUF Tuffix Slack](https://csuf-tuffix.slack.com) channel to find valuable information that will help you complete your installation.
 
@@ -78,19 +78,21 @@ Most of the challenges you will encounter have already been faced by your peers.
 
 ## Virtual Machine
 
-1. Install [VirtualBox 6.1](https://www.virtualbox.org/wiki/Download_Old_Builds_6_1) on your host computer. [Version 6.1.34](https://download.virtualbox.org/virtualbox/6.1.34/) is the tested version, but newer versions should be compatible
+1. Install [VirtualBox 7](https://www.virtualbox.org/wiki/Downloads) on your host computer. [Version 7.0.6](https://download.virtualbox.org/virtualbox/7.0.6) is the tested version, but newer versions should be compatible
 
-    - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
+    - If you're having trouble installing or running VirtualBox 7 you can install and run the Legacy Version 6.1.14. Please following the [Legacy](legacy/install_vb-6.14.md) instructions. **NOTE:** If you're running Windows 11, you will have to use VirtualBox 7.0.0 and higher.
+
+    - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see [this](https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5) forum. VirtualBox must be installed successfully first before moving on to the next step.
 
     - Apple M1 Computers are ARM based and are not supported for native or VM based Tuffix installations
 
-    - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. You can usually find instructions by googling for "(computer model) enable  virtualization", for example "Lenovo Thinkpad T420 enable virtualization".
+    - VirtualBox requires that the CPU virtualization feature is turned on in your BIOS settings. Most models of computer have this turned on by default, but some have it turned off. If VirtualBox gives errors about CPU virtualization, enter your BIOS settings and turn this feature on. Check the [Troubleshooting Docs](troubleshoot.md#virtualization-not-enabled) for more information.
 
-    - The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, but **do not upgrade VirtualBox** because that will cause the Guest Additions to stop working.
+    - The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, and if you choose to upgrade it **may** cause the Guest Additions to stop working. They will have to be manually updated. Check the [Troubleshooting Docs](troubleshoot.md#update-guest-additions) on how to update Guest Additions.
 
-1. Download the [Tuffix 2022 Edition](https://drive.google.com/file/d/1AM8qoVylAhZ_Rt98d_UtdTAPPbuqmHyT/view) .ova file from Google Drive.
+1. Download the [Tuffix 2022 Edition](https://drive.google.com/file/d/1AM8qoVylAhZ_Rt98d_UtdTAPPbuqmHyT/view) .ova file from Google Drive. **NEW LINK NEEDED | TODO**
 
-1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2`.
+1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2`. **UPDATE HASH | TODO**
 
     1. On a Linux or Mac host, open a terminal window and use the shasum command:
         ```
@@ -112,10 +114,10 @@ Most of the challenges you will encounter have already been faced by your peers.
 
 1. In the VirtualBox user interface, Import the .ova file. This may take several minutes.
 
-1. Start the virtual machine, and login using username “student” and password “student”.
+1. Start the virtual machine, and login using username `student` and password `student`.
 
 There is a [Vagrantfile](vagrant/Vagrantfile) for those who know how to use [Vagrant](vagrantup.com).
 
 ## Troubleshooting ##
 
-If you encounter an issue installing or using Tuffix see the [Troubleshooting Guide](troubleshoot.md) or reach out on slack.
+If you encounter an issue installing or using Tuffix see the [Troubleshooting Guide](troubleshoot.md) or reach out on [Slack](https://csuf-tuffix.slack.com).
