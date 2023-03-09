@@ -289,10 +289,10 @@
   remote_user: root
   tasks:
 
-  - name: Remove update-manager
-    apt:
-      name: update-manager
-      state: absent
+    - name: Remove update-manager
+      apt:
+        name: update-manager
+        state: absent
 
 #####################################################################
 # cleanup
