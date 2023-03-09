@@ -50,7 +50,7 @@ installing and using Tuffix.
 
 ## Native Install
 
-There is a series of videos specifically made for installing and getting started with Tuffix, https://www.youtube.com/playlist?list=PL3LtnHvH0mFEUtiLHYAKEowJcqnZ4fZwP. Please watch the videos before you attempt to install Tuffix so you are familiar with the process.
+There is a series of videos specifically made for installing and getting started with Tuffix on [YouTube](https://www.youtube.com/playlist?list=PL3LtnHvH0mFEUtiLHYAKEowJcqnZ4fZwP). Please watch the videos before you attempt to install Tuffix so you are familiar with the process.
 
 Most of the challenges you will encounter have already been faced by your peers. Visit the [CSUF Tuffix Slack](https://csuf-tuffix.slack.com) channel to find valuable information that will help you complete your installation.
 
@@ -80,7 +80,7 @@ Most of the challenges you will encounter have already been faced by your peers.
 
 1. Install [VirtualBox 6.1](https://www.virtualbox.org/wiki/Download_Old_Builds_6_1) on your host computer. [Version 6.1.34](https://download.virtualbox.org/virtualbox/6.1.34/) is the tested version, but newer versions should be compatible
 
-    - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5. VirtualBox must be installed successfully first before moving on to the next step.
+    - Apple computers with OS X 10.13 or later will encounter problems installing VirtualBox. If your installation failed, please see [this](https://medium.com/@DMeechan/fixing-the-installation-failed-virtualbox-error-on-mac-high-sierra-7c421362b5b5) forum. VirtualBox must be installed successfully first before moving on to the next step.
 
     - Apple M1 Computers are ARM based and are not supported for native or VM based Tuffix installations
 

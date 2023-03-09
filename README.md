@@ -48,11 +48,11 @@ Please use the appropriate channel within the workspace:
 
 ## Installation & Hardware Requirements
 
-See the [Tuffix Installation Instructions in install.md](docs/install.md)
+See the [Tuffix Installation Instructions](docs/install.md)
 
 ## Building a Release VM
 
-See the [Tuffix VM Build Process in vm-build-process.md](docs/vm-build-process.md)
+See the [Tuffix VM Build Process](docs/vm-build-process.md)
 
 ## Troubleshooting ##
 
@@ -62,5 +62,5 @@ If you encounter an issue installing or using Tuffix see the [Troubleshooting Gu
 
 This is the product of a working group including Mikhail Gofman, Paul
 Inventado, and Kevin Wortman. It builds upon Michael Shafae's build
-scripts and Kenytt Avery's
-node-box (https://github.com/ProfAvery/node-box).
+scripts and [Kenytt Avery's
+node-box](https://github.com/ProfAvery/node-box).
