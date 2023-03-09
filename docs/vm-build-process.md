@@ -5,41 +5,33 @@ These are the instructions to create a Tuffix VM. Ordinarily, they
 only need to be followed by the instructors who create the release VM.
 
 1. On host OS
-  - Install/upgrade VirtualBox, using the specific version stated in
+  - Install/upgrade VirtualBox and download the associated VBoxGuestAdditions ISO, using the specific version stated in
     the installation instructions. As of this writing, that is
     [**7.0.6**](https://download.virtualbox.org/virtualbox/7.0.6).
   - Download the latest vanilla Ubuntu 64-bit LTS release .iso file. As of
     this writing, that is [**ubuntu-22.04.2-desktop-amd64.iso**](https://releases.ubuntu.com/jammy/).
-2. In VirtualBox on the host computer
-  - New VM
+2. In VirtualBox on the host computer, Select `New` and make sure `Expert Mode` is enabled
+  - Name and Operating System
     - Name: **Tuffix 2022 Edition**
-    - Type: Linux
-    - Version: Ubuntu (64-bit)
-    - Memory: 2048 MB
-    - Create Virtual Hard Disk Now > VDI > Dynamically allocated > 40 GB
-  - VM settings
-    - System > Pointing device > PS/2 Mouse
-  - Display
-    - Video Memory > 128 MB
-    - Enable 3D acceleration: Yes
-  - Storage > optical drive > select the .iso image you downloaded above
-3. Start VM --- Ubuntu installer
-  - Language: English
-  - Click “Install Ubuntu”
-  - Keyboard: English (US)
-  - Download updates: yes
-  - Install third-party software: yes
-  - Erase disk and install
-  - Time Zone: Los Angeles
-  - User
-    - Name: student
-    - Computer Name: tuffix-vm
-    - Username: student (prefilled)
+    - ISO: select the .iso image you downloaded above
+    - Type: If not autodetected, select Linux
+    - Version: If not autodetected, select Ubuntu (64-bit)
+  - Unattended Install
+    - Username: student
     - Password: student
-    - Require login: yes
-  - *(let it finish, remove optical disk, restart)*
-4. Inside Ubuntu/Tuffix guest
+    - Hostname: tuffix-vm
+    - Guest Additions: select the .iso image you downloaded above
+  - Hardware
+    - Base Memory: If not autodetected, select 2048MB
+    - Processors: 2 CPUs
+  - Hard Disk
+    - Increase from the default (normally 24GB) to 40GB
+3. Start VM
+  - VM Should automatically start and begin the unattended install
+  - If the installation program stalls and asks to force quit or wait, select nothing and let it finish
+5. Inside Ubuntu/Tuffix guest
   - Login as student
+  - Skip all intro prompts
   - Use Firefox to download a background image and set it as the desktop wallpaper (it will automatically create a ~/Pictures/Wallpapers folder and copy the image there).
     - Fall 2018: [Tuffix-Background-v2-1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=1QFt8kOPKjpd18fjnDWEVCxVmi4512xNy)
     - Spring 2019: [Tuffix Background v3.3 1920x1080 - Jeffrey Lo.png](https://drive.google.com/open?id=16aBkkGTcgG40m4ayiuGNYbLM5BmDVjEC)
@@ -47,6 +39,7 @@ only need to be followed by the instructors who create the release VM.
     - 2020 Edition: https://photos.app.goo.gl/ERwsA2urLqh1JYFX8
     - 2022 Edition: [It Takes A Titan 2022](https://drive.google.com/file/d/1ZJbahygKCFb0ymPJ5p02GjieyPdHu5g8/view)
     - **pick a new image for each release**
+  - Add `student` to the sudoers groups by using `su` then as root, `usermod -aG sudo student`. You'll need to reboot after this.
   - Update all packages
   ```
   $ sudo apt update
@@ -54,7 +47,7 @@ only need to be followed by the instructors who create the release VM.
   $ sudo apt clean
   ```
 5. Follow the **native install instructions** to run the `tuffixize` script, etc.
-6. Guest additions
+6. Guest Additions - If you followed the Unattended Install, select Devices > Upgrade Guest Additions (this will reboot the VM), otherwise:
   - if you haven't already, reboot the VM to make sure the upgraded kernel is running
   - with the VM running and student logged in...
   - click Devices > Insert Guest Additions CD image...
