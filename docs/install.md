@@ -90,23 +90,23 @@ Most of the challenges you will encounter have already been faced by your peers.
 
     - The VM is intended to work with this specific version of VirtualBox, so you may experience compatibility problems if you use a different version. VirtualBox may ask you to upgrade to a newer version, and if you choose to upgrade it **may** cause the Guest Additions to stop working. They will have to be manually updated. Check the [Troubleshooting Docs](troubleshoot.md#update-guest-additions) on how to update Guest Additions.
 
-1. Download the [Tuffix 2022 Edition](https://drive.google.com/file/d/1AM8qoVylAhZ_Rt98d_UtdTAPPbuqmHyT/view) .ova file from Google Drive. **NEW LINK NEEDED | TODO**
+1. Download the [Tuffix 2022 Edition](https://drive.google.com/file/d/16CHGUqUmNDovJAcX5tO4JKhSmDusxOHL/view) .ova file from Google Drive.
 
-1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2`. **UPDATE HASH | TODO**
+1. *(Recommended but not essential.)* Verify that the .ova downloaded completely, and was not tampered with, by checking its cryptographic hash. Compute a SHA-256 for your .ova and confirm that it matches: `f1fa0c67059cf3f74c5d9f750a9cb5e9b1cf577019f5b6df67821e4167a62b8d`.
 
     1. On a Linux or Mac host, open a terminal window and use the shasum command:
         ```
         $ cd ~/Downloads
-        $ shasum --algorithm 256 "Tuffix 2022 Edition.ova"
-        f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2  Tuffix 2022 Edition.ova
+        $ sha256sum Tuffix.2022.Edition.ova
+        f1fa0c67059cf3f74c5d9f750a9cb5e9b1cf577019f5b6df67821e4167a62b8d  Tuffix.2022.Edition.ova
         ```
 
     1. On Windows, open a Command Prompt window and use the CertUtil command:
         ```
         C:\>cd "%USERPROFILE%\Downloads" 
-        C:\Users\CSUFTitan\Downloads>CertUtil -hashfile "Tuffix 2022 Edition.ova" SHA256
-        SHA256 hash of Tuffix 2022 Edition.ova:
-        f09956e248a44476403e659a08e8dbf0ff9dd65bda4eaefc4157c8b555ea4ba2
+        C:\Users\CSUFTitan\Downloads>CertUtil -hashfile "Tuffix.2022.Edition.ova" SHA256
+        SHA256 hash of Tuffix.2022.Edition.ova:
+        f1fa0c67059cf3f74c5d9f750a9cb5e9b1cf577019f5b6df67821e4167a62b8d
         CertUtil: -hashfile command completed successfully.
         ```
 
