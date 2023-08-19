@@ -1,6 +1,6 @@
 ## Troubleshooting ##
 
-Common Installing or General Use issues and their fixes can be found below. If you would rather have interactive assistance or the issue isn't listed below, help is always available on the [CSUF Tuffix Slack Workspace](README.md#community-slack-workspace)
+Common Installing or General Use issues and their fixes can be found below. If you would rather have interactive assistance or the issue isn't listed below, help is always available on the [CSUF Tuffix Slack Workspace](../README.md#community-slack-workspace)
 
 ## I can't connect to the School Wi-Fi (eduroam) ##
 
@@ -8,7 +8,7 @@ You can reference the [eduroam](eduroam.md) documentation for connecting to the 
 
 ## Download Link is Dead ##
 
-Feel free to join the [CSUF Tuffix Slack Workspace](README.md#community-slack-workspace) and let us know into the `#general` chat.
+Feel free to join the [CSUF Tuffix Slack Workspace](../README.md#community-slack-workspace) and let us know into the `#general` chat.
 
 ## Virtualization Not Enabled ##
 
@@ -35,7 +35,13 @@ Virtualization is not support on the new generation of M1 based Mac computers.
 
 There's a good chance that SATA controller for your computer's boot drive is set to RAID and not AHCI.
 
-  1. **Restart your computer and enter the BIOS**. The key to press to enter the BIOS as your computer starts up is generally F2 or Delete (not to be confused with the backspace key). Consult your computer manufacture to determine the appropriate BIOS key for your computer manufacture.
-  2. **Enable AHCI on your SATA Controller**
+  1. **Restart your computer and enter the BIOS.** The key to press to enter the BIOS as your computer starts up is generally F2 or Delete (not to be confused with the backspace key). Consult your computer manufacture to determine the appropriate BIOS key for your computer manufacture.
+  2. **Enable AHCI on your SATA Controller.**
       - This option will most likely be found under a tab referred to as Storage, SATA Configuration, SATA Mode, or something similar.
       - Make sure this is set to AHCI and **not** RAID
+
+## Update Guest Additions ##
+
+If you're using a newer version of VirtualBox you may be prompted to update the Guest Addition. It's always a good idea to keep the Guest Additions up to date, as if they drift too far apart, stability issues may arise.
+  1. **Mount the Guest Additions CD.** In VirtualBox, select `Devices` in the toolbar at the top, and choose to `Insert Guest Additions CD image`
+  2. **Run the Installation Script.** If the script doesn't autorun, you'll need to run the script from the Terminal using `sudo ./VBoxLinuxAdditions.run`. This file will be located in the mounted Guest Addition CD image, which you can find under Devices in your file explorer, or mounted under `/media/student/`
